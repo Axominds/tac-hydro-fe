@@ -28,7 +28,7 @@ export const ContactSection = (): JSX.Element => {
               ullamcorper mattis.
             </p>
             <NavLink
-              to="/contact"
+              to="/"
               className="inline-flex items-center gap-2 rounded-full bg-[#d1862b] px-6 py-3 text-white text-sm font-semibold tracking-[0.02em] shadow-[0_10px_20px_rgba(209,134,43,0.35)] hover:bg-[#bb741f] transition-colors"
             >
               Contact Us

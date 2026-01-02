@@ -33,35 +33,50 @@ export const SiteHeader = ({
   logoAlt = "TAC Hydro Consultancy logo",
   cta,
 }: SiteHeaderProps): JSX.Element => {
+  const disabledLabels = new Set(["Project", "Projects", "Services", "Gallery", "Contact Us"]);
+
   return (
     <header className={cn("relative z-30 px-20 py-[30px] pointer-events-auto", headerClassName)}>
       <div className={cn("flex items-center justify-between", innerClassName)}>
         <img className={cn("w-[277px] h-[63px]", logoClassName)} alt={logoAlt} src={logoSrc} />
 
         <nav className={cn("flex items-center gap-[29px]", navClassName)}>
-          {navigationItems.map((item, index) => (
-            <NavLink
-              key={`${item.label}-${index}`}
-              to={item.href}
-              end={item.href === "/"}
-              className={({ isActive }) =>
-                cn(
-                  "[font-family:'Montserrat',Helvetica] font-bold text-white text-lg tracking-[0] leading-[normal] transition-colors",
-                  (isActive || item.isActive) && "text-[#0070c0] underline underline-offset-4",
+          {navigationItems.map((item, index) =>
+            disabledLabels.has(item.label) ? (
+              <span
+                key={`${item.label}-${index}`}
+                className={cn(
+                  "[font-family:'Montserrat',Helvetica] font-bold text-white text-lg tracking-[0] leading-[normal] opacity-70 cursor-default",
                   linkClassName,
-                )
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+                )}
+              >
+                {item.label}
+              </span>
+            ) : (
+              <NavLink
+                key={`${item.label}-${index}`}
+                to={item.href}
+                end={item.href === "/"}
+                className={({ isActive }) =>
+                  cn(
+                    "[font-family:'Montserrat',Helvetica] font-bold text-white text-lg tracking-[0] leading-[normal] transition-colors",
+                    (isActive || item.isActive) && "text-[#0070c0] underline underline-offset-4",
+                    linkClassName,
+                  )
+                }
+              >
+                {item.label}
+              </NavLink>
+            )
+          )}
 
           {cta ?? (
             <Button
-              asChild
-              className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl [font-family:'Montserrat',Helvetica] font-bold text-white text-lg hover:bg-[#005a9c]"
+              type="button"
+              aria-disabled="true"
+              className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl [font-family:'Montserrat',Helvetica] font-bold text-white text-lg opacity-70 cursor-default"
             >
-              <NavLink to="/contact">Contact Us</NavLink>
+              Contact Us
             </Button>
           )}
         </nav>
