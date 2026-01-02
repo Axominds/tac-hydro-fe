@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import { cn } from "../../lib/utils";
 import { LOGO_PRIMARY } from "../../assets";
 import { Button } from "../ui/button";
@@ -33,28 +34,34 @@ export const SiteHeader = ({
   cta,
 }: SiteHeaderProps): JSX.Element => {
   return (
-    <header className={cn("relative z-10 px-20 py-[30px]", headerClassName)}>
+    <header className={cn("relative z-30 px-20 py-[30px] pointer-events-auto", headerClassName)}>
       <div className={cn("flex items-center justify-between", innerClassName)}>
         <img className={cn("w-[277px] h-[63px]", logoClassName)} alt={logoAlt} src={logoSrc} />
 
         <nav className={cn("flex items-center gap-[29px]", navClassName)}>
           {navigationItems.map((item, index) => (
-            <a
+            <NavLink
               key={`${item.label}-${index}`}
-              href={item.href}
-              className={cn(
-                "[font-family:'Montserrat',Helvetica] font-bold text-white text-lg tracking-[0] leading-[normal]",
-                item.isActive && "underline",
-                linkClassName,
-              )}
+              to={item.href}
+              end={item.href === "/"}
+              className={({ isActive }) =>
+                cn(
+                  "[font-family:'Montserrat',Helvetica] font-bold text-white text-lg tracking-[0] leading-[normal] transition-colors",
+                  (isActive || item.isActive) && "text-[#0070c0] underline underline-offset-4",
+                  linkClassName,
+                )
+              }
             >
               {item.label}
-            </a>
+            </NavLink>
           ))}
 
           {cta ?? (
-            <Button className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl [font-family:'Montserrat',Helvetica] font-bold text-white text-lg hover:bg-[#005a9c]">
-              Contact Us
+            <Button
+              asChild
+              className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl [font-family:'Montserrat',Helvetica] font-bold text-white text-lg hover:bg-[#005a9c]"
+            >
+              <NavLink to="/contact">Contact Us</NavLink>
             </Button>
           )}
         </nav>

@@ -6,6 +6,11 @@
   .all-\[unset\] {
     all: unset;
   }
+
+  .mission-panel {
+    @apply rounded-[26px] bg-[#e9f6ef] px-10 py-10;
+    box-shadow: 20px 20px 32px -12px rgba(0, 0, 0, 0.18);
+  }
 }
 
 :root {
@@ -36,6 +41,10 @@
   animation: var(--animate-spin);
 }
 
+.animate-blink {
+  animation: blink 0.75s step-end infinite;
+}
+
 @keyframes spin {
   to {
     transform: rotate(1turn);
@@ -45,7 +54,7 @@
 @keyframes image-glow {
   0% {
     opacity: 0;
-    animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 1);
+    animation-timing-function: cubic-bezier(0.74, 0.25, 0.76, 0.78);
   }
 
   10% {
@@ -92,6 +101,17 @@
   30%,
   60% {
     background-position: calc(100% + var(--shimmer-width)) 0;
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
   }
 }
 
@@ -191,6 +211,7 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    font-family: "Playfair Display", Helvetica, serif;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;

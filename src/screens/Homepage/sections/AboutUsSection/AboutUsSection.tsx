@@ -20,33 +20,41 @@ const whyUsParagraphs = [
 
 export const AboutUsSection = (): JSX.Element => {
   return (
-    <section className="relative w-full py-16 md:py-24 bg-[url(/downloads/mjlob7k1SeIJX4/img/vector-3.svg)] bg-[100%_100%]">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+    <section className="relative w-full pt-[5.5rem] pb-[5.5rem] bg-white">
+      <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-20">
+        <div className="grid grid-cols-1 lg:grid-cols-[560px_1fr] gap-10 lg:gap-16 items-start">
           <div className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-            <div className="relative w-full aspect-[586/614] bg-[url(/downloads/mjlob7k1SeIJX4/img/group-2.png)] bg-[100%_100%]">
+            <div className="relative w-full aspect-[586/614]">
               <img
-                className="w-full h-full rounded-[10px] object-cover"
-                alt="About IQ Organic Solutions"
+                className="w-full h-full object-cover"
+                style={{
+                  WebkitMaskImage: "url(/downloads/mjlob7k1SeIJX4/img/group-2.png)",
+                  maskImage: "url(/downloads/mjlob7k1SeIJX4/img/group-2.png)",
+                  WebkitMaskSize: "100% 100%",
+                  maskSize: "100% 100%",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                }}
+                alt="About TAC Hydro"
                 src="/downloads/mjlob7k1SeIJX4/img/image-3-1.png"
               />
             </div>
           </div>
 
           <div className="flex flex-col space-y-8 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-            <h2 className="[font-family:'Playfair_Display',Helvetica] font-bold italic text-[#111111] text-4xl md:text-5xl tracking-[0] leading-normal">
+            <h2 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-[#111111] text-[42px] tracking-[0] leading-[1.1]">
               About Us
             </h2>
 
-            <div className="space-y-4">
-              <h3 className="[font-family:'Inter',Helvetica] font-bold italic text-[#111111] text-xl tracking-[0] leading-normal">
+            <div className="space-y-3">
+              <h3 className="[font-family:'Inter',Helvetica] font-bold text-[#111111] text-lg tracking-[0] leading-normal">
                 History
               </h3>
               <div className="space-y-2">
                 {historyParagraphs.map((paragraph, index) => (
                   <p
                     key={index}
-                    className="[font-family:'Inter',Helvetica] font-normal text-[#555555] text-[15px] tracking-[0] leading-normal"
+                    className="[font-family:'Inter',Helvetica] font-normal text-[#555555] text-[15px] tracking-[0] leading-[22px]"
                   >
                     {paragraph}
                   </p>
@@ -54,15 +62,15 @@ export const AboutUsSection = (): JSX.Element => {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="[font-family:'Inter',Helvetica] font-bold italic text-[#111111] text-xl tracking-[0] leading-normal">
+            <div className="space-y-3">
+              <h3 className="[font-family:'Inter',Helvetica] font-bold text-[#111111] text-lg tracking-[0] leading-normal">
                 Why Us
               </h3>
               <div className="space-y-2">
                 {whyUsParagraphs.map((paragraph, index) => (
                   <p
                     key={index}
-                    className="[font-family:'Inter',Helvetica] font-normal text-[#555555] text-[15px] tracking-[0] leading-normal"
+                    className="[font-family:'Inter',Helvetica] font-normal text-[#555555] text-[15px] tracking-[0] leading-[22px]"
                   >
                     {paragraph}
                   </p>

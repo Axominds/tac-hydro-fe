@@ -1,68 +1,154 @@
-import React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
-const testimonialData = {
-  title: "Project Development",
-  description:
-    "TAC Hydro Consultancy Pvt. Ltd. is a leading engineering consultancy based in Nepal, specializing in hydropower and infrastructure development (...)",
-  backgroundImage: "/downloads/mjlob7k1SeIJX4/img/rectangle-213.png",
-  totalSlides: 5,
-  currentSlide: 2,
-};
+const slides = [
+  "/downloads/mjlob7k1SeIJX4/img/rectangle-213.png",
+  "/downloads/mjlob7k1SeIJX4/img/mask-group-4.png",
+  "/downloads/mjlob7k1SeIJX4/img/mask-group-5.png",
+  "/downloads/mjlob7k1SeIJX4/img/mask-group-6.png",
+  "/downloads/mjlob7k1SeIJX4/img/rectangle-218.png",
+];
 
 export const TestimonialsSection = (): JSX.Element => {
+  const [activeIndex, setActiveIndex] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isAutoPaused, setIsAutoPaused] = useState(false);
+  const dragStartX = useRef<number | null>(null);
+  const dragDeltaX = useRef(0);
+  const isDragging = useRef(false);
+  const sliderImages = useMemo(() => {
+    const first = slides[0];
+    const last = slides[slides.length - 1];
+    return [last, ...slides, first];
+  }, []);
+
+  const goToNext = () => {
+    setIsTransitioning(true);
+    setActiveIndex((prev) => prev + 1);
+  };
+
+  const goToPrev = () => {
+    setIsTransitioning(true);
+    setActiveIndex((prev) => prev - 1);
+  };
+
+  useEffect(() => {
+    if (isAutoPaused) {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      goToNext();
+    }, 3000);
+
+    return () => window.clearInterval(timer);
+  }, [isAutoPaused]);
+
   return (
     <section className="relative w-full overflow-hidden">
-      <div className="relative w-full h-[851px]">
-        <img
-          className="absolute w-full h-full top-0 left-0 object-cover"
-          alt="Background pattern"
-          src="/downloads/mjlob7k1SeIJX4/img/vector-1.png"
-        />
+      <div
+        className="relative w-screen h-[520px] cursor-grab active:cursor-grabbing"
+        onMouseEnter={() => setIsAutoPaused(true)}
+        onMouseLeave={() => setIsAutoPaused(false)}
+        onPointerDown={(event) => {
+          dragStartX.current = event.clientX;
+          dragDeltaX.current = 0;
+          isDragging.current = true;
+          setIsAutoPaused(true);
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={(event) => {
+          if (!isDragging.current || dragStartX.current === null) {
+            return;
+          }
+          dragDeltaX.current = event.clientX - dragStartX.current;
+        }}
+        onPointerUp={(event) => {
+          if (!isDragging.current) {
+            return;
+          }
+          const delta = dragDeltaX.current;
+          if (Math.abs(delta) > 40) {
+            if (delta > 0) {
+              goToPrev();
+            } else {
+              goToNext();
+            }
+          }
+          dragStartX.current = null;
+          dragDeltaX.current = 0;
+          isDragging.current = false;
+          setIsAutoPaused(false);
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }}
+        onPointerLeave={() => {
+          if (!isDragging.current) {
+            return;
+          }
+          dragStartX.current = null;
+          dragDeltaX.current = 0;
+          isDragging.current = false;
+          setIsAutoPaused(false);
+        }}
+      >
+        <div
+          className={`absolute inset-0 flex h-full w-full ${
+            isTransitioning ? "transition-transform duration-800 ease-in-out" : ""
+          }`}
+          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
+          onTransitionEnd={() => {
+            if (activeIndex === sliderImages.length - 1) {
+              setIsTransitioning(false);
+              setActiveIndex(1);
+              window.requestAnimationFrame(() => setIsTransitioning(true));
+            }
 
-        <div className="absolute w-full h-[68.91%] top-[23.67%] left-0">
-          <img
-            className="absolute w-full h-full top-0 left-0 object-cover"
-            alt="Vector overlay"
-            src="/downloads/mjlob7k1SeIJX4/img/vector-4.svg"
-          />
-
-          <div className="absolute inset-0 w-[95.05%] h-[99.97%]">
-            <img
-              className="absolute w-full h-full top-0 left-0 object-cover"
-              alt="Project background"
-              src={testimonialData.backgroundImage}
-            />
-
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30" />
-          </div>
-
-          <div className="absolute w-full h-full top-0 left-0 flex flex-col justify-center px-16">
-            <div className="max-w-[653px] translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-              <h2 className="[font-family:'Playfair_Display',Helvetica] font-bold italic text-white text-[44px] leading-[1.2] mb-6">
-                {testimonialData.title}
-              </h2>
-
-              <p className="[font-family:'Inter',Helvetica] font-normal text-[#ededed] text-base leading-[1.5] max-w-[585px] translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-                {testimonialData.description}
-              </p>
-            </div>
-          </div>
-
-          <div className="absolute bottom-[4.58%] left-1/2 -translate-x-1/2 flex gap-2 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-            {Array.from({ length: testimonialData.totalSlides }).map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index === testimonialData.currentSlide
-                    ? "bg-white"
-                    : "bg-white/40 hover:bg-white/60"
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-                aria-current={index === testimonialData.currentSlide ? "true" : "false"}
+            if (activeIndex === 0) {
+              setIsTransitioning(false);
+              setActiveIndex(slides.length);
+              window.requestAnimationFrame(() => setIsTransitioning(true));
+            }
+          }}
+        >
+          {sliderImages.map((slide, index) => (
+            <div key={`${slide}-${index}`} className="relative h-full w-full flex-shrink-0">
+              <img
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                alt="Project development"
+                src={slide}
               />
-            ))}
-          </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30 pointer-events-none" />
+
+              <div className="relative z-10 h-full max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-20 flex flex-col justify-center">
+                <div className="max-w-[653px]">
+                  <h2 className="[font-family:'Playfair_Display',Helvetica] font-bold italic text-white text-[44px] leading-[1.2] mb-6">
+                    Project Development
+                  </h2>
+
+                  <p className="[font-family:'Inter',Helvetica] font-normal text-[#ededed] text-base leading-[1.5] max-w-[585px]">
+                    TAC Hydro Consultancy Pvt. Ltd. is a leading engineering consultancy based in
+                    Nepal, specializing in hydropower and infrastructure development (...)
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+          {slides.map((_, index) => (
+            <button
+              key={`testimonial-dot-${index}`}
+              type="button"
+              onClick={() => {
+              setIsTransitioning(true);
+              setActiveIndex(index + 1);
+            }}
+            className={`w-3 h-3 rounded-full transition-colors ${
+              index + 1 === activeIndex ? "bg-white" : "bg-white/40 hover:bg-white/60"
+            }`}
+              aria-label={`Go to slide ${index + 1}`}
+              aria-current={index + 1 === activeIndex ? "true" : "false"}
+            />
+          ))}
         </div>
       </div>
     </section>
