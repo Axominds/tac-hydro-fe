@@ -34,6 +34,7 @@ const services = [
 
 export const FooterSection = (): JSX.Element => {
   const currentYear = new Date().getFullYear();
+  const disabledLinks = new Set(["Services", "Gallery", "Contact Us", "Projects"]);
 
   return (
     <footer className="w-full bg-[#586772] py-[60px] px-20">
@@ -103,25 +104,22 @@ export const FooterSection = (): JSX.Element => {
 
             <div className="grid grid-cols-2 gap-x-28 gap-y-5">
               {usefulLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={
-                    link.name === "Home"
-                      ? "/"
-                      : link.name === "About us"
-                        ? "/about"
-                        : link.name === "Services"
-                          ? "/services"
-                          : link.name === "Projects"
-                            ? "/projects"
-                            : link.name === "Gallery"
-                              ? "/gallery"
-                              : "#"
-                  }
-                  className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-lg text-justify tracking-[0] leading-7 hover:text-[#f0f1ff] transition-colors"
-                >
-                  {link.name}
-                </a>
+                disabledLinks.has(link.name) ? (
+                  <span
+                    key={index}
+                    className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-lg text-justify tracking-[0] leading-7 opacity-70 cursor-default"
+                  >
+                    {link.name}
+                  </span>
+                ) : (
+                  <a
+                    key={index}
+                    href={link.name === "Home" ? "/" : "/about"}
+                    className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-lg text-justify tracking-[0] leading-7 hover:text-[#f0f1ff] transition-colors"
+                  >
+                    {link.name}
+                  </a>
+                )
               ))}
             </div>
           </div>
