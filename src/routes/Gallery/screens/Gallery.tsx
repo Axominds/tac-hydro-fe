@@ -18,11 +18,11 @@ export const Gallery = (): JSX.Element => {
       {/* Hero Section with Header */}
       <section className="relative w-full h-[350px]">
         <img
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
           alt="Hero Background"
           src={HERO_BG_PRIMARY}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1a2332]/90 to-[#2c3e50]/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1a2332]/90 to-[#2c3e50]/90 pointer-events-none" />
 
         {/* Header Navigation */}
         <SiteHeader navigationItems={navigationItems} />

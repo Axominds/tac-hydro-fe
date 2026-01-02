@@ -5,23 +5,20 @@ const projectsData = [
   {
     id: 1,
     image: "/downloads/mjlob7k1SeIJX4/img/mask-group.png",
-    title: "Stress reduction",
-    description: "internet tend to repeat predefined",
-    hasHeart: true,
+    title: "Project Development",
+    description: "End-to-end hydropower planning and delivery.",
   },
   {
     id: 2,
     image: "/downloads/mjlob7k1SeIJX4/img/mask-group-1.png",
-    title: "",
-    description: "",
-    hasHeart: false,
+    title: "Hydropower Studies",
+    description: "Feasibility, design, and engineering support.",
   },
   {
     id: 3,
-    image: "/downloads/mjlob7k1SeIJX4/img/clip-path-group.png",
-    title: "",
-    description: "",
-    hasHeart: false,
+    image: "/downloads/mjlob7k1SeIJX4/img/mask-group.png",
+    title: "Infrastructure Design",
+    description: "Sustainable solutions for complex terrain.",
   },
 ];
 
@@ -37,7 +34,7 @@ export const HeroSection = (): JSX.Element => {
           {projectsData.map((project, index) => (
             <Card
               key={project.id}
-              className="overflow-hidden shadow-[0px_4px_4px_#00000040] border-0 translate-y-[-1rem] animate-fade-in opacity-0"
+              className="group overflow-hidden shadow-[0px_4px_4px_#00000040] border-0 translate-y-[-1rem] animate-fade-in opacity-0 transition-transform duration-300 hover:-translate-y-2 hover:shadow-[0px_12px_24px_#00000055] [perspective:1200px]"
               style={
                 {
                   "--animation-delay": `${200 + index * 200}ms`,
@@ -46,38 +43,31 @@ export const HeroSection = (): JSX.Element => {
             >
               <CardContent className="p-0 relative">
                 <div className="relative aspect-[375/460]">
-                  <img
-                    className="w-full h-full object-cover"
-                    alt={project.title || `Project ${project.id}`}
-                    src={project.image}
-                  />
-
-                  {project.hasHeart && (
-                    <button
-                      className="absolute top-6 right-6 w-12 h-12 flex items-center justify-center transition-transform hover:scale-110"
-                      type="button"
-                      aria-label="Like project"
-                    >
+                  <div className="absolute inset-0 transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                    <div className="absolute inset-0 [backface-visibility:hidden]">
                       <img
-                        className="w-full h-full"
-                        alt="Like"
-                        src="/downloads/mjlob7k1SeIJX4/img/group.png"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        alt={project.title || `Project ${project.id}`}
+                        src={project.image}
                       />
-                    </button>
-                  )}
-
-                  {project.title && (
-                    <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/60 to-transparent">
-                      <img
-                        className="mb-3"
-                        alt={project.title}
-                        src="/downloads/mjlob7k1SeIJX4/img/stress-reduction.png"
-                      />
-                      <p className="[font-family:'Inter',Helvetica] font-normal text-white text-[13px] tracking-[0] leading-normal">
-                        {project.description}
-                      </p>
                     </div>
-                  )}
+                    <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-[#0b1f2b]">
+                      <img
+                        className="absolute inset-0 w-full h-full object-cover blur-sm scale-105"
+                        alt=""
+                        aria-hidden="true"
+                        src={project.image}
+                      />
+                      <div className="relative h-full w-full flex flex-col justify-end p-6 bg-gradient-to-t from-black/75 via-black/40 to-transparent">
+                        <h3 className="[font-family:'Inter',Helvetica] font-semibold text-white text-xl tracking-[0] leading-tight mb-2">
+                          {project.title}
+                        </h3>
+                        <p className="[font-family:'Inter',Helvetica] font-normal text-white/90 text-[14px] tracking-[0] leading-[20px]">
+                          {project.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

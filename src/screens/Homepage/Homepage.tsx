@@ -1,5 +1,5 @@
 import { ChevronRightIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { HERO_BG_ALT } from "../../assets";
 import { Button } from "../../components/ui/button";
 import { SiteHeader } from "../../components/sections/SiteHeader";
@@ -7,7 +7,6 @@ import { AboutUsSection } from "./sections/AboutUsSection";
 import { CallToActionSection } from "./sections/CallToActionSection";
 import { FooterSection } from "../../components/sections/FooterSection";
 import { HeroSection } from "./sections/HeroSection";
-import { MainContentSection } from "./sections/MainContentSection";
 import { ProjectsSection } from "./sections/ProjectsSection";
 import { TestimonialsSection } from "./sections/TestimonialsSection";
 
@@ -57,39 +56,94 @@ const partnerLogos = [
   },
 ];
 
+const typewriterWords = ["INNOVATE", "ENGINEER", "SUSTAIN"];
+
 export const Homepage = (): JSX.Element => {
+  const [typewriterText, setTypewriterText] = useState("");
+  const [typewriterIndex, setTypewriterIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const currentWord = typewriterWords[typewriterIndex % typewriterWords.length];
+    if (!isDeleting && typewriterText === currentWord) {
+      const pauseTimer = window.setTimeout(() => setIsDeleting(true), 800);
+      return () => window.clearTimeout(pauseTimer);
+    }
+
+    if (isDeleting && typewriterText.length === 0) {
+      const resetTimer = window.setTimeout(() => {
+        setIsDeleting(false);
+        setTypewriterIndex((prev) => prev + 1);
+      }, 300);
+      return () => window.clearTimeout(resetTimer);
+    }
+
+    const nextText = isDeleting
+      ? currentWord.substring(0, typewriterText.length - 1)
+      : currentWord.substring(0, typewriterText.length + 1);
+    let delay = isDeleting ? 90 : 130;
+
+    if (!isDeleting && typewriterText.length === currentWord.length - 1) {
+      delay = 60;
+    }
+
+    const timer = window.setTimeout(() => {
+      setTypewriterText(nextText);
+    }, delay);
+
+    return () => window.clearTimeout(timer);
+  }, [isDeleting, typewriterIndex, typewriterText]);
+
   return (
     <div
       className="overflow-hidden border border-solid border-black w-full relative animate-fade-in opacity-0"
       data-model-id="2:330"
     >
-      <header className="relative w-full">
-        <img className="w-full h-[915px] object-cover" alt="Hero Background" src={HERO_BG_ALT} />
+      <header className="relative w-full min-w-[1440px] h-[820px]">
+        <img
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          alt="Hero Background"
+          src={HERO_BG_ALT}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent pointer-events-none" />
 
         <SiteHeader
           navigationItems={navigationItems}
-          headerClassName="absolute top-[30px] left-0 right-0 px-20 translate-y-[-1rem] animate-fade-in opacity-0"
-          innerClassName="max-w-[1289px] w-full mx-auto"
-          navClassName="gap-7"
+          headerClassName="absolute top-0 left-0 right-0 px-6 sm:px-10 lg:px-20 translate-y-[-1rem] animate-fade-in opacity-0"
+          innerClassName="max-w-[1280px] w-full mx-auto"
+          navClassName="gap-6"
           linkClassName="transition-opacity hover:opacity-80"
         />
 
-        <div className="absolute top-[614px] left-[85px] max-w-[847px] translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-          <p className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-[25px] tracking-[0] leading-[35px]">
-            TacHydro exists to bring low carbon solutions to minimize the impact of energy creation
-            on the environment.
-          </p>
+        <div className="relative z-10 h-full">
+          <div className="h-full max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-20 flex items-end pb-10 sm:pb-12 lg:pb-6">
+            <div className="max-w-[720px] translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] lg:absolute lg:left-[78px] lg:top-[393px] lg:max-w-[995px]">
+              <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-white text-[52px] leading-[1] tracking-[0] lg:w-[995px] lg:h-[189px]">
+                <span className="block">Empowering Sustainable Resources</span>
+                <span className="block">Through Engineering Excellence</span>
+              </h1>
+              <div className="mt-[-4.75rem] flex items-center gap-2 min-h-[32px]">
+                <span className="[font-family:'Montserrat',Helvetica] font-bold text-white text-[32px] leading-[1] tracking-[0]">
+                  {typewriterText}
+                </span>
+                <span className="inline-block w-[2px] h-7 bg-white animate-blink" aria-hidden="true" />
+              </div>
+              <div className="bg-white mt-3" />
+              <p className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-[20px] tracking-[0] leading-[35px] mt-4 max-w-[640px]">
+                TacHydro exists to bring low carbon solutions to minimize the impact of energy
+                creation on the environment.
+              </p>
+
+              <Button className="mt-6 h-auto inline-flex items-center justify-center gap-[9px] px-[29px] py-2.5 bg-[#0070c0] hover:bg-[#005a9c] rounded-[40px] transition-colors">
+                <span className="[font-family:'Montserrat',Helvetica] font-bold text-white text-lg tracking-[0] leading-[normal]">
+                  Get Started
+                </span>
+                <ChevronRightIcon className="w-5 h-5 text-white" />
+              </Button>
+            </div>
+          </div>
         </div>
-
-        <Button className="absolute top-[729px] left-[78px] h-auto inline-flex items-center justify-center gap-[9px] px-[29px] py-2.5 bg-[#0070c0] hover:bg-[#005a9c] rounded-[40px] transition-colors translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-          <span className="[font-family:'Montserrat',Helvetica] font-bold text-white text-lg tracking-[0] leading-[normal]">
-            Get Started
-          </span>
-          <ChevronRightIcon className="w-5 h-5 text-white" />
-        </Button>
       </header>
-
-      <MainContentSection />
 
       <AboutUsSection />
 
@@ -98,8 +152,6 @@ export const Homepage = (): JSX.Element => {
       <HeroSection />
 
       <CallToActionSection />
-
-      <ProjectsSection />
 
       <section className="relative w-full bg-white border border-solid border-[#6f636366] py-[30px]">
         <div className="w-full px-4 flex flex-col gap-[55px]">
