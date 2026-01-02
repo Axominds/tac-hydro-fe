@@ -10,6 +10,22 @@ import { FooterSection } from "../../components/sections/FooterSection";
 import { HeroSection } from "./sections/HeroSection";
 import { ProjectsSection } from "./sections/ProjectsSection";
 import { TestimonialsSection } from "./sections/TestimonialsSection";
+import { Link } from "react-router-dom";
+
+const mapImage = "/Nepal_grey.svg";
+
+const mapLocations = [
+  { x: 14, y: 26, title: "Feasibility Study", detail: "Early-stage viability and yield analysis." },
+  { x: 20, y: 32, title: "Detailed Design", detail: "Full engineering design packages." },
+  { x: 30, y: 44, title: "Hydromechanical", detail: "Turbine and gate system design." },
+  { x: 42, y: 50, title: "Construction Supervision", detail: "On-site QA/QC and progress checks." },
+  { x: 54, y: 56, title: "Due Diligence", detail: "Independent technical reviews." },
+  { x: 62, y: 62, title: "Monitoring & Billing", detail: "Project tracking and verification." },
+  { x: 70, y: 60, title: "Feasibility Study", detail: "Resource and environmental review." },
+  { x: 78, y: 66, title: "Detailed Design", detail: "Structural and hydraulic detailing." },
+  { x: 84, y: 70, title: "Hydromechanical", detail: "Equipment selection and specs." },
+  { x: 88, y: 76, title: "Construction Supervision", detail: "Field coordination and reporting." },
+];
 
 const navigationItems = [
   { label: "Home", href: "/", isActive: true },
@@ -105,7 +121,6 @@ export const Homepage = (): JSX.Element => {
   const [typewriterIndex, setTypewriterIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [activePartnerFilter, setActivePartnerFilter] = useState("ALL");
-  const [isLogoPaused, setIsLogoPaused] = useState(false);
 
   useEffect(() => {
     const currentWord = typewriterWords[typewriterIndex % typewriterWords.length];
@@ -206,6 +221,78 @@ export const Homepage = (): JSX.Element => {
 
       <TestimonialsSection />
 
+      <section className="relative w-full bg-white py-16">
+        <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-20">
+          <div className="relative">
+            <img className="w-full h-auto object-contain" alt="Project coverage map" src={mapImage} />
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={
+                {
+                  maskImage: `url(${mapImage})`,
+                  maskSize: "contain",
+                  maskRepeat: "no-repeat",
+                  maskPosition: "center",
+                  WebkitMaskImage: `url(${mapImage})`,
+                  WebkitMaskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                } as React.CSSProperties
+              }
+            >
+              {mapLocations.map((location, index) => (
+                <div
+                  key={`pin-${location.title}-${index}`}
+                  className="absolute -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: `${location.x}%`, top: `${location.y}%` }}
+                >
+                  <svg
+                    className="h-6 w-6 drop-shadow-[0_6px_10px_rgba(0,112,192,0.35)]"
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill="#0070c0"
+                      d="M12 2c-3.3 0-6 2.7-6 6 0 4.6 6 12 6 12s6-7.4 6-12c0-3.3-2.7-6-6-6z"
+                    />
+                    <circle cx="12" cy="8" r="2.6" fill="#ffffff" />
+                  </svg>
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0">
+              {mapLocations.map((location, index) => (
+                <div
+                  key={`tooltip-${location.title}-${index}`}
+                  className="group absolute -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: `${location.x}%`, top: `${location.y}%` }}
+                >
+                  <button
+                    type="button"
+                    className="h-8 w-8 rounded-full opacity-0"
+                    aria-label={`${location.title}: ${location.detail}`}
+                  />
+                  <div className="pointer-events-auto absolute left-1/2 top-[-8px] w-[190px] -translate-x-1/2 -translate-y-full opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <div className="rounded-xl border border-[#e3e7ef] bg-white px-3 py-2 shadow-[0_10px_24px_rgba(15,23,42,0.15)]">
+                      <Link
+                        className="[font-family:'Montserrat',Helvetica] text-xs font-semibold uppercase tracking-[0.16em] text-[#0070c0] hover:text-[#005a9c]"
+                        to="/projects"
+                      >
+                        {location.title}
+                      </Link>
+                      <p className="[font-family:'Montserrat',Helvetica] text-xs text-[#4b5563]">
+                        {location.detail}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <HeroSection />
 
       <CallToActionSection />
@@ -225,15 +312,9 @@ export const Homepage = (): JSX.Element => {
           <div className="w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
             <div
               className="relative w-full overflow-hidden"
-              onMouseEnter={() => setIsLogoPaused(true)}
-              onMouseLeave={() => setIsLogoPaused(false)}
-              onTouchStart={() => setIsLogoPaused(true)}
-              onTouchEnd={() => setIsLogoPaused(false)}
             >
               <div
-                className={`flex w-max gap-6 animate-marquee hover:[animation-play-state:paused] ${
-                  isLogoPaused ? "[animation-play-state:paused]" : ""
-                }`}
+                className="flex w-max gap-6 animate-marquee"
                 style={
                   {
                     "--duration": "45s",

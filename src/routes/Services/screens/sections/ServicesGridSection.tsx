@@ -1,5 +1,16 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import { ChevronRightIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+
+const sectorFilters = [
+  "Hydropower",
+  "Tunnel",
+  "Transmission Line",
+  "Road",
+  "Environment",
+  "Irrigation & Water Resources",
+];
 
 const serviceItems = [
   {
@@ -10,6 +21,14 @@ const serviceItems = [
       "Comprehensive project development services from initial concept to feasibility studies and implementation planning.",
     longDescription:
       "Our Project Development service provides end-to-end support for hydropower and infrastructure projects, from initial concept through to implementation. We begin with comprehensive feasibility studies that assess technical, economic, environmental, and social aspects of proposed projects. Our team conducts detailed site investigations, hydrological analyses, and resource assessments to ensure project viability. We develop robust business cases and financial models that attract investors and secure funding. Our expertise includes stakeholder engagement, regulatory compliance, and risk management. We work closely with clients to refine project concepts, optimize designs, and develop implementation strategies that maximize value while minimizing risks. Our project development services have helped bring numerous successful projects to fruition, contributing to sustainable development and economic growth. We pride ourselves on our ability to navigate complex regulatory environments and build strong partnerships with local communities and government agencies.",
+    sectors: [
+      "Hydropower",
+      "Tunnel",
+      "Transmission Line",
+      "Road",
+      "Environment",
+      "Irrigation & Water Resources",
+    ],
   },
   {
     id: 2,
@@ -19,6 +38,7 @@ const serviceItems = [
       "Expert engineering solutions for hydropower and infrastructure projects with focus on innovation and sustainability.",
     longDescription:
       "Our Project Engineering service delivers innovative, sustainable engineering solutions for complex hydropower and infrastructure projects. We provide comprehensive engineering design services covering civil, mechanical, electrical, and structural disciplines. Our team utilizes state-of-the-art design tools and methodologies to optimize project performance and efficiency. We specialize in developing solutions that balance technical excellence with environmental responsibility and cost-effectiveness. Our engineering services include detailed design, technical specifications, construction drawings, and quality assurance. We conduct rigorous analysis and modeling to ensure designs meet the highest standards of safety and reliability. Our engineers work collaboratively with clients and stakeholders to address technical challenges and deliver solutions that exceed expectations. With extensive experience in challenging terrain and complex project conditions, we bring proven expertise to every engagement. Our commitment to innovation drives us to continuously explore new technologies and approaches that enhance project outcomes.",
+    sectors: ["Hydropower", "Tunnel", "Transmission Line", "Road", "Irrigation & Water Resources"],
   },
   {
     id: 3,
@@ -28,39 +48,58 @@ const serviceItems = [
       "Professional project management services ensuring timely delivery and quality control throughout project lifecycle.",
     longDescription:
       "Our Project Management service provides comprehensive oversight and coordination for hydropower and infrastructure projects of all sizes. We employ proven project management methodologies and best practices to ensure projects are delivered on time, within budget, and to the highest quality standards. Our experienced project managers coordinate all aspects of project execution, from procurement and contracting to construction supervision and commissioning. We implement robust monitoring and control systems that track progress, manage risks, and ensure compliance with specifications and regulations. Our team facilitates effective communication among all project stakeholders, resolving issues promptly and maintaining project momentum. We provide regular reporting and documentation that keeps clients informed and engaged throughout the project lifecycle. Our project management approach emphasizes proactive problem-solving, continuous improvement, and stakeholder satisfaction. With a track record of successfully managing complex, multi-disciplinary projects, we bring the expertise and dedication needed to achieve project success.",
+    sectors: ["Hydropower", "Tunnel", "Transmission Line", "Road"],
   },
   {
     id: 4,
     image: "/downloads/mjlodvw6RB1obD/img/mask-group-2.png",
-    title: "Specialized Hydromech Works",
+    title: "Research and Development",
     description:
-      "Advanced hydromechanical engineering services for complex water resource and hydropower projects.",
+      "Research-driven innovation to improve project outcomes, sustainability, and efficiency.",
     longDescription:
-      "Our Specialized Hydromech Works service provides expert solutions for the most challenging aspects of hydropower and water resource projects. We specialize in the design, analysis, and optimization of hydromechanical equipment including turbines, gates, valves, and control systems. Our team has deep expertise in hydraulic engineering, fluid mechanics, and mechanical systems integration. We conduct detailed hydraulic modeling and analysis to optimize system performance and efficiency. Our services include equipment selection, specification development, performance testing, and commissioning support. We work with leading equipment manufacturers to ensure clients receive the best available technology for their specific applications. Our hydromechanical engineers address complex technical challenges including cavitation, vibration, and erosion issues. We provide ongoing support for equipment operation, maintenance, and upgrades. With extensive experience in both new installations and rehabilitation projects, we deliver solutions that maximize performance, reliability, and longevity of hydromechanical systems.",
-  },
-  {
-    id: 5,
-    image: "/downloads/mjlodvw6RB1obD/img/mask-group-3.png",
-    title: "Product Development",
-    description:
-      "Innovative product development solutions tailored to meet specific project requirements and industry standards.",
-    longDescription:
-      "Our Product Development service creates innovative solutions tailored to the unique needs of hydropower and infrastructure projects. We work closely with clients to understand their specific requirements and develop custom products that address technical challenges and enhance project performance. Our development process includes concept design, prototyping, testing, and refinement to ensure products meet the highest standards of quality and reliability. We leverage advanced engineering tools and methodologies to optimize product designs for performance, manufacturability, and cost-effectiveness. Our team has expertise in developing a wide range of products including specialized equipment, monitoring systems, and control solutions. We conduct rigorous testing and validation to ensure products perform as intended under real-world conditions. Our product development services include documentation, training, and ongoing support to ensure successful implementation and operation. We maintain strong relationships with manufacturing partners to ensure quality production and timely delivery. Our commitment to innovation and excellence drives us to continuously push the boundaries of what's possible in hydropower and infrastructure technology.",
-  },
-  {
-    id: 6,
-    image: "/downloads/mjlodvw6RB1obD/img/mask-group-4.png",
-    title: "Consulting Services",
-    description:
-      "Strategic consulting services providing expert guidance for hydropower and infrastructure development projects.",
-    longDescription:
-      "Our Consulting Services provide strategic guidance and expert advice for all aspects of hydropower and infrastructure development. We offer independent, objective analysis and recommendations that help clients make informed decisions and achieve their project objectives. Our consulting services cover a broad range of areas including strategic planning, technical due diligence, regulatory compliance, and risk assessment. We conduct comprehensive reviews of project proposals, designs, and implementation plans to identify opportunities for improvement and optimization. Our consultants bring decades of combined experience and deep industry knowledge to every engagement. We provide expert witness services, dispute resolution support, and technical advisory services for complex projects. Our consulting approach emphasizes collaboration, transparency, and practical solutions that address real-world challenges. We work with government agencies, private developers, financial institutions, and international organizations to support sustainable development initiatives. Our commitment to excellence and integrity has made us a trusted advisor for some of the most significant hydropower and infrastructure projects in the region.",
+      "Our Research and Development service focuses on applied research, feasibility innovation, and improved methodologies across infrastructure sectors. We evaluate emerging technologies, refine modeling approaches, and develop decision frameworks that reduce risk and improve delivery. Our team runs pilot studies, conducts data-driven analyses, and collaborates with academic and industry partners to translate research into practical project gains. We help clients explore optimization strategies for design, construction, and environmental performance while ensuring compliance with regulations. Our R&D work supports continuous improvement in safety, cost efficiency, and sustainability. By blending research with field insight, we deliver actionable recommendations that elevate project outcomes across diverse geographies and operating conditions.",
+    sectors: ["Hydropower", "Environment", "Irrigation & Water Resources"],
   },
 ];
 
 export const ServicesGridSection = (): JSX.Element => {
   const [selectedService, setSelectedService] = useState<(typeof serviceItems)[0] | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSector, setActiveSector] = useState(sectorFilters[0]);
+  const popupItems = [
+    {
+      title: "Project identification",
+      button: "About Project Identification",
+      slug: "project-identification",
+    },
+    {
+      title: "Desk Study",
+      button: "About Desk Study",
+      slug: "desk-study",
+    },
+    {
+      title: "Topographical Survey",
+      button: "About Topographical Survey",
+      slug: "topographical-survey",
+    },
+    {
+      title: "Feasibility Study",
+      button: "About Feasibility Study",
+      slug: "feasibility-study",
+    },
+    {
+      title: "Due Diligence",
+      button: "About Due Diligence",
+      slug: "due-diligence",
+    },
+  ];
+  const popupDescription =
+    "TAC Hydro Consultancy Pvt. Ltd. is a leading engineering consultancy based in Nepal, specializing in hydropower and infrastructure development. Our journey began in 2005, when a team of experienced engineers came together with a shared vision to contribute to the nation's energy sector through the study.";
+
+  const filteredServices = useMemo(
+    () => serviceItems.filter((item) => item.sectors.includes(activeSector)),
+    [activeSector]
+  );
 
   const handleServiceClick = (service: (typeof serviceItems)[0]) => {
     setSelectedService(service);
@@ -71,8 +110,28 @@ export const ServicesGridSection = (): JSX.Element => {
     <>
       <section className="relative w-full py-16 bg-[#f5f5f5]">
         <div className="max-w-[1400px] mx-auto px-8">
+          <h2 className="[font-family:'Montserrat',Helvetica] text-sm font-semibold uppercase tracking-[0.24em] text-[#6b6b6b] mb-4">
+            Sectors
+          </h2>
+          <div className="flex flex-wrap items-center gap-3 mb-10">
+            {sectorFilters.map((sector) => (
+              <button
+                key={sector}
+                type="button"
+                onClick={() => setActiveSector(sector)}
+                className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${
+                  activeSector === sector
+                    ? "border-[#0070c0] bg-[#0070c0] text-white"
+                    : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
+                }`}
+                aria-pressed={activeSector === sector}
+              >
+                {sector}
+              </button>
+            ))}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {serviceItems.map((item) => (
+            {filteredServices.map((item) => (
               <div
                 key={item.id}
                 onClick={() => handleServiceClick(item)}
@@ -110,26 +169,47 @@ export const ServicesGridSection = (): JSX.Element => {
       </section>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden bg-[#cfe6f5] p-6">
           <DialogHeader>
-            <DialogTitle className="[font-family:'Montserrat',Helvetica] font-bold text-[#2c3e50] text-2xl tracking-[0] leading-[normal] mb-4">
-              {selectedService?.title}
-            </DialogTitle>
+            <DialogTitle className="sr-only">Service Details</DialogTitle>
           </DialogHeader>
-          {selectedService && (
-            <div className="space-y-4">
-              <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg">
-                <img
-                  className="w-full h-full object-cover"
-                  alt={selectedService.title}
-                  src={selectedService.image}
-                />
-              </div>
-              <p className="[font-family:'Montserrat',Helvetica] font-normal text-[#555555] text-base tracking-[0] leading-[28px] text-justify">
-                {selectedService.longDescription}
-              </p>
+          <div className="max-h-[70vh] overflow-y-auto pr-2 hide-scrollbar space-y-5">
+            <div className="relative w-full aspect-[16/7] overflow-hidden rounded-2xl bg-white shadow-[0_10px_24px_rgba(15,23,42,0.12)]">
+              <img
+                className="w-full h-full object-cover"
+                alt={selectedService?.title || "Project overview"}
+                src={selectedService?.image || "/downloads/mjlodvw6RB1obD/img/mask-group.png"}
+              />
             </div>
-          )}
+            <div className="space-y-5">
+              {popupItems.map((item, index) => (
+                <div key={item.title} className="rounded-2xl border border-[#b8d7ee] bg-[#d9efff] p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="[font-family:'Montserrat',Helvetica] text-sm font-bold text-[#3b4b5c]">
+                      {String(index + 1).padStart(2, "0")}.
+                    </span>
+                    <div>
+                      <h3 className="[font-family:'Montserrat',Helvetica] text-sm font-semibold text-[#2c3e50]">
+                        {item.title}
+                      </h3>
+                      <p className="[font-family:'Montserrat',Helvetica] text-xs text-[#5b6a79] leading-[1.6] mt-1">
+                        {popupDescription}
+                      </p>
+                      <Link
+                        to={`/service-detial?item=${item.slug}`}
+                        onClick={() => setIsOpen(false)}
+                        className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#0070c0] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#005a9c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0070c0]/40"
+                        aria-label={`${item.button} (opens page)`}
+                      >
+                        {item.button}
+                        <ChevronRightIcon className="h-3 w-3" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </>

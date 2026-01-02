@@ -45,6 +45,15 @@
   animation: blink 0.75s step-end infinite;
 }
 
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes spin {
   to {
     transform: rotate(1turn);
