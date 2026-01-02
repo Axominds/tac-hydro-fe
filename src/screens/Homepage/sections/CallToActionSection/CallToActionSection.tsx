@@ -7,7 +7,7 @@ export const CallToActionSection = (): JSX.Element => {
         <div className="grid grid-cols-1 lg:grid-cols-[520px_1fr] gap-12 items-center">
           <div className="relative">
             <img
-              className="w-full h-auto rounded-[14px] shadow-[0_12px_18px_rgba(0,0,0,0.2)]"
+              className="w-full h-auto rounded-[14px]"
               alt="Mission and Vision"
               src="/downloads/mjlob7k1SeIJX4/img/mask-group-2.png"
             />
@@ -34,7 +34,17 @@ export const CallToActionSection = (): JSX.Element => {
               <div className="space-y-5">
                 <div className="flex items-start gap-4 rounded-[18px] bg-white px-6 py-5 shadow-[0_12px_18px_rgba(0,0,0,0.12)]">
                   <span className="w-11 h-11 rounded-full bg-[#bfe5d3] flex items-center justify-center text-[#2f3a35] font-semibold">
-                    <span className="block w-5 h-5 rounded-full bg-[#90d1ba]" />
+                    <svg
+                      className="w-6 h-6 text-[#2f3a35]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M20 6L9 17l-5-5" />
+                    </svg>
                   </span>
                   <div>
                     <h3 className="[font-family:'Inter',Helvetica] font-semibold text-[#111111] text-lg mb-1">

@@ -1,10 +1,11 @@
 import { ChevronRightIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { HERO_BG_ALT } from "../../assets";
 import { Button } from "../../components/ui/button";
 import { SiteHeader } from "../../components/sections/SiteHeader";
 import { AboutUsSection } from "./sections/AboutUsSection";
 import { CallToActionSection } from "./sections/CallToActionSection";
+import { ContactSection } from "./sections/ContactSection";
 import { FooterSection } from "../../components/sections/FooterSection";
 import { HeroSection } from "./sections/HeroSection";
 import { ProjectsSection } from "./sections/ProjectsSection";
@@ -56,12 +57,55 @@ const partnerLogos = [
   },
 ];
 
+const partnerShowcaseFilters = ["ALL", "TRENDING", "INTERNATIONAL", "POLITICS", "BUSINESS"];
+
+const partnerShowcaseItems = [
+  {
+    id: 1,
+    title: "River Basin Capacity Upgrade",
+    category: "INTERNATIONAL",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group.png",
+  },
+  {
+    id: 2,
+    title: "Green Corridor Retrofit",
+    category: "TRENDING",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group-1.png",
+  },
+  {
+    id: 3,
+    title: "Turbine Efficiency Pilot",
+    category: "BUSINESS",
+    image: "/downloads/mjlodvw6RB1obD/img/clip-path-group.png",
+  },
+  {
+    id: 4,
+    title: "Rapid Flow Intake Design",
+    category: "POLITICS",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group-2.png",
+  },
+  {
+    id: 5,
+    title: "Watershed Resilience Program",
+    category: "INTERNATIONAL",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group-3.png",
+  },
+  {
+    id: 6,
+    title: "Grid Stability Partnership",
+    category: "BUSINESS",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group-4.png",
+  },
+];
+
 const typewriterWords = ["INNOVATE", "ENGINEER", "SUSTAIN"];
 
 export const Homepage = (): JSX.Element => {
   const [typewriterText, setTypewriterText] = useState("");
   const [typewriterIndex, setTypewriterIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activePartnerFilter, setActivePartnerFilter] = useState("ALL");
+  const [isLogoPaused, setIsLogoPaused] = useState(false);
 
   useEffect(() => {
     const currentWord = typewriterWords[typewriterIndex % typewriterWords.length];
@@ -93,6 +137,19 @@ export const Homepage = (): JSX.Element => {
 
     return () => window.clearTimeout(timer);
   }, [isDeleting, typewriterIndex, typewriterText]);
+
+  const logoMarqueeItems = useMemo(() => {
+    const tiledLogos = Array.from({ length: 15 }, (_, index) => partnerLogos[index % partnerLogos.length]);
+    return tiledLogos;
+  }, []);
+
+  const filteredPartnerShowcaseItems =
+    activePartnerFilter === "ALL"
+      ? partnerShowcaseItems
+      : partnerShowcaseItems.filter((item) => item.category === activePartnerFilter);
+  const resolvedPartnerShowcaseItems =
+    filteredPartnerShowcaseItems.length > 0 ? filteredPartnerShowcaseItems : partnerShowcaseItems;
+  const [featuredPartnerShowcase, ...partnerShowcaseCards] = resolvedPartnerShowcaseItems;
 
   return (
     <div
@@ -153,34 +210,125 @@ export const Homepage = (): JSX.Element => {
 
       <CallToActionSection />
 
-      <section className="relative w-full bg-white border border-solid border-[#6f636366] py-[30px]">
-        <div className="w-full px-4 flex flex-col gap-[55px]">
-          <div className="flex justify-center translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-            <div className="inline-flex h-9 items-center justify-center gap-2.5 px-5 py-2 rounded-[28px] border-b-2 [border-bottom-style:solid] border-l-2 [border-left-style:solid] border-[#111111]">
-              <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#444444] text-base tracking-[0] leading-[normal]">
+      <ContactSection />
+
+      <section className="relative w-full border border-solid border-[#6f636366] bg-[#f8f5f0] py-[30px]">
+        <div className="w-full px-4 flex flex-col gap-[24px]">
+          <div className="flex items-center justify-center">
+            <div className="inline-flex h-9 items-center justify-center rounded-full border border-[#111111] px-5">
+              <span className="[font-family:'Montserrat',Helvetica] text-sm font-semibold tracking-[0.12em] text-[#444444]">
                 OUR VALUED PARTNERS
-              </h2>
+              </span>
+            </div>
+          </div>         
+
+          <div className="w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
+            <div
+              className="relative w-full overflow-hidden"
+              onMouseEnter={() => setIsLogoPaused(true)}
+              onMouseLeave={() => setIsLogoPaused(false)}
+              onTouchStart={() => setIsLogoPaused(true)}
+              onTouchEnd={() => setIsLogoPaused(false)}
+            >
+              <div
+                className={`flex w-max gap-6 animate-marquee hover:[animation-play-state:paused] ${
+                  isLogoPaused ? "[animation-play-state:paused]" : ""
+                }`}
+                style={
+                  {
+                    "--duration": "45s",
+                    "--gap": "24px",
+                  } as React.CSSProperties
+                }
+              >
+                {[...logoMarqueeItems, ...logoMarqueeItems].map((logo, index) => (
+                  <div
+                    key={`logo-marquee-${logo.alt}-${index}`}
+                    className="group flex min-w-[170px] items-center justify-center rounded-3xl p-4 [perspective:800px] sm:min-w-[190px] lg:min-w-[220px]"
+                    aria-hidden={index >= logoMarqueeItems.length}
+                  >
+                    <div className="relative h-[170px] w-full">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <img
+                          className={`${logo.className} grayscale transition duration-300 group-hover:grayscale-0 group-hover:scale-[1.06]`}
+                          alt={logo.alt}
+                          src={logo.src}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="w-full overflow-hidden translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-            <div className="flex items-center gap-[60px] animate-marquee [--duration:30s] [--gap:60px]">
-              {partnerLogos.map((logo, index) => (
-                <img
-                  key={`logo-1-${index}`}
-                  className={`${logo.className} flex-shrink-0`}
-                  alt={logo.alt}
-                  src={logo.src}
-                />
-              ))}
-              {partnerLogos.map((logo, index) => (
-                <img
-                  key={`logo-2-${index}`}
-                  className={`${logo.className} flex-shrink-0`}
-                  alt={logo.alt}
-                  src={logo.src}
-                />
-              ))}
+      <section className="relative w-full bg-[#f2efe9] py-16">
+        <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-20">
+          <div className="flex flex-col gap-10">
+            <div className="flex items-center justify-between gap-6 flex-wrap">
+              <div className="flex items-center gap-4">
+                <div className="inline-flex h-9 items-center justify-center gap-2.5 px-5 py-2 rounded-[28px] border-b-2 [border-bottom-style:solid] border-l-2 [border-left-style:solid] border-[#111111]">
+                  <h2 className="[font-family:'Montserrat',Helvetica] font-bold text-[#444444] text-base tracking-[0] leading-[normal]">
+                    BLOG
+                  </h2>
+                </div>
+                <span className="[font-family:'Montserrat',Helvetica] text-sm font-semibold text-[#6b6b6b]">
+                  Recently Added
+                </span>
+              </div>
+              <div className="flex items-center gap-6 flex-wrap">
+                {partnerShowcaseFilters.map((filter) => (
+                  <button
+                    key={filter}
+                    type="button"
+                    onClick={() => setActivePartnerFilter(filter)}
+                    className={`[font-family:'Montserrat',Helvetica] text-xs font-semibold tracking-[0.18em] uppercase transition-colors ${
+                      activePartnerFilter === filter ? "text-[#111111]" : "text-[#9c9c9c]"
+                    }`}
+                    aria-pressed={activePartnerFilter === filter}
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.2fr_1fr]">
+              {featuredPartnerShowcase && (
+                <div className="relative min-h-[360px] overflow-hidden rounded-[28px]">
+                  <img
+                    className="absolute inset-0 h-full w-full object-cover"
+                    alt={featuredPartnerShowcase.title}
+                    src={featuredPartnerShowcase.image}
+                  />
+                  <div className="absolute inset-0 bg-black/15" />
+                  <div className="absolute bottom-8 left-8 max-w-[380px]">
+                    <p className="[font-family:'Montserrat',Helvetica] text-lg font-semibold text-white/90">
+                      {featuredPartnerShowcase.title}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {partnerShowcaseCards.slice(0, 4).map((item) => (
+                  <div key={item.id} className="flex flex-col gap-3">
+                    <div className="overflow-hidden rounded-2xl bg-white shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+                      <img className="h-40 w-full object-cover" alt={item.title} src={item.image} />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="[font-family:'Montserrat',Helvetica] text-sm font-semibold text-[#111111]">
+                        {item.title}
+                      </p>
+                      <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6a8bc2]">
+                        {item.category}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

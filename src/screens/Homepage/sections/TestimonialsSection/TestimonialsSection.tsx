@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 const slides = [
   "/downloads/mjlob7k1SeIJX4/img/rectangle-213.png",
@@ -11,27 +11,87 @@ const slides = [
 export const TestimonialsSection = (): JSX.Element => {
   const [activeIndex, setActiveIndex] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(true);
+  const [isAutoPaused, setIsAutoPaused] = useState(false);
+  const dragStartX = useRef<number | null>(null);
+  const dragDeltaX = useRef(0);
+  const isDragging = useRef(false);
   const sliderImages = useMemo(() => {
     const first = slides[0];
     const last = slides[slides.length - 1];
     return [last, ...slides, first];
   }, []);
 
+  const goToNext = () => {
+    setIsTransitioning(true);
+    setActiveIndex((prev) => prev + 1);
+  };
+
+  const goToPrev = () => {
+    setIsTransitioning(true);
+    setActiveIndex((prev) => prev - 1);
+  };
+
   useEffect(() => {
+    if (isAutoPaused) {
+      return;
+    }
     const timer = window.setInterval(() => {
-      setIsTransitioning(true);
-      setActiveIndex((prev) => prev + 1);
-    }, 1000);
+      goToNext();
+    }, 3000);
 
     return () => window.clearInterval(timer);
-  }, []);
+  }, [isAutoPaused]);
 
   return (
     <section className="relative w-full overflow-hidden">
-      <div className="relative w-screen h-[520px]">
+      <div
+        className="relative w-screen h-[520px] cursor-grab active:cursor-grabbing"
+        onMouseEnter={() => setIsAutoPaused(true)}
+        onMouseLeave={() => setIsAutoPaused(false)}
+        onPointerDown={(event) => {
+          dragStartX.current = event.clientX;
+          dragDeltaX.current = 0;
+          isDragging.current = true;
+          setIsAutoPaused(true);
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={(event) => {
+          if (!isDragging.current || dragStartX.current === null) {
+            return;
+          }
+          dragDeltaX.current = event.clientX - dragStartX.current;
+        }}
+        onPointerUp={(event) => {
+          if (!isDragging.current) {
+            return;
+          }
+          const delta = dragDeltaX.current;
+          if (Math.abs(delta) > 40) {
+            if (delta > 0) {
+              goToPrev();
+            } else {
+              goToNext();
+            }
+          }
+          dragStartX.current = null;
+          dragDeltaX.current = 0;
+          isDragging.current = false;
+          setIsAutoPaused(false);
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }}
+        onPointerLeave={() => {
+          if (!isDragging.current) {
+            return;
+          }
+          dragStartX.current = null;
+          dragDeltaX.current = 0;
+          isDragging.current = false;
+          setIsAutoPaused(false);
+        }}
+      >
         <div
           className={`absolute inset-0 flex h-full w-full ${
-            isTransitioning ? "transition-transform duration-300 ease-in-out" : ""
+            isTransitioning ? "transition-transform duration-800 ease-in-out" : ""
           }`}
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
           onTransitionEnd={() => {
@@ -79,12 +139,12 @@ export const TestimonialsSection = (): JSX.Element => {
               key={`testimonial-dot-${index}`}
               type="button"
               onClick={() => {
-                setIsTransitioning(true);
-                setActiveIndex(index + 1);
-              }}
-              className={`w-3 h-3 rounded-full transition-colors ${
-                index + 1 === activeIndex ? "bg-white" : "bg-white/40 hover:bg-white/60"
-              }`}
+              setIsTransitioning(true);
+              setActiveIndex(index + 1);
+            }}
+            className={`w-3 h-3 rounded-full transition-colors ${
+              index + 1 === activeIndex ? "bg-white" : "bg-white/40 hover:bg-white/60"
+            }`}
               aria-label={`Go to slide ${index + 1}`}
               aria-current={index + 1 === activeIndex ? "true" : "false"}
             />

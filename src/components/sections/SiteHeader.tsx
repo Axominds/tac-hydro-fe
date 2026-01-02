@@ -57,8 +57,11 @@ export const SiteHeader = ({
           ))}
 
           {cta ?? (
-            <Button className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl [font-family:'Montserrat',Helvetica] font-bold text-white text-lg hover:bg-[#005a9c]">
-              Contact Us
+            <Button
+              asChild
+              className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl [font-family:'Montserrat',Helvetica] font-bold text-white text-lg hover:bg-[#005a9c]"
+            >
+              <NavLink to="/contact">Contact Us</NavLink>
             </Button>
           )}
         </nav>
