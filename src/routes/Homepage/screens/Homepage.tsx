@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../../../components/ui/button";
 import { FooterSection } from "../../../components/sections/FooterSection";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
@@ -20,12 +20,37 @@ const stats = [
 
 export const Homepage = (): JSX.Element => {
   const [counts, setCounts] = useState(() => stats.map(() => 0));
+  const [statsAnimationSeed, setStatsAnimationSeed] = useState(0);
+  const statsSectionRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (!statsSectionRef.current) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStatsAnimationSeed((prev) => prev + 1);
+        }
+      },
+      { threshold: 0.35 }
+    );
+
+    observer.observe(statsSectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (statsAnimationSeed === 0) {
+      return;
+    }
     const targets = stats.map((stat) => parseFloat(stat.number) || 0);
     const duration = 1200;
     const startTime = performance.now();
     let frameId = 0;
+
+    setCounts(stats.map(() => 0));
 
     const tick = (now: number) => {
       const progress = Math.min((now - startTime) / duration, 1);
@@ -37,7 +62,7 @@ export const Homepage = (): JSX.Element => {
 
     frameId = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frameId);
-  }, []);
+  }, [statsAnimationSeed]);
 
   return (
     <div className="w-full min-w-[1440px] relative bg-white animate-fade-in opacity-0">
@@ -145,7 +170,10 @@ export const Homepage = (): JSX.Element => {
               />
             </div>
 
-            <div className="flex flex-col gap-6 opacity-100 w-[803.3657px] h-[402.3088px] p-6">
+            <div
+              className="flex flex-col gap-6 opacity-100 w-[803.3657px] h-[402.3088px] p-6"
+              ref={statsSectionRef}
+            >
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-10">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-left w-[222.8271px] h-[181.039px] opacity-100">
