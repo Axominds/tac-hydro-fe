@@ -174,7 +174,7 @@ export const Homepage = (): JSX.Element => {
 
   return (
     <div className="overflow-hidden border border-solid border-black w-full relative" data-model-id="2:330">
-      <header className="relative w-full min-w-[1440px] h-[820px]">
+      <header className="relative w-full h-[520px] sm:h-[640px] lg:h-[820px]">
         <img
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
           alt="Hero Background"
@@ -193,18 +193,18 @@ export const Homepage = (): JSX.Element => {
         <div className="relative z-10 h-full">
           <div className="h-full max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-20 flex items-end pb-10 sm:pb-12 lg:pb-6">
             <div className="max-w-[720px] translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] lg:absolute lg:left-[78px] lg:top-[393px] lg:max-w-[995px]">
-              <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-white text-[52px] leading-[1] tracking-[0] lg:w-[995px] lg:h-[189px]">
+              <h1 className="[font-family:'Montserrat',Helvetica] font-bold text-white text-3xl sm:text-4xl lg:text-[52px] leading-[1.2] tracking-[0] lg:max-w-[995px] mb-2">
                 <span className="block">Empowering Sustainable Resources</span>
-                <span className="block">Through Engineering Excellence</span>
+                <span className="block mt-[10px]">Through Engineering Excellence</span>
               </h1>
-              <div className="mt-[-4.75rem] flex items-center gap-2 min-h-[32px]">
-                <span className="[font-family:'Montserrat',Helvetica] font-bold text-white text-[32px] leading-[1] tracking-[0]">
+              <div className="mt-0 flex items-center gap-2 min-h-[32px]">
+                <span className="[font-family:'Montserrat',Helvetica] font-bold text-white text-xl sm:text-2xl lg:text-[32px] leading-[1] tracking-[0]">
                   {typewriterText}
                 </span>
                 <span className="inline-block w-[2px] h-7 bg-white animate-blink" aria-hidden="true" />
               </div>
               <div className="bg-white mt-3" />
-              <p className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-[20px] tracking-[0] leading-[35px] mt-4 max-w-[640px]">
+              <p className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-base sm:text-lg lg:text-[20px] tracking-[0] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[640px]">
                 TacHydro exists to bring low carbon solutions to minimize the impact of energy
                 creation on the environment.
               </p>
@@ -212,9 +212,9 @@ export const Homepage = (): JSX.Element => {
               <Button
                 type="button"
                 onClick={handleGetStarted}
-                className="mt-6 h-auto inline-flex items-center justify-center gap-[9px] px-[29px] py-2.5 bg-[#0070c0] hover:bg-[#005a9c] rounded-[40px] transition-colors"
+                className="mt-6 h-auto inline-flex items-center justify-center gap-[9px] px-6 sm:px-[29px] py-2.5 bg-[#0070c0] hover:bg-[#005a9c] rounded-[40px] transition-colors"
               >
-                <span className="[font-family:'Montserrat',Helvetica] font-bold text-white text-lg tracking-[0] leading-[normal]">
+                <span className="[font-family:'Montserrat',Helvetica] font-bold text-white text-sm sm:text-base lg:text-lg tracking-[0] leading-[normal]">
                   Get Started
                 </span>
                 <ChevronRightIcon className="w-5 h-5 text-white" />

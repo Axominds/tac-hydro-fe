@@ -63,12 +63,12 @@ export const HeroSection = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="relative mx-auto h-[520px] max-w-[1200px] overflow-visible">
+        <div className="relative mx-auto min-h-[420px] sm:min-h-[520px] max-w-[1200px] overflow-visible">
           {positions.map((position) => {
             const cardIndex = (activeIndex + position + totalCards) % totalCards;
             const sector = sectorCards[cardIndex];
             const isActive = position === 0;
-            const translateX = position * 240;
+            const translateX = position * 200;
             const cardScale = isActive ? 1.08 : 1;
             return (
               <Card
@@ -83,7 +83,7 @@ export const HeroSection = (): JSX.Element => {
                   }
                 }}
                 aria-label={`View ${sector.title} services`}
-                className={`absolute left-1/2 top-1/2 w-[260px] -translate-x-1/2 -translate-y-1/2 overflow-hidden border-0 bg-transparent shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform cursor-pointer ${
+                className={`absolute left-1/2 top-1/2 w-[220px] sm:w-[240px] lg:w-[260px] -translate-x-1/2 -translate-y-1/2 overflow-hidden border-0 bg-transparent shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform cursor-pointer ${
                   "pointer-events-auto"
                 }`}
                 style={

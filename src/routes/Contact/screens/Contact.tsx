@@ -14,8 +14,8 @@ const navigationItems = [
 
 export const Contact = (): JSX.Element => {
   return (
-    <div className="w-full min-w-[1440px] relative bg-[#f5f5f5]">
-      <section className="relative w-full h-[560px]">
+    <div className="w-full relative bg-[#f5f5f5]">
+      <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">
         <img
           className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
           alt="Hero Background"
@@ -29,10 +29,10 @@ export const Contact = (): JSX.Element => {
           <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-4">
             CONTACT
           </span>
-          <h1 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-white text-[60px] tracking-[0] leading-[1.05] mb-6">
+          <h1 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-white text-3xl sm:text-4xl lg:text-[60px] tracking-[0] leading-[1.05] mb-6">
             Contact Us
           </h1>
-          <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/75 text-[17px] tracking-[0] leading-[normal] max-w-[560px]">
+          <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/75 text-sm sm:text-base lg:text-[17px] tracking-[0] leading-[normal] max-w-[560px] px-4">
             Let us know how we can support your next hydropower project.
           </p>
         </div>
@@ -41,7 +41,7 @@ export const Contact = (): JSX.Element => {
       <section className="relative w-full bg-white py-16">
         <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-20">
           <div className="flex flex-col gap-3">
-            <h2 className="[font-family:'Montserrat',Helvetica] text-[28px] font-bold text-[#111111]">
+            <h2 className="[font-family:'Montserrat',Helvetica] text-2xl sm:text-[28px] font-bold text-[#111111]">
               CONTACT US
             </h2>
             <p className="[font-family:'Montserrat',Helvetica] text-sm text-[#6b6b6b] max-w-[620px]">
@@ -224,7 +224,7 @@ export const Contact = (): JSX.Element => {
             <iframe
               title="TAC Hydro Consultancy Pvt. Ltd. location"
               src="https://www.google.com/maps?q=27.6875467,85.3168056&z=18&output=embed"
-              className="h-[420px] w-full"
+              className="h-[260px] sm:h-[360px] lg:h-[420px] w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />

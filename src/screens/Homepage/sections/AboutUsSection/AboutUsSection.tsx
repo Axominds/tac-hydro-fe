@@ -22,7 +22,7 @@ export const AboutUsSection = (): JSX.Element => {
   return (
     <section id="about-us" className="relative w-full pt-[5.5rem] pb-[5.5rem] bg-white">
       <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-20">
-        <div className="grid grid-cols-1 lg:grid-cols-[560px_1fr] gap-10 lg:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,560px)_1fr] gap-10 lg:gap-16 items-start">
           <div className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
             <div className="relative w-full aspect-[586/614]">
               <img
@@ -42,7 +42,7 @@ export const AboutUsSection = (): JSX.Element => {
           </div>
 
           <div className="flex flex-col space-y-8 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-            <h2 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-[#111111] text-[42px] tracking-[0] leading-[1.1]">
+            <h2 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-[#111111] text-3xl sm:text-4xl lg:text-[42px] tracking-[0] leading-[1.1]">
               About Us
             </h2>
 
@@ -54,7 +54,7 @@ export const AboutUsSection = (): JSX.Element => {
                 {historyParagraphs.map((paragraph, index) => (
                   <p
                     key={index}
-                    className="[font-family:'Inter',Helvetica] font-normal text-[#555555] text-[15px] tracking-[0] leading-[22px]"
+                    className="[font-family:'Inter',Helvetica] font-normal text-[#555555] text-sm sm:text-[15px] tracking-[0] leading-[22px]"
                   >
                     {paragraph}
                   </p>
@@ -70,7 +70,7 @@ export const AboutUsSection = (): JSX.Element => {
                 {whyUsParagraphs.map((paragraph, index) => (
                   <p
                     key={index}
-                    className="[font-family:'Inter',Helvetica] font-normal text-[#555555] text-[15px] tracking-[0] leading-[22px]"
+                    className="[font-family:'Inter',Helvetica] font-normal text-[#555555] text-sm sm:text-[15px] tracking-[0] leading-[22px]"
                   >
                     {paragraph}
                   </p>

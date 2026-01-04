@@ -15,9 +15,9 @@ const navigationItems = [
 
 export const Services = (): JSX.Element => {
   return (
-    <div className="w-full min-w-[1440px] relative bg-[#f5f5f5]">
+    <div className="w-full relative bg-[#f5f5f5]">
       {/* Hero Section with Header */}
-      <section className="relative w-full h-[560px]">
+      <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">
         <img
           className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
           alt="Hero Background"
@@ -33,10 +33,10 @@ export const Services = (): JSX.Element => {
           <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-4">
             SERVICES
           </span>
-          <h1 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-white text-[60px] tracking-[0] leading-[1.05] mb-6">
+          <h1 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-white text-3xl sm:text-4xl lg:text-[60px] tracking-[0] leading-[1.05] mb-6">
             Our Services
           </h1>
-          <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/75 text-[17px] tracking-[0] leading-[normal] max-w-[560px]">
+          <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/75 text-sm sm:text-base lg:text-[17px] tracking-[0] leading-[normal] max-w-[560px] px-4">
             Expertise from feasibility to delivery across every project phase.
           </p>
         </div>

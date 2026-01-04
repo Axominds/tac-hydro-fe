@@ -67,7 +67,7 @@ export const ProjectsGridSection = (): JSX.Element => {
   return (
     <>
       <section className="relative w-full py-16 bg-[#f5f5f5]">
-        <div className="max-w-[1400px] mx-auto px-8">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projectItems.map((item) => (
               <div
@@ -98,7 +98,7 @@ export const ProjectsGridSection = (): JSX.Element => {
       </section>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="w-[90vw] max-w-3xl sm:w-full">
           <DialogHeader>
             <DialogTitle className="[font-family:'Montserrat',Helvetica] font-bold text-[#2c3e50] text-2xl tracking-[0] leading-[normal] mb-4">
               {selectedProject?.title}

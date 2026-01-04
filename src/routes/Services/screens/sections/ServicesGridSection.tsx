@@ -118,7 +118,7 @@ export const ServicesGridSection = (): JSX.Element => {
   return (
     <>
       <section className="relative w-full py-16 bg-[#f5f5f5]">
-        <div className="max-w-[1400px] mx-auto px-8">
+        <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
           <h2 className="[font-family:'Montserrat',Helvetica] text-sm font-semibold uppercase tracking-[0.24em] text-[#6b6b6b] mb-4">
             Sectors
           </h2>
@@ -178,7 +178,7 @@ export const ServicesGridSection = (): JSX.Element => {
       </section>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden bg-[#cfe6f5] p-6">
+        <DialogContent className="w-[90vw] max-w-6xl max-h-[95vh] overflow-hidden bg-[#cfe6f5] p-6 sm:w-full">
           <DialogHeader>
             <DialogTitle className="[font-family:'Montserrat',Helvetica] text-center text-2xl font-semibold text-[#1f2a37]">
               {selectedService?.title ?? "Service Details"}

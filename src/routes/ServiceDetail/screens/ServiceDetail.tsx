@@ -82,8 +82,8 @@ export const ServiceDetail = (): JSX.Element => {
   const activeItem = detailItems.find((item) => item.slug === activeSlug) || detailItems[0];
 
   return (
-    <div className="w-full min-w-[1440px] relative bg-[#f5f5f5]">
-      <section className="relative w-full h-[360px]">
+    <div className="w-full relative bg-[#f5f5f5]">
+      <section className="relative w-full min-h-[260px] sm:min-h-[320px] lg:h-[360px]">
         <img
           className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
           alt="Service detail hero"
@@ -95,7 +95,7 @@ export const ServiceDetail = (): JSX.Element => {
           <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-3">
             SERVICE DETAIL
           </span>
-          <h1 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-white text-[48px] tracking-[0] leading-[1.1]">
+          <h1 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-white text-3xl sm:text-4xl lg:text-[48px] tracking-[0] leading-[1.1]">
             {activeItem.title}
           </h1>
         </div>
@@ -122,7 +122,7 @@ export const ServiceDetail = (): JSX.Element => {
           <div className="bg-white p-0">
             <div className="relative w-full max-w-[1100px] mx-auto overflow-hidden rounded-2xl">
               <img
-                className="h-[400px] w-full object-cover"
+                className="h-[240px] sm:h-[320px] lg:h-[400px] w-full object-cover"
                 alt={activeItem.title}
                 src={activeItem.heroImage}
               />
