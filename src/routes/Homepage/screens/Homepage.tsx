@@ -114,35 +114,35 @@ export const Homepage = (): JSX.Element => {
           <div className="relative lg:min-h-[620px]">
             <div className="bg-[#2f5f4a] rounded-xl p-6 text-white lg:w-[850px] lg:h-[596px] lg:pr-[340px]">
               <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-white text-[19px] mb-2">
-                Message <span className="text-[#4ade80]">From</span> Top Level
+                Message <span className="text-white">From</span> Top Level
               </h3>
-              <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/90 text-[11px] leading-[18px] mb-2.5">
+              <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/90 text-[16px] leading-[24px] mb-2.5">
                 As the Chairman of TAC Hydro Consultancy, I am thrilled to welcome you to our
                 website. Our company specializes in providing expert consultancy services for
                 project identification, design, construction monitoring, bill verification and
                 rehabilitation of hydropower projects.
               </p>
-              <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/90 text-[11px] leading-[18px] mb-2.5">
+              <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/90 text-[16px] leading-[24px] mb-2.5">
                 We understand the importance of meeting sustainable and clean energy sources, and
                 we are dedicated to helping our clients achieve their goals in this field. Our team
                 of experts has extensive experience and knowledge in the industry, and we are
                 committed to providing the highest level of service and professionalism.
               </p>
-              <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/90 text-[11px] leading-[18px] mb-4">
+              <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/90 text-[16px] leading-[24px] mb-4">
                 We take pride in our ability to deliver innovative and cost-effective solutions for
                 our clients. Our goal is to help you achieve your project objectives and meet your
                 specific needs.
               </p>
-              <Button className="h-auto px-6 py-2.5 bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-md [font-family:'Montserrat',Helvetica] font-bold text-xs">
+              <Button className="mt-[35px] h-auto px-6 py-2.5 bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-md [font-family:'Montserrat',Helvetica] font-bold text-xs">
                 Let's talk
               </Button>
               <div className="mt-4 flex items-center justify-end">
                 <div className="text-right">
-                  <p className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-xs">
-                    John Doe
+                  <p className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-[16px]">
+                      Kumar Panday
                   </p>
-                  <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/80 text-[11px]">
-                    Managing Director (MD)
+                  <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/80 text-[15px]">
+                    Executive Chairma
                   </p>
                 </div>
               </div>
@@ -150,7 +150,7 @@ export const Homepage = (): JSX.Element => {
 
             <div className="mt-16 flex justify-center lg:absolute lg:right-[-8px] lg:top-[-32px] lg:mt-0">
               <img
-                className="w-[502px] h-[596px] object-cover rounded-[5px] opacity-100 shadow-[0_18px_30px_rgba(0,0,0,0.25)]"
+                className="w-[502px] h-[596px] object-cover object-top rounded-[5px] opacity-100 shadow-[0_18px_30px_rgba(0,0,0,0.25)]"
                 alt="Managing Director"
                 src="/chairperson.png"
               />
