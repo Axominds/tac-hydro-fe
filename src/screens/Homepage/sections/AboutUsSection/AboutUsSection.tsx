@@ -20,7 +20,7 @@ const whyUsParagraphs = [
 
 export const AboutUsSection = (): JSX.Element => {
   return (
-    <section className="relative w-full pt-[5.5rem] pb-[5.5rem] bg-white">
+    <section id="about-us" className="relative w-full pt-[5.5rem] pb-[5.5rem] bg-white">
       <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-20">
         <div className="grid grid-cols-1 lg:grid-cols-[560px_1fr] gap-10 lg:gap-16 items-start">
           <div className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">

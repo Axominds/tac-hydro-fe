@@ -14,7 +14,7 @@ const navigationItems = [
 
 export const Projects = (): JSX.Element => {
   return (
-    <div className="w-full min-w-[1440px] relative bg-[#f5f5f5] animate-fade-in opacity-0">
+    <div className="w-full min-w-[1440px] relative bg-[#f5f5f5]">
       {/* Hero Section with Header */}
       <section className="relative w-full h-[560px]">
         <img

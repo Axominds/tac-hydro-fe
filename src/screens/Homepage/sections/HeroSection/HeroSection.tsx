@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "../../../../components/ui/card";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
@@ -45,6 +46,11 @@ export const HeroSection = (): JSX.Element => {
   const [activeIndex, setActiveIndex] = useState(0);
   const totalCards = sectorCards.length;
   const positions = [-2, -1, 0, 1, 2];
+  const navigate = useNavigate();
+
+  const handleCardClick = (title: string) => {
+    navigate(`/services?sector=${encodeURIComponent(title)}`);
+  };
 
   return (
     <section className="relative w-full py-8 bg-[url(/downloads/mjlob7k1SeIJX4/img/vector-3.svg)] bg-cover bg-center">
@@ -67,7 +73,17 @@ export const HeroSection = (): JSX.Element => {
             return (
               <Card
                 key={`${sector.id}-${position}`}
-                className={`absolute left-1/2 top-1/2 w-[260px] -translate-x-1/2 -translate-y-1/2 overflow-hidden border-0 bg-transparent shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform ${
+                onClick={() => handleCardClick(sector.title)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    handleCardClick(sector.title);
+                  }
+                }}
+                aria-label={`View ${sector.title} services`}
+                className={`absolute left-1/2 top-1/2 w-[260px] -translate-x-1/2 -translate-y-1/2 overflow-hidden border-0 bg-transparent shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform cursor-pointer ${
                   "pointer-events-auto"
                 }`}
                 style={

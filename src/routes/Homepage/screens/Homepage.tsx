@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { FooterSection } from "../../../components/sections/FooterSection";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
@@ -65,7 +66,7 @@ export const Homepage = (): JSX.Element => {
   }, [statsAnimationSeed]);
 
   return (
-    <div className="w-full min-w-[1440px] relative bg-white animate-fade-in opacity-0">
+    <div className="w-full min-w-[1440px] relative bg-white">
       {/* Hero Section with Header */}
       <section className="relative w-full h-[560px]">
         <img
@@ -230,12 +231,12 @@ export const Homepage = (): JSX.Element => {
           <p className="[font-family:'Montserrat',Helvetica] font-normal text-[#555555] text-lg tracking-[0] leading-[normal] mb-8">
             Start your adventure with Armonia - contact us now!
           </p>
-          <button
-            type="button"
+          <Link
+            to="/contact"
             className="inline-flex items-center justify-center w-[360px] h-[66.125px] opacity-100"
           >
             <img className="w-full h-full object-contain" alt="Contact us" src="/button.png" />
-          </button>
+          </Link>
         </div>
       </section>
 
