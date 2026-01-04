@@ -180,7 +180,9 @@ export const ServicesGridSection = (): JSX.Element => {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden bg-[#cfe6f5] p-6">
           <DialogHeader>
-            <DialogTitle className="sr-only">Service Details</DialogTitle>
+            <DialogTitle className="[font-family:'Montserrat',Helvetica] text-center text-2xl font-semibold text-[#1f2a37]">
+              {selectedService?.title ?? "Service Details"}
+            </DialogTitle>
           </DialogHeader>
           <div className="max-h-[80vh] overflow-y-auto pr-2 hide-scrollbar space-y-5">
             <div className="relative w-full aspect-[16/7] overflow-hidden rounded-2xl bg-white shadow-[0_10px_24px_rgba(15,23,42,0.12)]">
