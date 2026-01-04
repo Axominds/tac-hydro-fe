@@ -142,7 +142,7 @@ export const Homepage = (): JSX.Element => {
                       Kumar Panday
                   </p>
                   <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/80 text-[15px]">
-                    Executive Chairma
+                    Executive Chairman
                   </p>
                 </div>
               </div>
