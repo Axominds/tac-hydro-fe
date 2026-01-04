@@ -121,6 +121,12 @@ export const Homepage = (): JSX.Element => {
   const [typewriterIndex, setTypewriterIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [activePartnerFilter, setActivePartnerFilter] = useState("ALL");
+  const handleGetStarted = () => {
+    const target = document.getElementById("about-us");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   useEffect(() => {
     const currentWord = typewriterWords[typewriterIndex % typewriterWords.length];
@@ -167,10 +173,7 @@ export const Homepage = (): JSX.Element => {
   const [featuredPartnerShowcase, ...partnerShowcaseCards] = resolvedPartnerShowcaseItems;
 
   return (
-    <div
-      className="overflow-hidden border border-solid border-black w-full relative animate-fade-in opacity-0"
-      data-model-id="2:330"
-    >
+    <div className="overflow-hidden border border-solid border-black w-full relative" data-model-id="2:330">
       <header className="relative w-full min-w-[1440px] h-[820px]">
         <img
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
@@ -206,7 +209,11 @@ export const Homepage = (): JSX.Element => {
                 creation on the environment.
               </p>
 
-              <Button className="mt-6 h-auto inline-flex items-center justify-center gap-[9px] px-[29px] py-2.5 bg-[#0070c0] hover:bg-[#005a9c] rounded-[40px] transition-colors">
+              <Button
+                type="button"
+                onClick={handleGetStarted}
+                className="mt-6 h-auto inline-flex items-center justify-center gap-[9px] px-[29px] py-2.5 bg-[#0070c0] hover:bg-[#005a9c] rounded-[40px] transition-colors"
+              >
                 <span className="[font-family:'Montserrat',Helvetica] font-bold text-white text-lg tracking-[0] leading-[normal]">
                   Get Started
                 </span>
@@ -275,12 +282,9 @@ export const Homepage = (): JSX.Element => {
                   />
                   <div className="pointer-events-auto absolute left-1/2 top-[-8px] w-[190px] -translate-x-1/2 -translate-y-full opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <div className="rounded-xl border border-[#e3e7ef] bg-white px-3 py-2 shadow-[0_10px_24px_rgba(15,23,42,0.15)]">
-                      <Link
-                        className="[font-family:'Montserrat',Helvetica] text-xs font-semibold uppercase tracking-[0.16em] text-[#0070c0] hover:text-[#005a9c]"
-                        to="/projects"
-                      >
+                      <span className="[font-family:'Montserrat',Helvetica] text-xs font-semibold uppercase tracking-[0.16em] text-[#0070c0]">
                         {location.title}
-                      </Link>
+                      </span>
                       <p className="[font-family:'Montserrat',Helvetica] text-xs text-[#4b5563]">
                         {location.detail}
                       </p>

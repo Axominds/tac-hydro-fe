@@ -34,6 +34,14 @@ const services = [
 
 export const FooterSection = (): JSX.Element => {
   const currentYear = new Date().getFullYear();
+  const linkHrefs: Record<string, string> = {
+    Home: "/",
+    "About us": "/about",
+    Services: "/services",
+    Gallery: "/gallery",
+    "Contact Us": "/contact",
+    Projects: "/projects",
+  };
 
   return (
     <footer className="w-full bg-[#586772] py-[60px] px-20">
@@ -105,19 +113,7 @@ export const FooterSection = (): JSX.Element => {
               {usefulLinks.map((link, index) => (
                 <a
                   key={index}
-                  href={
-                    link.name === "Home"
-                      ? "/"
-                      : link.name === "About us"
-                        ? "/about"
-                        : link.name === "Services"
-                          ? "/services"
-                          : link.name === "Projects"
-                            ? "/projects"
-                            : link.name === "Gallery"
-                              ? "/gallery"
-                              : "#"
-                  }
+                  href={linkHrefs[link.name] ?? "/about"}
                   className="[font-family:'Montserrat',Helvetica] font-semibold text-white text-lg text-justify tracking-[0] leading-7 hover:text-[#f0f1ff] transition-colors"
                 >
                   {link.name}

@@ -94,18 +94,18 @@ export const GalleryGridSection = (): JSX.Element => {
     <section className="relative w-full py-16 bg-[#f5f5f5]">
       <div className="max-w-[1400px] mx-auto px-8">
         {/* Year Tabs */}
-        <div className="flex items-center justify-center gap-12 mb-16">
+        <div id="gallery-filter" className="flex flex-wrap items-center justify-center gap-3 mb-12">
           {yearTabs.map((tab, index) => (
             <button
               key={index}
               onClick={() => setActiveYear(tab.year)}
               type="button"
               aria-pressed={activeYear === tab.year}
-              className={`[font-family:'Montserrat',Helvetica] ${
+              className={`[font-family:'Montserrat',Helvetica] rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${
                 activeYear === tab.year
-                  ? "font-bold text-[#0070c0] border-b-4 border-[#0070c0]"
-                  : "font-semibold text-[#888888]"
-              } text-2xl tracking-[0] leading-[normal] pb-2 hover:text-[#0070c0] transition-colors`}
+                  ? "border-[#0070c0] bg-[#0070c0] text-white"
+                  : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
+              }`}
             >
               {tab.year}
             </button>

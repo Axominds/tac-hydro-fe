@@ -14,7 +14,7 @@ const navigationItems = [
 
 export const Contact = (): JSX.Element => {
   return (
-    <div className="w-full min-w-[1440px] relative bg-[#f5f5f5] animate-fade-in opacity-0">
+    <div className="w-full min-w-[1440px] relative bg-[#f5f5f5]">
       <section className="relative w-full h-[560px]">
         <img
           className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"

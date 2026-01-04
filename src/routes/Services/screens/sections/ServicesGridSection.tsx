@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ChevronRightIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
 
 const sectorFilters = [
@@ -66,6 +66,7 @@ export const ServicesGridSection = (): JSX.Element => {
   const [selectedService, setSelectedService] = useState<(typeof serviceItems)[0] | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeSector, setActiveSector] = useState(sectorFilters[0]);
+  const location = useLocation();
   const popupItems = [
     {
       title: "Project identification",
@@ -106,6 +107,14 @@ export const ServicesGridSection = (): JSX.Element => {
     setIsOpen(true);
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const requestedSector = params.get("sector");
+    if (requestedSector && sectorFilters.includes(requestedSector)) {
+      setActiveSector(requestedSector);
+    }
+  }, [location.search]);
+
   return (
     <>
       <section className="relative w-full py-16 bg-[#f5f5f5]">
@@ -113,7 +122,7 @@ export const ServicesGridSection = (): JSX.Element => {
           <h2 className="[font-family:'Montserrat',Helvetica] text-sm font-semibold uppercase tracking-[0.24em] text-[#6b6b6b] mb-4">
             Sectors
           </h2>
-          <div className="flex flex-wrap items-center gap-3 mb-10">
+          <div id="services-filter" className="flex flex-wrap items-center gap-3 mb-10">
             {sectorFilters.map((sector) => (
               <button
                 key={sector}
@@ -169,11 +178,11 @@ export const ServicesGridSection = (): JSX.Element => {
       </section>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden bg-[#cfe6f5] p-6">
+        <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden bg-[#cfe6f5] p-6">
           <DialogHeader>
             <DialogTitle className="sr-only">Service Details</DialogTitle>
           </DialogHeader>
-          <div className="max-h-[70vh] overflow-y-auto pr-2 hide-scrollbar space-y-5">
+          <div className="max-h-[80vh] overflow-y-auto pr-2 hide-scrollbar space-y-5">
             <div className="relative w-full aspect-[16/7] overflow-hidden rounded-2xl bg-white shadow-[0_10px_24px_rgba(15,23,42,0.12)]">
               <img
                 className="w-full h-full object-cover"
