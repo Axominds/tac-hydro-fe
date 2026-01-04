@@ -4,7 +4,7 @@ export const CallToActionSection = (): JSX.Element => {
   return (
     <section className="relative w-full py-20 bg-white">
       <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-20">
-        <div className="grid grid-cols-1 lg:grid-cols-[520px_1fr] gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,520px)_1fr] gap-12 items-center">
           <div className="relative">
             <img
               className="w-full h-auto rounded-[14px]"
@@ -19,14 +19,14 @@ export const CallToActionSection = (): JSX.Element => {
                 MISSION &amp; VISION
               </div>
 
-              <h2 className="[font-family:'Playfair_Display',Helvetica] font-bold italic text-[#1b1b1b] text-[40px] leading-[1.12] mb-2">
+              <h2 className="[font-family:'Playfair_Display',Helvetica] font-bold italic text-[#1b1b1b] text-3xl sm:text-4xl lg:text-[40px] leading-[1.12] mb-2">
                 Guided by Purpose,
               </h2>
-              <h2 className="[font-family:'Playfair_Display',Helvetica] font-bold italic text-[#1b1b1b] text-[40px] leading-[1.12] mb-4">
+              <h2 className="[font-family:'Playfair_Display',Helvetica] font-bold italic text-[#1b1b1b] text-3xl sm:text-4xl lg:text-[40px] leading-[1.12] mb-4">
                 Built for Impact.
               </h2>
 
-              <p className="[font-family:'Inter',Helvetica] font-normal text-[#5a5a5a] text-base leading-[24px] max-w-[520px] mb-7">
+              <p className="[font-family:'Inter',Helvetica] font-normal text-[#5a5a5a] text-sm sm:text-base leading-[24px] max-w-[520px] mb-7">
                 We create meaningful experiences through organic, safe, and sustainable
                 choices—designed for real life.
               </p>

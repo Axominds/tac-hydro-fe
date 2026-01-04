@@ -45,7 +45,7 @@ export const TestimonialsSection = (): JSX.Element => {
   return (
     <section className="relative w-full overflow-hidden">
       <div
-        className="relative w-screen h-[520px] cursor-grab active:cursor-grabbing"
+        className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[520px] cursor-grab active:cursor-grabbing"
         onMouseEnter={() => setIsAutoPaused(true)}
         onMouseLeave={() => setIsAutoPaused(false)}
         onPointerDown={(event) => {
@@ -119,11 +119,11 @@ export const TestimonialsSection = (): JSX.Element => {
 
               <div className="relative z-10 h-full max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-20 flex flex-col justify-center">
                 <div className="max-w-[653px]">
-                  <h2 className="[font-family:'Playfair_Display',Helvetica] font-bold italic text-white text-[44px] leading-[1.2] mb-6">
+                  <h2 className="[font-family:'Playfair_Display',Helvetica] font-bold italic text-white text-3xl sm:text-4xl lg:text-[44px] leading-[1.2] mb-6">
                     Project Development
                   </h2>
 
-                  <p className="[font-family:'Inter',Helvetica] font-normal text-[#ededed] text-base leading-[1.5] max-w-[585px]">
+                  <p className="[font-family:'Inter',Helvetica] font-normal text-[#ededed] text-sm sm:text-base leading-[1.5] max-w-[585px]">
                     TAC Hydro Consultancy Pvt. Ltd. is a leading engineering consultancy based in
                     Nepal, specializing in hydropower and infrastructure development (...)
                   </p>

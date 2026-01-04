@@ -92,7 +92,7 @@ export const GalleryGridSection = (): JSX.Element => {
 
   return (
     <section className="relative w-full py-16 bg-[#f5f5f5]">
-      <div className="max-w-[1400px] mx-auto px-8">
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
         {/* Year Tabs */}
         <div id="gallery-filter" className="flex flex-wrap items-center justify-center gap-3 mb-12">
           {yearTabs.map((tab, index) => (
@@ -134,7 +134,7 @@ export const GalleryGridSection = (): JSX.Element => {
         {/* Empty State */}
         {currentGalleryItems.length === 0 && (
           <div className="text-center py-20">
-            <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#888888] text-xl tracking-[0] leading-[normal]">
+            <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#888888] text-lg sm:text-xl tracking-[0] leading-[normal]">
               No gallery items available for {activeYear}
             </p>
           </div>
