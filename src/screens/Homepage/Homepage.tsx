@@ -275,9 +275,12 @@ export const Homepage = (): JSX.Element => {
                   />
                   <div className="pointer-events-auto absolute left-1/2 top-[-8px] w-[190px] -translate-x-1/2 -translate-y-full opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <div className="rounded-xl border border-[#e3e7ef] bg-white px-3 py-2 shadow-[0_10px_24px_rgba(15,23,42,0.15)]">
-                      <span className="[font-family:'Montserrat',Helvetica] text-xs font-semibold uppercase tracking-[0.16em] text-[#0070c0]">
+                      <Link
+                        className="[font-family:'Montserrat',Helvetica] text-xs font-semibold uppercase tracking-[0.16em] text-[#0070c0] hover:text-[#005a9c]"
+                        to="/projects"
+                      >
                         {location.title}
-                      </span>
+                      </Link>
                       <p className="[font-family:'Montserrat',Helvetica] text-xs text-[#4b5563]">
                         {location.detail}
                       </p>
