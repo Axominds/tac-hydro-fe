@@ -36,7 +36,9 @@ export const SiteHeader = ({
   return (
     <header className={cn("relative z-30 px-20 py-[30px] pointer-events-auto", headerClassName)}>
       <div className={cn("flex items-center justify-between", innerClassName)}>
-        <img className={cn("w-[277px] h-[63px]", logoClassName)} alt={logoAlt} src={logoSrc} />
+        <NavLink to="/" className="inline-flex" aria-label="Go to home page">
+          <img className={cn("w-[277px] h-[63px]", logoClassName)} alt={logoAlt} src={logoSrc} />
+        </NavLink>
 
         <nav className={cn("flex items-center gap-[29px]", navClassName)}>
           {navigationItems.map((item, index) => (
