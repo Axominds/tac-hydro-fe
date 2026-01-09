@@ -5,7 +5,6 @@ import {
   MailIcon,
   MapPinIcon,
   PhoneIcon,
-  YoutubeIcon,
 } from "lucide-react";
 import React from "react";
 import { LOGO_FOOTER } from "../../assets";
@@ -71,31 +70,25 @@ export const FooterSection = (): JSX.Element => {
               <ArrowRightIcon className="ml-2 w-4 h-4" />
             </Button>
 
-            <div className="flex gap-6 mt-8">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-auto w-auto p-0 hover:bg-transparent"
+            <div className="flex gap-4 mt-8">
+              <a
+                href="https://www.facebook.com/tachydro"
+                target="_blank"
+                rel="noreferrer"
                 aria-label="Visit TAC Hydro on Facebook"
+                className="flex h-auto w-auto items-center justify-center rounded-full border border-white/20 p-2 text-white hover:border-white/60"
               >
-                <FacebookIcon className="w-[13px] h-6 text-white" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-auto w-auto p-0 hover:bg-transparent"
+                <FacebookIcon className="w-[18px] h-[18px] text-white" />
+              </a>
+              <a
+                href="https://www.linkedin.com/company/tachydro/"
+                target="_blank"
+                rel="noreferrer"
                 aria-label="Visit TAC Hydro on LinkedIn"
+                className="flex h-auto w-auto items-center justify-center rounded-full border border-white/20 p-2 text-white hover:border-white/60"
               >
-                <LinkedinIcon className="w-[23px] h-[23px] text-white" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-auto w-auto p-0 hover:bg-transparent"
-                aria-label="Visit TAC Hydro on YouTube"
-              >
-                <YoutubeIcon className="w-[27px] h-[19px] text-white" />
-              </Button>
+                <LinkedinIcon className="w-[20px] h-[20px] text-white" />
+              </a>
             </div>
           </div>
 
@@ -112,6 +105,8 @@ export const FooterSection = (): JSX.Element => {
                 <a
                   key={index}
                   href={linkHrefs[link.name] ?? "/about-us"}
+                  target={link.name === "Facebook" || link.name === "LinkedIn" ? "_blank" : undefined}
+                  rel={link.name === "Facebook" || link.name === "LinkedIn" ? "noreferrer" : undefined}
                   className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 hover:text-[#f0f1ff] transition-colors"
                 >
                   {link.name}
