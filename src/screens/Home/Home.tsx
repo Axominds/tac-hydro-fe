@@ -198,7 +198,7 @@ export const Home = (): JSX.Element => {
           <div className="h-full mx-auto px-4 sm:px-8 lg:px-20 flex items-center justify-start">
             <div className="translate-y-[6.5rem] sm:translate-y-[7rem]">
               <div className="max-w-[720px] animate-fade-in opacity-0 [--animation-delay:200ms] lg:max-w-[995px]">
-                <h1 className="font-bold text-white text-3xl sm:text-4xl lg:text-[52px] leading-[1.2] mb-2">
+                <h1 className="font-bold text-white text-3xl sm:text-4xl lg:text-[52px] sm:leading-[1.1] lg:leading-[1.1] mb-2">
                   <span className="block">Empowering Sustainable Resources Through Engineering Excellence</span>
                 </h1>
                 <div className="mt-0 flex items-center gap-2 min-h-[32px]">
