@@ -84,10 +84,10 @@ export const ProjectsGridSection = (): JSX.Element => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="p-6">
-                  <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-[#2c3e50] text-xl tracking-[0] leading-[normal] mb-3">
+                  <h3 className="font-bold text-[#2c3e50] text-xl leading-[normal] mb-3">
                     {item.title}
                   </h3>
-                  <p className="[font-family:'Montserrat',Helvetica] font-normal text-[#555555] text-sm tracking-[0] leading-[24px]">
+                  <p className="font-normal text-[#555555] text-sm leading-[24px]">
                     {item.description}
                   </p>
                 </div>
@@ -100,7 +100,7 @@ export const ProjectsGridSection = (): JSX.Element => {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="w-[90vw] max-w-3xl sm:w-full">
           <DialogHeader>
-            <DialogTitle className="[font-family:'Montserrat',Helvetica] font-bold text-[#2c3e50] text-2xl tracking-[0] leading-[normal] mb-4">
+            <DialogTitle className="font-bold text-[#2c3e50] text-2xl leading-[normal] mb-4">
               {selectedProject?.title}
             </DialogTitle>
           </DialogHeader>
@@ -113,7 +113,7 @@ export const ProjectsGridSection = (): JSX.Element => {
                   src={selectedProject.image}
                 />
               </div>
-              <p className="[font-family:'Montserrat',Helvetica] font-normal text-[#555555] text-base tracking-[0] leading-[28px] text-justify">
+              <p className="font-normal text-[#555555] text-base leading-[28px] text-justify">
                 {selectedProject.longDescription}
               </p>
             </div>

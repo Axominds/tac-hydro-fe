@@ -119,7 +119,7 @@ export const ServicesGridSection = (): JSX.Element => {
     <>
       <section className="relative w-full py-16 bg-[#f5f5f5]">
         <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
-          <h2 className="[font-family:'Montserrat',Helvetica] text-sm font-semibold uppercase tracking-[0.24em] text-[#6b6b6b] mb-4">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6b6b6b] mb-4">
             Sectors
           </h2>
           <div id="services-filter" className="flex flex-wrap items-center gap-3 mb-10">
@@ -164,10 +164,10 @@ export const ServicesGridSection = (): JSX.Element => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 <div className="p-6">
-                  <h3 className="[font-family:'Montserrat',Helvetica] font-bold text-[#2c3e50] text-xl tracking-[0] leading-[normal] mb-3">
+                  <h3 className="font-bold text-[#2c3e50] text-xl leading-[normal] mb-3">
                     {item.title}
                   </h3>
-                  <p className="[font-family:'Montserrat',Helvetica] font-normal text-[#555555] text-sm tracking-[0] leading-[24px]">
+                  <p className="font-normal text-[#555555] text-sm leading-[24px]">
                     {item.description}
                   </p>
                 </div>
@@ -180,7 +180,7 @@ export const ServicesGridSection = (): JSX.Element => {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="w-[90vw] max-w-6xl max-h-[95vh] overflow-hidden bg-[#cfe6f5] p-6 sm:w-full">
           <DialogHeader>
-            <DialogTitle className="[font-family:'Montserrat',Helvetica] text-center text-2xl font-semibold text-[#1f2a37]">
+            <DialogTitle className="text-center text-2xl font-semibold text-[#1f2a37]">
               {selectedService?.title ?? "Service Details"}
             </DialogTitle>
           </DialogHeader>
@@ -196,14 +196,14 @@ export const ServicesGridSection = (): JSX.Element => {
               {popupItems.map((item, index) => (
                 <div key={item.title} className="rounded-2xl border border-[#b8d7ee] bg-[#d9efff] p-4">
                   <div className="flex items-start gap-3">
-                    <span className="[font-family:'Montserrat',Helvetica] text-sm font-bold text-[#3b4b5c]">
+                    <span className="text-sm font-bold text-[#3b4b5c]">
                       {String(index + 1).padStart(2, "0")}.
                     </span>
                     <div>
-                      <h3 className="[font-family:'Montserrat',Helvetica] text-sm font-semibold text-[#2c3e50]">
+                      <h3 className="text-sm font-semibold text-[#2c3e50]">
                         {item.title}
                       </h3>
-                      <p className="[font-family:'Montserrat',Helvetica] text-xs text-[#5b6a79] leading-[1.6] mt-1">
+                      <p className="text-xs text-[#5b6a79] leading-[1.6] mt-1">
                         {popupDescription}
                       </p>
                       <Link

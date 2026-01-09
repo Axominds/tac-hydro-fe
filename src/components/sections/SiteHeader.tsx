@@ -99,7 +99,7 @@ export const SiteHeader = ({
               end={item.href === "/"}
               className={({ isActive }) =>
                 cn(
-                  "[font-family:'Montserrat',Helvetica] font-bold text-white text-sm sm:text-base lg:text-lg tracking-[0] leading-[normal] transition-colors",
+                  "font-bold text-white text-sm sm:text-base lg:text-lg leading-[normal] transition-colors",
                   (isActive || item.isActive) && "text-[#0070c0] underline underline-offset-4",
                   linkClassName,
                 )
@@ -113,7 +113,7 @@ export const SiteHeader = ({
             <NavLink to="/contact" className="inline-flex">
               <Button
                 type="button"
-                className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl [font-family:'Montserrat',Helvetica] font-bold text-white text-sm sm:text-base lg:text-lg"
+                className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl font-bold text-white text-sm sm:text-base lg:text-lg"
               >
                 Contact Us
               </Button>
@@ -133,7 +133,7 @@ export const SiteHeader = ({
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    "[font-family:'Montserrat',Helvetica] font-semibold text-white text-base tracking-[0] leading-[normal] transition-colors",
+                    "font-semibold text-white text-base leading-[normal] transition-colors",
                     (isActive || item.isActive) && "text-[#0070c0]",
                     linkClassName,
                   )
@@ -146,7 +146,7 @@ export const SiteHeader = ({
               <NavLink to="/contact" className="inline-flex" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button
                   type="button"
-                  className="h-auto w-full px-5 py-2.5 bg-[#0070c0] rounded-3xl [font-family:'Montserrat',Helvetica] font-bold text-white text-base"
+                  className="h-auto w-full px-5 py-2.5 bg-[#0070c0] rounded-3xl font-bold text-white text-base"
                 >
                   Contact Us
                 </Button>

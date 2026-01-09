@@ -101,7 +101,7 @@ export const GalleryGridSection = (): JSX.Element => {
               onClick={() => setActiveYear(tab.year)}
               type="button"
               aria-pressed={activeYear === tab.year}
-              className={`[font-family:'Montserrat',Helvetica] rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${
+              className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${
                 activeYear === tab.year
                   ? "border-[#0070c0] bg-[#0070c0] text-white"
                   : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
@@ -134,7 +134,7 @@ export const GalleryGridSection = (): JSX.Element => {
         {/* Empty State */}
         {currentGalleryItems.length === 0 && (
           <div className="text-center py-20">
-            <p className="[font-family:'Montserrat',Helvetica] font-semibold text-[#888888] text-lg sm:text-xl tracking-[0] leading-[normal]">
+            <p className="font-semibold text-[#888888] text-lg sm:text-xl leading-[normal]">
               No gallery items available for {activeYear}
             </p>
           </div>

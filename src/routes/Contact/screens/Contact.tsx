@@ -2,7 +2,7 @@ import React from "react";
 import { FooterSection } from "../../../components/sections/FooterSection";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
 import { HERO_BG_PRIMARY } from "../../../assets";
-import { ContactSection } from "../../../screens/Homepage/sections/ContactSection";
+import { ContactSection } from "../../../screens/Home/sections/ContactSection";
 
 const navigationItems = [
   { label: "Home", href: "/" },
@@ -26,13 +26,13 @@ export const Contact = (): JSX.Element => {
         <SiteHeader navigationItems={navigationItems} />
 
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
-          <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-4">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-4">
             CONTACT
           </span>
-          <h1 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-white text-3xl sm:text-4xl lg:text-[60px] tracking-[0] leading-[1.05] mb-6">
+          <h1 className="font-semibold text-white text-3xl sm:text-4xl lg:text-[60px] leading-[1.05] mb-6">
             Contact Us
           </h1>
-          <p className="[font-family:'Montserrat',Helvetica] font-normal text-white/75 text-sm sm:text-base lg:text-[17px] tracking-[0] leading-[normal] max-w-[560px] px-4">
+          <p className="font-normal text-white/75 text-sm sm:text-base lg:text-[17px] leading-[normal] max-w-[560px] px-4">
             Let us know how we can support your next hydropower project.
           </p>
         </div>
@@ -41,23 +41,23 @@ export const Contact = (): JSX.Element => {
       <section className="relative w-full bg-white py-16">
         <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-20">
           <div className="flex flex-col gap-3">
-            <h2 className="[font-family:'Montserrat',Helvetica] text-2xl sm:text-[28px] font-bold text-[#111111]">
+            <h2 className="text-2xl sm:text-[28px] font-bold text-[#111111]">
               CONTACT US
             </h2>
-            <p className="[font-family:'Montserrat',Helvetica] text-sm text-[#6b6b6b] max-w-[620px]">
+            <p className="text-sm text-[#6b6b6b] max-w-[620px]">
               Whether you have a question, need more details about our services, or want to discuss a potential collaboration, we're here to help.
             </p>
           </div>
 
           <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[1.1fr_0.9fr]">
             <div className="rounded-2xl bg-[#f4f4f4] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
-              <h3 className="[font-family:'Montserrat',Helvetica] text-sm font-semibold uppercase tracking-[0.22em] text-[#111111]">
+              <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-[#111111]">
                 Get in Touch
               </h3>
               <div className="mt-4 border-t border-[#e2e2e2] pt-4">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <label className="flex flex-col gap-2">
-                    <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase text-[#6b6b6b]">
+                    <span className="text-[11px] font-semibold uppercase text-[#6b6b6b]">
                       Name
                     </span>
                     <input
@@ -67,7 +67,7 @@ export const Contact = (): JSX.Element => {
                     />
                   </label>
                   <label className="flex flex-col gap-2">
-                    <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase text-[#6b6b6b]">
+                    <span className="text-[11px] font-semibold uppercase text-[#6b6b6b]">
                       Phone Number
                     </span>
                     <input
@@ -80,7 +80,7 @@ export const Contact = (): JSX.Element => {
                 <div className="mt-4 grid grid-cols-1 gap-4">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <label className="flex flex-col gap-2">
-                      <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase text-[#6b6b6b]">
+                      <span className="text-[11px] font-semibold uppercase text-[#6b6b6b]">
                         Email
                       </span>
                       <input
@@ -90,7 +90,7 @@ export const Contact = (): JSX.Element => {
                       />
                     </label>
                     <label className="flex flex-col gap-2">
-                      <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase text-[#6b6b6b]">
+                      <span className="text-[11px] font-semibold uppercase text-[#6b6b6b]">
                         Services
                       </span>
                       <input
@@ -101,7 +101,7 @@ export const Contact = (): JSX.Element => {
                     </label>
                   </div>
                   <label className="flex flex-col gap-2">
-                    <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase text-[#6b6b6b]">
+                    <span className="text-[11px] font-semibold uppercase text-[#6b6b6b]">
                       Your Message
                     </span>
                     <textarea
@@ -121,7 +121,7 @@ export const Contact = (): JSX.Element => {
 
             <div className="flex flex-col gap-6">
               <div className="rounded-2xl bg-[#f4f4f4] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
-                <h3 className="[font-family:'Montserrat',Helvetica] text-sm font-semibold uppercase tracking-[0.22em] text-[#111111]">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-[#111111]">
                   Contact Information
                 </h3>
                 <div className="mt-4 border-t border-[#e2e2e2] pt-4 space-y-4">
@@ -135,10 +135,10 @@ export const Contact = (): JSX.Element => {
                       </svg>
                     </div>
                     <div>
-                      <p className="[font-family:'Montserrat',Helvetica] text-xs font-semibold uppercase text-[#111111]">
+                      <p className="text-xs font-semibold uppercase text-[#111111]">
                         Phone
                       </p>
-                      <p className="[font-family:'Montserrat',Helvetica] text-sm text-[#6b6b6b]">
+                      <p className="text-sm text-[#6b6b6b]">
                         +977 01-5422896
                       </p>
                     </div>
@@ -153,10 +153,10 @@ export const Contact = (): JSX.Element => {
                       </svg>
                     </div>
                     <div>
-                      <p className="[font-family:'Montserrat',Helvetica] text-xs font-semibold uppercase text-[#111111]">
+                      <p className="text-xs font-semibold uppercase text-[#111111]">
                         Email
                       </p>
-                      <p className="[font-family:'Montserrat',Helvetica] text-sm text-[#6b6b6b]">
+                      <p className="text-sm text-[#6b6b6b]">
                        service@tachydro.com.np
                       </p>
                     </div>
@@ -171,10 +171,10 @@ export const Contact = (): JSX.Element => {
                       </svg>
                     </div>
                     <div>
-                      <p className="[font-family:'Montserrat',Helvetica] text-xs font-semibold uppercase text-[#111111]">
+                      <p className="text-xs font-semibold uppercase text-[#111111]">
                         Address
                       </p>
-                      <p className="[font-family:'Montserrat',Helvetica] text-sm text-[#6b6b6b]">
+                      <p className="text-sm text-[#6b6b6b]">
                         Kupondole, Lalitpur, Nepal
                       </p>
                     </div>
@@ -183,31 +183,31 @@ export const Contact = (): JSX.Element => {
               </div>
 
               <div className="rounded-2xl bg-[#f4f4f4] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
-                <h3 className="[font-family:'Montserrat',Helvetica] text-sm font-semibold uppercase tracking-[0.22em] text-[#111111]">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.22em] text-[#111111]">
                   Business Hours
                 </h3>
                 <div className="mt-4 border-t border-[#e2e2e2] pt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div>
-                    <p className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase text-[#6b6b6b]">
+                    <p className="text-[11px] font-semibold uppercase text-[#6b6b6b]">
                       Monday - Friday
                     </p>
-                    <p className="[font-family:'Montserrat',Helvetica] text-sm text-[#6b6b6b]">
+                    <p className="text-sm text-[#6b6b6b]">
                       9:00 am - 8:00 pm
                     </p>
                   </div>
                   <div>
-                    <p className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase text-[#6b6b6b]">
+                    <p className="text-[11px] font-semibold uppercase text-[#6b6b6b]">
                       Saturday
                     </p>
-                    <p className="[font-family:'Montserrat',Helvetica] text-sm text-[#6b6b6b]">
+                    <p className="text-sm text-[#6b6b6b]">
                       9:00 am - 6:00 pm
                     </p>
                   </div>
                   <div>
-                    <p className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase text-[#6b6b6b]">
+                    <p className="text-[11px] font-semibold uppercase text-[#6b6b6b]">
                       Sunday
                     </p>
-                    <p className="[font-family:'Montserrat',Helvetica] text-sm text-[#6b6b6b]">
+                    <p className="text-sm text-[#6b6b6b]">
                       9:00 am - 5:00 pm
                     </p>
                   </div>

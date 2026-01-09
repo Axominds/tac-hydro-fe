@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { HashRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { Homepage as MainHomepage } from "./screens/Homepage";
-import { Homepage as AboutUsHomepage } from "./routes/Homepage/screens/Homepage";
+import { Home as MainHome } from "./screens/Home";
+import { Home as AboutHome } from "./routes/Home/screens/Home";
 import { Gallery } from "./routes/Gallery/screens/Gallery";
 import { Projects } from "./routes/Projects/screens/Projects";
 import { Services } from "./routes/Services/screens/Services";
@@ -42,8 +42,8 @@ export const App = (): JSX.Element => {
     <Router>
       <ScrollManager />
       <Routes>
-        <Route path="/" element={<MainHomepage />} />
-        <Route path="/about" element={<AboutUsHomepage />} />
+        <Route path="/" element={<MainHome />} />
+        <Route path="/about" element={<AboutHome />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/services" element={<Services />} />

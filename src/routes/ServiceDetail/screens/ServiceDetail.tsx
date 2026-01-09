@@ -92,10 +92,10 @@ export const ServiceDetail = (): JSX.Element => {
         <div className="absolute inset-0 bg-gradient-to-b from-[#0b1522]/85 via-[#0b1522]/45 to-[#0b1522]/85 pointer-events-none" />
         <SiteHeader navigationItems={navigationItems} />
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
-          <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-3">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-3">
             SERVICE DETAIL
           </span>
-          <h1 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-white text-3xl sm:text-4xl lg:text-[48px] tracking-[0] leading-[1.1]">
+          <h1 className="font-semibold text-white text-3xl sm:text-4xl lg:text-[48px] leading-[1.1]">
             {activeItem.title}
           </h1>
         </div>
@@ -130,7 +130,7 @@ export const ServiceDetail = (): JSX.Element => {
 
             <div className="mt-6 space-y-4 text-sm text-[#4b5563]">
               {detailCopy.map((line) => (
-                <p key={line} className="[font-family:'Montserrat',Helvetica] leading-[1.7]">
+                <p key={line} className="leading-[1.7]">
                   {line}
                 </p>
               ))}
@@ -149,7 +149,7 @@ export const ServiceDetail = (): JSX.Element => {
 
             <ul className="mt-6 list-disc pl-5 text-sm text-[#4b5563] space-y-2">
               {detailBullets.map((bullet) => (
-                <li key={bullet} className="[font-family:'Montserrat',Helvetica] leading-[1.7]">
+                <li key={bullet} className="leading-[1.7]">
                   {bullet}
                 </li>
               ))}
