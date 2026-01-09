@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { FooterSection } from "../../../components/sections/FooterSection";
+import { HeroWave } from "../../../components/sections/HeroWave";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
 import { HERO_BG_PRIMARY } from "../../../assets";
 
@@ -11,6 +12,7 @@ const navigationItems = [
   { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
   { label: "Galleries", href: "/galleries" },
+  { label: "Contact Us", href: "/contact-us" },
 ];
 
 const stats = [
@@ -88,6 +90,7 @@ export const Home = (): JSX.Element => {
             Explore the origin of our craft, our commitment to natural
           </p>
         </div>
+        <HeroWave className="text-white/70" />
       </section>
 
       {/* Who We Are Section */}

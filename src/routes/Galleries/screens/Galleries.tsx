@@ -1,5 +1,6 @@
 import React from "react";
 import { FooterSection } from "../../../components/sections/FooterSection";
+import { HeroWave } from "../../../components/sections/HeroWave";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
 import { HERO_BG_PRIMARY } from "../../../assets";
 import { GalleriesGridSection } from "./sections/GalleriesGridSection";
@@ -10,6 +11,7 @@ const navigationItems = [
   { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
   { label: "Galleries", href: "/galleries", isActive: true },
+  { label: "Contact Us", href: "/contact-us" },
 ];
 
 export const Galleries = (): JSX.Element => {
@@ -36,6 +38,7 @@ export const Galleries = (): JSX.Element => {
             A visual collection of our latest work and milestones.
           </p>
         </div>
+        <HeroWave className="text-white/60" />
       </section>
 
       <GalleriesGridSection />

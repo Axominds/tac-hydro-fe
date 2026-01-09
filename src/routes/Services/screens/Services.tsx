@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FooterSection } from "../../../components/sections/FooterSection";
+import { HeroWave } from "../../../components/sections/HeroWave";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
 import { HERO_BG_PRIMARY } from "../../../assets";
 import { ServicesGridSection } from "./sections/ServicesGridSection";
@@ -11,6 +12,7 @@ const navigationItems = [
   { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services", isActive: true },
   { label: "Galleries", href: "/galleries" },
+  { label: "Contact Us", href: "/contact-us" },
 ];
 
 export const Services = (): JSX.Element => {
@@ -37,6 +39,7 @@ export const Services = (): JSX.Element => {
             Expertise from feasibility to delivery across every project phase.
           </p>
         </div>
+        <HeroWave className="text-white/80" />
       </section>
 
       <ServicesGridSection />

@@ -1,5 +1,6 @@
 import React from "react";
 import { FooterSection } from "../../../components/sections/FooterSection";
+import { HeroWave } from "../../../components/sections/HeroWave";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
 import { HERO_BG_PRIMARY } from "../../../assets";
 import { ProjectsGridSection } from "./sections/ProjectsGridSection";
@@ -10,6 +11,7 @@ const navigationItems = [
   { label: "Projects", href: "/projects", isActive: true },
   { label: "Services", href: "/services" },
   { label: "Galleries", href: "/galleries" },
+  { label: "Contact Us", href: "/contact-us" },
 ];
 
 export const Projects = (): JSX.Element => {
@@ -36,6 +38,7 @@ export const Projects = (): JSX.Element => {
             Discover our portfolio of hydropower and infrastructure work.
           </p>
         </div>
+        <HeroWave className="text-white/70" />
       </section>
 
       <ProjectsGridSection />

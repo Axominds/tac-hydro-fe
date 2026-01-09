@@ -10,6 +10,7 @@ const navigationItems = [
   { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services", isActive: true },
   { label: "Galleries", href: "/galleries" },
+  { label: "Contact Us", href: "/contact-us" },
 ];
 
 const detailItems = [

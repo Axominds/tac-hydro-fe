@@ -33,6 +33,7 @@ const navigationItems = [
   { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
   { label: "Galleries", href: "/galleries" },
+  { label: "Contact Us", href: "/contact-us" },
 ];
 
 const partnerLogos = [
@@ -216,7 +217,7 @@ export const Home = (): JSX.Element => {
                 <Button
                   type="button"
                   onClick={handleGetStarted}
-                  className="mt-6 h-auto inline-flex items-center justify-center gap-[9px] px-6 sm:px-[29px] py-2.5 bg-[#0070c0] hover:bg-[#005a9c] rounded-[40px] transition-colors"
+                  className="mt-6 inline-flex items-center justify-center gap-[9px] px-6 sm:px-[29px] py-2.5 rounded-[32px] border border-white/40 bg-gradient-to-br from-white/60 via-white/10 to-white/10 backdrop-blur-[30px] font-bold text-white text-sm sm:text-base lg:text-lg shadow-[0_25px_45px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_65px_rgba(0,0,0,0.45)] active:translate-y-0.5"
                 >
                   <span className="font-bold text-white text-sm sm:text-base lg:text-lg leading-[normal]">
                     Get Started

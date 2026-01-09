@@ -34,6 +34,16 @@ export const SiteHeader = ({
   cta,
 }: SiteHeaderProps): JSX.Element => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navWrapperClass =
+    "relative z-20 flex items-center flex-wrap justify-center gap-3 rounded-[40px] border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-white/0 px-2 py-2 shadow-[0_25px_45px_rgba(0,0,0,0.45)] backdrop-blur-[30px]";
+  const baseNavItem =
+    "text-white/80 font-semibold text-sm sm:text-base lg:text-lg transition text-center";
+  const glassClass =
+    "group relative inline-flex items-center px-6 py-2 rounded-[32px] border border-white/20 bg-gradient-to-br from-white/5 via-white/10 to-white/20 backdrop-blur-[30px] font-bold text-white leading-[1.1] transition-all duration-300 text-center shadow-[inset_0_0_25px_rgba(255,255,255,0.25)]";
+  const glassHover =
+    "hover:translate-y-0 hover:border-white/60 hover:bg-white/25 hover:shadow-[0_25px_65px_rgba(0,0,0,0.45)] active:translate-y-0.5";
+  const activeGlass =
+    `${glassClass} ${glassHover} border-[#0070c0] bg-[#0070c0] shadow-[0_18px_45px_rgba(0,0,0,0.35),inset_0_0_35px_rgba(0,0,0,0.5)] ring-1 ring-white/40 ring-inset`;
 
   return (
     <header
@@ -91,34 +101,25 @@ export const SiteHeader = ({
           </button>
         </div>
 
-        <nav className={cn("hidden sm:flex flex-wrap items-center justify-center gap-4 sm:gap-6", navClassName)}>
-          {navigationItems.map((item, index) => (
-            <NavLink
-              key={`${item.label}-${index}`}
-              to={item.href}
-              end={item.href === "/"}
-              className={({ isActive }) =>
-                cn(
-                  "font-bold text-white text-sm sm:text-base lg:text-lg leading-[normal] transition-colors",
-                  (isActive || item.isActive) && "text-[#0070c0] underline underline-offset-4",
-                  linkClassName,
-                )
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-
-          {cta ?? (
-            <NavLink to="/contact-us" className="inline-flex">
-              <Button
-                type="button"
-                className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl font-bold text-white text-sm sm:text-base lg:text-lg"
+        <nav className={cn("hidden sm:flex justify-center", navClassName)}>
+          <div className={navWrapperClass}>
+            {navigationItems.map((item, index) => (
+              <NavLink
+                key={`${item.label}-${index}`}
+                to={item.href}
+                end={item.href === "/"}
+            className={({ isActive }) =>
+              cn(
+                baseNavItem,
+                (isActive || item.isActive) ? activeGlass : "hover:text-white",
+                linkClassName,
+              )
+            }
               >
-                Contact Us
-              </Button>
-            </NavLink>
-          )}
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
         </nav>
       </div>
 
@@ -133,8 +134,8 @@ export const SiteHeader = ({
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    "font-semibold text-white text-base leading-[normal] transition-colors",
-                    (isActive || item.isActive) && "text-[#0070c0]",
+                    baseNavItem,
+                    (isActive || item.isActive) ? activeGlass : "hover:text-white",
                     linkClassName,
                   )
                 }
@@ -142,16 +143,7 @@ export const SiteHeader = ({
                 {item.label}
               </NavLink>
             ))}
-            {cta ?? (
-              <NavLink to="/contact-us" className="inline-flex" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button
-                  type="button"
-                  className="h-auto w-full px-5 py-2.5 bg-[#0070c0] rounded-3xl font-bold text-white text-base"
-                >
-                  Contact Us
-                </Button>
-              </NavLink>
-            )}
+            {cta}
           </nav>
         </div>
       )}
