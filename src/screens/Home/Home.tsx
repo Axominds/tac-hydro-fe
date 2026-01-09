@@ -29,46 +29,53 @@ const mapLocations = [
 
 const navigationItems = [
   { label: "Home", href: "/", isActive: true },
-  { label: "About", href: "/about" },
-  { label: "Project", href: "/projects" },
+  { label: "About Us", href: "/about-us" },
+  { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
-  { label: "Gallery", href: "/gallery" },
+  { label: "Galleries", href: "/galleries" },
 ];
 
 const partnerLogos = [
   {
     src: "/downloads/mjlob7k1SeIJX4/img/image-3.png",
     alt: "Partner 1",
+    name: "SkyReach Power",
     className: "w-[140px] h-[142px] object-cover",
   },
   {
     src: "/downloads/mjlob7k1SeIJX4/img/image-4.png",
     alt: "Partner 2",
+    name: "BlueCurrent Energy",
     className: "w-[141px] h-[142px] object-cover",
   },
   {
     src: "/downloads/mjlob7k1SeIJX4/img/image-20.png",
     alt: "Partner 3",
+    name: "SummitFlow Hydro",
     className: "w-[190px] h-[130px] object-cover",
   },
   {
     src: "/downloads/mjlob7k1SeIJX4/img/image-21.png",
     alt: "Partner 4",
+    name: "Evergreen Turbines",
     className: "w-[142px] h-[142px] object-cover",
   },
   {
     src: "/downloads/mjlob7k1SeIJX4/img/image-17.png",
     alt: "Partner 5",
+    name: "NorthRiver Works",
     className: "w-[141px] h-[142px]",
   },
   {
     src: "/downloads/mjlob7k1SeIJX4/img/image-18.png",
     alt: "Partner 6",
+    name: "Crestline Renewables",
     className: "w-[141px] h-[142px]",
   },
   {
     src: "/downloads/mjlob7k1SeIJX4/img/image-8.png",
     alt: "Partner 7",
+    name: "Cascade Infrastructure",
     className: "w-[111px] h-[142px]",
   },
 ];
@@ -192,8 +199,7 @@ export const Home = (): JSX.Element => {
             <div className="translate-y-[6.5rem] sm:translate-y-[7rem]">
               <div className="max-w-[720px] animate-fade-in opacity-0 [--animation-delay:200ms] lg:max-w-[995px]">
                 <h1 className="font-bold text-white text-3xl sm:text-4xl lg:text-[52px] leading-[1.2] mb-2">
-                  <span className="block whitespace-nowrap">Empowering Sustainable Resources</span>
-                  <span className="block mt-[10px]">Through Engineering Excellence</span>
+                  <span className="block">Empowering Sustainable Resources Through Engineering Excellence</span>
                 </h1>
                 <div className="mt-0 flex items-center gap-2 min-h-[32px]">
                   <span className="font-bold text-white text-xl sm:text-2xl lg:text-[32px] leading-[1]">
@@ -332,12 +338,15 @@ export const Home = (): JSX.Element => {
                     aria-hidden={index >= logoMarqueeItems.length}
                   >
                     <div className="relative h-[170px] w-full">
-                      <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                         <img
-                          className={`${logo.className} grayscale transition duration-300 group-hover:grayscale-0 group-hover:scale-[1.06]`}
+                          className={`${logo.className} transition duration-300 group-hover:scale-[1.12]`}
                           alt={logo.alt}
                           src={logo.src}
                         />
+                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#2c3e50] opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center">
+                          {logo.name}
+                        </span>
                       </div>
                     </div>
                   </div>

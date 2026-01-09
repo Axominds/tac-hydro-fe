@@ -14,9 +14,9 @@ import { Separator } from "../ui/separator";
 
 const usefulLinks = [
   { name: "Home", column: 1 },
-  { name: "About us", column: 1 },
+  { name: "About Us", column: 1 },
   { name: "Services", column: 1 },
-  { name: "Gallery", column: 1 },
+  { name: "Galleries", column: 1 },
   { name: "Contact Us", column: 1 },
   { name: "Projects", column: 2 },
   { name: "Team", column: 2 },
@@ -36,15 +36,15 @@ export const FooterSection = (): JSX.Element => {
   const currentYear = new Date().getFullYear();
   const linkHrefs: Record<string, string> = {
     Home: "/",
-    "About us": "/about",
+    "About Us": "/about-us",
     Services: "/services",
-    Gallery: "/gallery",
-    "Contact Us": "/contact",
+    Galleries: "/galleries",
+    "Contact Us": "/contact-us",
     Projects: "/projects",
   };
 
   return (
-    <footer className="w-full bg-[#586772] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20">
+    <footer className="w-full bg-[#6fb7e6] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20">
       <div className="max-w-[1449px] mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           <div className="flex flex-col">
@@ -54,20 +54,18 @@ export const FooterSection = (): JSX.Element => {
               src={LOGO_FOOTER}
             />
 
-            <div className="font-semibold text-white text-base sm:text-lg text-justify leading-7 mb-4">
-              Empowering Sustainable Resources
-              <br />
-              Through Engineering Excellence
+            <div className="font-semibold text-white text-base sm:text-lg leading-7 mb-4">
+              Empowering Sustainable Resources Through Engineering Excellence
             </div>
 
-            <p className="font-medium text-white text-sm sm:text-base text-justify leading-7 mb-6">
+            <p className="font-medium text-white text-sm sm:text-base leading-7 mb-6">
               From the earliest conceptual sketches to the final touches on a completed project
               every step of our journey has been marked.
             </p>
 
             <Button
               variant="link"
-              className="font-semibold text-white text-base sm:text-lg text-justify leading-7 p-0 h-auto justify-start w-fit hover:no-underline"
+              className="font-semibold text-white text-base sm:text-lg leading-7 p-0 h-auto justify-start w-fit hover:no-underline"
             >
               Read More
               <ArrowRightIcon className="ml-2 w-4 h-4" />
@@ -113,8 +111,8 @@ export const FooterSection = (): JSX.Element => {
               {usefulLinks.map((link, index) => (
                 <a
                   key={index}
-                  href={linkHrefs[link.name] ?? "/about"}
-                  className="font-semibold text-white text-sm sm:text-base lg:text-lg text-justify leading-7 hover:text-[#f0f1ff] transition-colors"
+                  href={linkHrefs[link.name] ?? "/about-us"}
+                  className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 hover:text-[#f0f1ff] transition-colors"
                 >
                   {link.name}
                 </a>
@@ -135,7 +133,7 @@ export const FooterSection = (): JSX.Element => {
                 <Button
                   key={index}
                   variant="link"
-                  className="font-semibold text-white text-sm sm:text-base lg:text-lg text-justify leading-7 p-0 h-auto justify-start hover:no-underline whitespace-normal text-left"
+                  className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 p-0 h-auto justify-start hover:no-underline whitespace-normal text-left"
                 >
                   {service}
                 </Button>
@@ -154,21 +152,21 @@ export const FooterSection = (): JSX.Element => {
             <div className="flex flex-col gap-5">
               <div className="flex gap-3 items-start">
                 <MapPinIcon className="w-4 h-5 text-white flex-shrink-0 mt-1" />
-                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg text-justify leading-7">
+                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7">
                   Kupandol, Lalitpur 44600 , Nepal
                 </span>
               </div>
 
               <div className="flex gap-3 items-center">
                 <PhoneIcon className="w-[21px] h-[21px] text-white flex-shrink-0" />
-                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg text-justify leading-7 whitespace-nowrap">
+                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap">
                   +977 01-5422896
                 </span>
               </div>
 
               <div className="flex gap-3 items-center">
                 <MailIcon className="w-[23px] h-[17px] text-white flex-shrink-0" />
-                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg text-justify leading-7 whitespace-nowrap">
+                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap">
                   service@tachydro.com.np
                 </span>
               </div>
@@ -179,7 +177,7 @@ export const FooterSection = (): JSX.Element => {
         <Separator className="bg-white/30 my-10" />
 
         <div className="flex flex-col lg:flex-row justify-between items-center gap-4 text-center lg:text-left">
-          <p className="font-normal text-white text-sm sm:text-base lg:text-lg text-justify leading-7">
+          <p className="font-normal text-white text-sm sm:text-base lg:text-lg leading-7">
             ©{currentYear} TAC Hydro Consultancy Pvt Ltd. All Rights Reserved.
           </p>
         </div>

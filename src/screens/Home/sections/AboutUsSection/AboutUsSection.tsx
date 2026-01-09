@@ -43,7 +43,7 @@ export const AboutUsSection = (): JSX.Element => {
 
           <div className="flex flex-col space-y-8 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
             <h2 className="font-semibold text-[#111111] text-3xl sm:text-4xl lg:text-[42px] leading-[1.1]">
-              About Us
+              About
             </h2>
 
             <div className="space-y-3">

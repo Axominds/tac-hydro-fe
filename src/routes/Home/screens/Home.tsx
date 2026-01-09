@@ -7,10 +7,10 @@ import { HERO_BG_PRIMARY } from "../../../assets";
 
 const navigationItems = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about", isActive: true },
-  { label: "Project", href: "/projects" },
+  { label: "About Us", href: "/about-us", isActive: true },
+  { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
-  { label: "Gallery", href: "/gallery" },
+  { label: "Galleries", href: "/galleries" },
 ];
 
 const stats = [
@@ -226,7 +226,7 @@ export const Home = (): JSX.Element => {
             Start your adventure with Armonia - contact us now!
           </p>
           <Link
-            to="/contact"
+            to="/contact-us"
             className="inline-flex items-center justify-center w-full max-w-[360px] h-auto opacity-100"
           >
             <img className="w-full h-full object-contain" alt="Contact us" src="/button.png" />

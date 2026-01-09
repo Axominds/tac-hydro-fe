@@ -6,10 +6,10 @@ import { ContactSection } from "../../../screens/Home/sections/ContactSection";
 
 const navigationItems = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Project", href: "/projects" },
+  { label: "About Us", href: "/about-us" },
+  { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
-  { label: "Gallery", href: "/gallery" },
+  { label: "Galleries", href: "/galleries" },
 ];
 
 export const Contact = (): JSX.Element => {
@@ -26,9 +26,6 @@ export const Contact = (): JSX.Element => {
         <SiteHeader navigationItems={navigationItems} />
 
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-4">
-            CONTACT
-          </span>
           <h1 className="font-semibold text-white text-3xl sm:text-4xl lg:text-[60px] leading-[1.05] mb-6">
             Contact Us
           </h1>

@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { HashRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Home as MainHome } from "./screens/Home";
 import { Home as AboutHome } from "./routes/Home/screens/Home";
-import { Gallery } from "./routes/Gallery/screens/Gallery";
+import { Galleries } from "./routes/Galleries/screens/Galleries";
 import { Projects } from "./routes/Projects/screens/Projects";
 import { Services } from "./routes/Services/screens/Services";
 import { Contact } from "./routes/Contact/screens/Contact";
@@ -19,8 +19,8 @@ const ScrollManager = (): null => {
       targetId = decodeURIComponent(location.hash.replace("#", ""));
     } else if (location.pathname === "/services" && params.get("sector")) {
       targetId = "services-filter";
-    } else if (location.pathname === "/gallery" && params.get("year")) {
-      targetId = "gallery-filter";
+    } else if (location.pathname === "/galleries" && params.get("year")) {
+      targetId = "galleries-filter";
     }
 
     if (targetId) {
@@ -44,11 +44,12 @@ export const App = (): JSX.Element => {
       <Routes>
         <Route path="/" element={<MainHome />} />
         <Route path="/about" element={<AboutHome />} />
-        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/about-us" element={<AboutHome />} />
+        <Route path="/galleries" element={<Galleries />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/services" element={<Services />} />
         <Route path="/service-detial" element={<ServiceDetail />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/contact-us" element={<Contact />} />
       </Routes>
     </Router>
   );

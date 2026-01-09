@@ -110,7 +110,7 @@ export const SiteHeader = ({
           ))}
 
           {cta ?? (
-            <NavLink to="/contact" className="inline-flex">
+            <NavLink to="/contact-us" className="inline-flex">
               <Button
                 type="button"
                 className="h-auto px-5 py-2.5 bg-[#0070c0] rounded-3xl font-bold text-white text-sm sm:text-base lg:text-lg"
@@ -143,7 +143,7 @@ export const SiteHeader = ({
               </NavLink>
             ))}
             {cta ?? (
-              <NavLink to="/contact" className="inline-flex" onClick={() => setIsMobileMenuOpen(false)}>
+              <NavLink to="/contact-us" className="inline-flex" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button
                   type="button"
                   className="h-auto w-full px-5 py-2.5 bg-[#0070c0] rounded-3xl font-bold text-white text-base"

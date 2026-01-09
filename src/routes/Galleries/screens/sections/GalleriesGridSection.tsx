@@ -85,7 +85,7 @@ const galleryData = {
   ],
 };
 
-export const GalleryGridSection = (): JSX.Element => {
+export const GalleriesGridSection = (): JSX.Element => {
   const [activeYear, setActiveYear] = useState("2026");
 
   const currentGalleryItems = galleryData[activeYear as keyof typeof galleryData] || [];
@@ -94,7 +94,7 @@ export const GalleryGridSection = (): JSX.Element => {
     <section className="relative w-full py-16 bg-[#f5f5f5]">
       <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
         {/* Year Tabs */}
-        <div id="gallery-filter" className="flex flex-wrap items-center justify-center gap-3 mb-12">
+        <div id="galleries-filter" className="flex flex-wrap items-center justify-center gap-3 mb-12">
           {yearTabs.map((tab, index) => (
             <button
               key={index}
@@ -112,7 +112,7 @@ export const GalleryGridSection = (): JSX.Element => {
           ))}
         </div>
 
-        {/* Gallery Grid */}
+        {/* Galleries Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {currentGalleryItems.map((item) => (
             <div
@@ -122,7 +122,7 @@ export const GalleryGridSection = (): JSX.Element => {
               <div className="relative aspect-[4/3] overflow-hidden bg-white">
                 <img
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  alt={`Gallery item ${item.id}`}
+                  alt={`Galleries item ${item.id}`}
                   src={item.image}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -135,7 +135,7 @@ export const GalleryGridSection = (): JSX.Element => {
         {currentGalleryItems.length === 0 && (
           <div className="text-center py-20">
             <p className="font-semibold text-[#888888] text-lg sm:text-xl leading-[normal]">
-              No gallery items available for {activeYear}
+              No galleries items available for {activeYear}
             </p>
           </div>
         )}

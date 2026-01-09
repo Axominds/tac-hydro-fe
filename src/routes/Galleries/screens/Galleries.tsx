@@ -2,17 +2,17 @@ import React from "react";
 import { FooterSection } from "../../../components/sections/FooterSection";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
 import { HERO_BG_PRIMARY } from "../../../assets";
-import { GalleryGridSection } from "./sections/GalleryGridSection";
+import { GalleriesGridSection } from "./sections/GalleriesGridSection";
 
 const navigationItems = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Project", href: "/projects" },
+  { label: "About Us", href: "/about-us" },
+  { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
-  { label: "Gallery", href: "/gallery", isActive: true },
+  { label: "Galleries", href: "/galleries", isActive: true },
 ];
 
-export const Gallery = (): JSX.Element => {
+export const Galleries = (): JSX.Element => {
   return (
     <div className="w-full relative bg-[#f5f5f5]">
       {/* Hero Section with Header */}
@@ -30,7 +30,7 @@ export const Gallery = (): JSX.Element => {
         {/* Hero Content */}
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
           <h1 className="font-semibold text-white text-3xl sm:text-4xl lg:text-[60px] leading-[1.05] mb-6">
-            Gallery
+            Galleries
           </h1>
           <p className="font-normal text-white/75 text-sm sm:text-base lg:text-[17px] leading-[normal] max-w-[560px] px-4">
             A visual collection of our latest work and milestones.
@@ -38,7 +38,7 @@ export const Gallery = (): JSX.Element => {
         </div>
       </section>
 
-      <GalleryGridSection />
+      <GalleriesGridSection />
       <FooterSection />
     </div>
   );

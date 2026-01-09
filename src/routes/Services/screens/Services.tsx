@@ -7,10 +7,10 @@ import { ServicesGridSection } from "./sections/ServicesGridSection";
 
 const navigationItems = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Project", href: "/projects" },
+  { label: "About Us", href: "/about-us" },
+  { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services", isActive: true },
-  { label: "Gallery", href: "/gallery" },
+  { label: "Galleries", href: "/galleries" },
 ];
 
 export const Services = (): JSX.Element => {

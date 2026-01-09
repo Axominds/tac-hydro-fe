@@ -6,10 +6,10 @@ import { ProjectsGridSection } from "./sections/ProjectsGridSection";
 
 const navigationItems = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Project", href: "/projects", isActive: true },
+  { label: "About Us", href: "/about-us" },
+  { label: "Projects", href: "/projects", isActive: true },
   { label: "Services", href: "/services" },
-  { label: "Gallery", href: "/gallery" },
+  { label: "Galleries", href: "/galleries" },
 ];
 
 export const Projects = (): JSX.Element => {

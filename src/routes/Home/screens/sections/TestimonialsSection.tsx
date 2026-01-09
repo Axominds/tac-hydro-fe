@@ -5,8 +5,7 @@ export const TestimonialsSection = (): JSX.Element => {
     <section className="w-full py-8">
       <div className="max-w-[997px] mx-auto px-4">
         <h1 className="font-bold text-white text-[52px] leading-[normal] mb-6">
-          Empowering Sustainable Resources <br />
-          Through Engineering Excellence
+          Empowering Sustainable Resources Through Engineering Excellence
         </h1>
 
         <div className="flex items-start">

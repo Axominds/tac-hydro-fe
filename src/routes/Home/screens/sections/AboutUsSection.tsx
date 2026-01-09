@@ -35,7 +35,7 @@ export const AboutUsSection = (): JSX.Element => {
 
           <div className="flex flex-col gap-8">
             <h2 className="font-bold text-[#111111] text-5xl leading-[normal]">
-              About Us
+              About
             </h2>
 
             <div className="flex flex-col gap-4">
