@@ -91,7 +91,7 @@ export const GalleriesGridSection = (): JSX.Element => {
   const currentGalleryItems = galleryData[activeYear as keyof typeof galleryData] || [];
 
   return (
-    <section className="relative w-full py-16 bg-[#f5f5f5]">
+    <section className="relative w-full py-16 bg-[#f8f9fa]">
       <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
         {/* Year Tabs */}
         <div id="galleries-filter" className="flex flex-wrap items-center justify-center gap-3 mb-12">
@@ -101,11 +101,10 @@ export const GalleriesGridSection = (): JSX.Element => {
               onClick={() => setActiveYear(tab.year)}
               type="button"
               aria-pressed={activeYear === tab.year}
-              className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${
-                activeYear === tab.year
+              className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${activeYear === tab.year
                   ? "border-[#0070c0] bg-[#0070c0] text-white"
                   : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
-              }`}
+                }`}
             >
               {tab.year}
             </button>

@@ -83,7 +83,7 @@ export const ServiceDetail = (): JSX.Element => {
   const activeItem = detailItems.find((item) => item.slug === activeSlug) || detailItems[0];
 
   return (
-    <div className="w-full relative bg-[#f5f5f5]">
+    <div className="w-full relative bg-[#f8f9fa]">
       <section className="relative w-full min-h-[260px] sm:min-h-[320px] lg:h-[360px]">
         <img
           className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
@@ -102,18 +102,17 @@ export const ServiceDetail = (): JSX.Element => {
         </div>
       </section>
 
-      <section className="relative w-full bg-white py-12">
+      <section className="relative w-full bg-[#f8f9fa] py-12">
         <div className="mx-auto w-full px-6 sm:px-10 lg:px-20">
           <div className="flex flex-wrap items-center gap-3 mb-8">
             {detailItems.map((item) => (
               <Link
                 key={item.slug}
                 to={`/service-detial?item=${item.slug}`}
-                className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${
-                  item.slug === activeItem.slug
+                className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${item.slug === activeItem.slug
                     ? "border-[#0070c0] bg-[#0070c0] text-white"
                     : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
-                }`}
+                  }`}
               >
                 {item.title}
               </Link>

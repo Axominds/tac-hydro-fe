@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { HERO_BG_ALT } from "../../../../assets";
+import { HERO_BG_ALT } from "../../../../../assets";
 
 export const ContactSection = (): JSX.Element => {
   return (

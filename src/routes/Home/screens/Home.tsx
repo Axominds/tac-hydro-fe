@@ -1,239 +1,429 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { ChevronRightIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { HERO_BG_ALT } from "../../../assets";
 import { Button } from "../../../components/ui/button";
-import { FooterSection } from "../../../components/sections/FooterSection";
-import { HeroWave } from "../../../components/sections/HeroWave";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
-import { HERO_BG_PRIMARY } from "../../../assets";
+import { AboutUsSection } from "./sections/AboutUsSection";
+import { CallToActionSection } from "./sections/CallToActionSection";
+import { ContactSection } from "./sections/ContactSection";
+import { FooterSection } from "../../../components/sections/FooterSection";
+import { HeroSection } from "./sections/HeroSection";
+import { ProjectsSection } from "./sections/ProjectsSection";
+import { TestimonialsSection } from "./sections/TestimonialsSection";
+import { Link } from "react-router-dom";
+
+const mapImage = "/Nepal_grey.svg";
+
+const mapLocations = [
+  { x: 14, y: 26, title: "Feasibility Study", detail: "Early-stage viability and yield analysis." },
+  { x: 20, y: 32, title: "Detailed Design", detail: "Full engineering design packages." },
+  { x: 30, y: 44, title: "Hydromechanical", detail: "Turbine and gate system design." },
+  { x: 42, y: 50, title: "Construction Supervision", detail: "On-site QA/QC and progress checks." },
+  { x: 54, y: 56, title: "Due Diligence", detail: "Independent technical reviews." },
+  { x: 62, y: 62, title: "Monitoring & Billing", detail: "Project tracking and verification." },
+  { x: 70, y: 60, title: "Feasibility Study", detail: "Resource and environmental review." },
+  { x: 78, y: 66, title: "Detailed Design", detail: "Structural and hydraulic detailing." },
+  { x: 84, y: 70, title: "Hydromechanical", detail: "Equipment selection and specs." },
+  { x: 88, y: 76, title: "Construction Supervision", detail: "Field coordination and reporting." },
+];
 
 const navigationItems = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/about-us", isActive: true },
+  { label: "Home", href: "/", isActive: true },
+  { label: "About Us", href: "/about-us" },
   { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
   { label: "Galleries", href: "/galleries" },
   { label: "Contact Us", href: "/contact-us" },
 ];
 
-const stats = [
-  { number: "80", label: "+projects", description: "We recently done our 80+ quality project" },
-  { number: "90", label: "+team", description: "My agency consists of 90+ team members" },
-  { number: "7k", label: "+clients", description: "Our happy client our service" },
+const partnerLogos = [
+  {
+    src: "/downloads/mjlob7k1SeIJX4/img/image-3.png",
+    alt: "Partner 1",
+    name: "SkyReach Power",
+    className: "w-[140px] h-[142px] object-cover",
+  },
+  {
+    src: "/downloads/mjlob7k1SeIJX4/img/image-4.png",
+    alt: "Partner 2",
+    name: "BlueCurrent Energy",
+    className: "w-[141px] h-[142px] object-cover",
+  },
+  {
+    src: "/downloads/mjlob7k1SeIJX4/img/image-20.png",
+    alt: "Partner 3",
+    name: "SummitFlow Hydro",
+    className: "w-[190px] h-[130px] object-cover",
+  },
+  {
+    src: "/downloads/mjlob7k1SeIJX4/img/image-21.png",
+    alt: "Partner 4",
+    name: "Evergreen Turbines",
+    className: "w-[142px] h-[142px] object-cover",
+  },
+  {
+    src: "/downloads/mjlob7k1SeIJX4/img/image-17.png",
+    alt: "Partner 5",
+    name: "NorthRiver Works",
+    className: "w-[141px] h-[142px]",
+  },
+  {
+    src: "/downloads/mjlob7k1SeIJX4/img/image-18.png",
+    alt: "Partner 6",
+    name: "Crestline Renewables",
+    className: "w-[141px] h-[142px]",
+  },
+  {
+    src: "/downloads/mjlob7k1SeIJX4/img/image-8.png",
+    alt: "Partner 7",
+    name: "Cascade Infrastructure",
+    className: "w-[111px] h-[142px]",
+  },
 ];
 
+const partnerShowcaseFilters = ["ALL", "TRENDING", "INTERNATIONAL", "POLITICS", "BUSINESS"];
+
+const partnerShowcaseItems = [
+  {
+    id: 1,
+    title: "River Basin Capacity Upgrade",
+    category: "INTERNATIONAL",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group.png",
+  },
+  {
+    id: 2,
+    title: "Green Corridor Retrofit",
+    category: "TRENDING",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group-1.png",
+  },
+  {
+    id: 3,
+    title: "Turbine Efficiency Pilot",
+    category: "BUSINESS",
+    image: "/downloads/mjlodvw6RB1obD/img/clip-path-group.png",
+  },
+  {
+    id: 4,
+    title: "Rapid Flow Intake Design",
+    category: "POLITICS",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group-2.png",
+  },
+  {
+    id: 5,
+    title: "Watershed Resilience Program",
+    category: "INTERNATIONAL",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group-3.png",
+  },
+  {
+    id: 6,
+    title: "Grid Stability Partnership",
+    category: "BUSINESS",
+    image: "/downloads/mjlodvw6RB1obD/img/mask-group-4.png",
+  },
+];
+
+const typewriterWords = ["INNOVATE", "ENGINEER", "SUSTAIN"];
+
 export const Home = (): JSX.Element => {
-  const [counts, setCounts] = useState(() => stats.map(() => 0));
-  const [statsAnimationSeed, setStatsAnimationSeed] = useState(0);
-  const statsSectionRef = useRef<HTMLDivElement | null>(null);
+  const [typewriterText, setTypewriterText] = useState("");
+  const [typewriterIndex, setTypewriterIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [activePartnerFilter, setActivePartnerFilter] = useState("ALL");
+  const handleGetStarted = () => {
+    const target = document.getElementById("about-us");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   useEffect(() => {
-    if (!statsSectionRef.current) {
-      return;
+    const currentWord = typewriterWords[typewriterIndex % typewriterWords.length];
+    if (!isDeleting && typewriterText === currentWord) {
+      const pauseTimer = window.setTimeout(() => setIsDeleting(true), 800);
+      return () => window.clearTimeout(pauseTimer);
     }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setStatsAnimationSeed((prev) => prev + 1);
-        }
-      },
-      { threshold: 0.35 }
-    );
+    if (isDeleting && typewriterText.length === 0) {
+      const resetTimer = window.setTimeout(() => {
+        setIsDeleting(false);
+        setTypewriterIndex((prev) => prev + 1);
+      }, 300);
+      return () => window.clearTimeout(resetTimer);
+    }
 
-    observer.observe(statsSectionRef.current);
-    return () => observer.disconnect();
+    const nextText = isDeleting
+      ? currentWord.substring(0, typewriterText.length - 1)
+      : currentWord.substring(0, typewriterText.length + 1);
+    let delay = isDeleting ? 90 : 130;
+
+    if (!isDeleting && typewriterText.length === currentWord.length - 1) {
+      delay = 60;
+    }
+
+    const timer = window.setTimeout(() => {
+      setTypewriterText(nextText);
+    }, delay);
+
+    return () => window.clearTimeout(timer);
+  }, [isDeleting, typewriterIndex, typewriterText]);
+
+  const logoMarqueeItems = useMemo(() => {
+    const tiledLogos = Array.from({ length: 15 }, (_, index) => partnerLogos[index % partnerLogos.length]);
+    return tiledLogos;
   }, []);
 
-  useEffect(() => {
-    if (statsAnimationSeed === 0) {
-      return;
-    }
-    const targets = stats.map((stat) => parseFloat(stat.number) || 0);
-    const duration = 1200;
-    const startTime = performance.now();
-    let frameId = 0;
-
-    setCounts(stats.map(() => 0));
-
-    const tick = (now: number) => {
-      const progress = Math.min((now - startTime) / duration, 1);
-      setCounts(targets.map((value) => Math.floor(value * progress)));
-      if (progress < 1) {
-        frameId = window.requestAnimationFrame(tick);
-      }
-    };
-
-    frameId = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frameId);
-  }, [statsAnimationSeed]);
+  const filteredPartnerShowcaseItems =
+    activePartnerFilter === "ALL"
+      ? partnerShowcaseItems
+      : partnerShowcaseItems.filter((item) => item.category === activePartnerFilter);
+  const resolvedPartnerShowcaseItems =
+    filteredPartnerShowcaseItems.length > 0 ? filteredPartnerShowcaseItems : partnerShowcaseItems;
+  const [featuredPartnerShowcase, ...partnerShowcaseCards] = resolvedPartnerShowcaseItems;
 
   return (
-    <div className="w-full relative bg-white">
-      {/* Hero Section with Header */}
-      <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">
+    <div className="overflow-hidden border border-solid border-black w-full relative" data-model-id="2:330">
+      <header className="relative w-full min-h-screen">
         <img
-          className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
           alt="Hero Background"
-          src={HERO_BG_PRIMARY}
+          src={HERO_BG_ALT}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0b1522]/90 via-[#0b1522]/50 to-[#0b1522]/90 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent pointer-events-none" />
 
-        {/* Header Navigation */}
-        <SiteHeader navigationItems={navigationItems} />
+        <SiteHeader
+          navigationItems={navigationItems}
+          headerClassName="absolute top-0 left-0 right-0 animate-fade-in opacity-0"
+        />
 
-        {/* Hero Content */}
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
-          <h1 className="font-semibold text-white text-3xl sm:text-4xl lg:text-[60px] leading-[1.05] mb-6">
-            Our Vision Unveiled
-          </h1>
-          <p className="font-normal text-white/75 text-sm sm:text-base lg:text-[17px] leading-[normal] max-w-[560px] px-4">
-            Explore the origin of our craft, our commitment to natural
-          </p>
-        </div>
-        <HeroWave className="text-white/70" />
-      </section>
-
-      {/* Who We Are Section */}
-      <section className="relative w-full py-16 sm:py-20 bg-[#f8f9fa]">
-        <div className="max-w-[900px] mx-auto px-6 sm:px-8 text-center">
-          <h2 className="font-bold text-[#2c3e50] text-3xl sm:text-4xl lg:text-[44px] leading-[normal] mb-6">
-            Who we are
-          </h2>
-          <p className="font-normal text-[#555555] text-base sm:text-lg leading-[30px] sm:leading-[32px] mb-4">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent
-            libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum
-            imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper
-            porta. Mauris massa. Vestibulum lacinia arcu eget nulla.
-          </p>
-        </div>
-      </section>
-
-      {/* Chairperson Section */}
-      <section className="relative w-full py-16 sm:py-20 pt-0 pb-0">
-        <div className="max-w-[1200px] mx-auto px-6 sm:px-8">
-          <div className="relative lg:min-h-[620px]">
-            <div className="bg-[#2f5f4a] rounded-xl p-6 sm:p-8 text-white w-full lg:max-w-[850px] lg:pr-[340px]">
-              <h3 className="font-bold text-white text-[19px] mb-2">
-                Message <span className="text-white">From</span> Top Level
-              </h3>
-              <p className="font-normal text-white/90 text-[16px] leading-[24px] mb-2.5">
-                As the Chairman of TAC Hydro Consultancy, I am thrilled to welcome you to our
-                website. Our company specializes in providing expert consultancy services for
-                project identification, design, construction monitoring, bill verification and
-                rehabilitation of hydropower projects.
-              </p>
-              <p className="font-normal text-white/90 text-[16px] leading-[24px] mb-2.5">
-                We understand the importance of meeting sustainable and clean energy sources, and
-                we are dedicated to helping our clients achieve their goals in this field. Our team
-                of experts has extensive experience and knowledge in the industry, and we are
-                committed to providing the highest level of service and professionalism.
-              </p>
-              <p className="font-normal text-white/90 text-[16px] leading-[24px] mb-4">
-                We take pride in our ability to deliver innovative and cost-effective solutions for
-                our clients. Our goal is to help you achieve your project objectives and meet your
-                specific needs.
-              </p>
-              <div className="mt-4 flex items-center justify-end">
-                <div className="text-right">
-                  <p className="font-semibold text-white text-[16px]">
-                      Kumar Panday
-                  </p>
-                  <p className="font-normal text-white/80 text-[15px]">
-                    Executive Chairman
-                  </p>
+        <div className="absolute inset-0 z-10">
+          <div className="h-full mx-auto px-4 sm:px-8 lg:px-20 flex items-center justify-start">
+            <div className="translate-y-[6.5rem] sm:translate-y-[7rem]">
+              <div className="max-w-[720px] animate-fade-in opacity-0 [--animation-delay:200ms] lg:max-w-[995px]">
+                <h1 className="font-bold text-white text-3xl sm:text-4xl lg:text-[52px] sm:leading-[1.1] lg:leading-[1.1] mb-2">
+                  <span className="block">Empowering Sustainable Resources Through Engineering Excellence</span>
+                </h1>
+                <div className="mt-0 flex items-center gap-2 min-h-[32px]">
+                  <span className="font-bold text-white text-xl sm:text-2xl lg:text-[32px] leading-[1]">
+                    {typewriterText}
+                  </span>
+                  <span className="inline-block w-[2px] h-7 bg-white animate-blink" aria-hidden="true" />
                 </div>
+                <div className="bg-white mt-3" />
+                <p className="font-semibold text-white text-base sm:text-lg lg:text-[20px] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[640px]">
+                  TacHydro exists to bring low carbon solutions to minimize the impact of energy
+                  creation on the environment.
+                </p>
+
+                <Button
+                  type="button"
+                  onClick={handleGetStarted}
+                  className="mt-6 inline-flex items-center justify-center gap-[9px] px-6 sm:px-[29px] py-2.5 rounded-[32px] border border-white/40 bg-gradient-to-br from-white/60 via-white/10 to-white/10 backdrop-blur-[30px] font-bold text-white text-sm sm:text-base lg:text-lg shadow-[0_25px_45px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_65px_rgba(0,0,0,0.45)] active:translate-y-0.5"
+                >
+                  <span className="font-bold text-white text-sm sm:text-base lg:text-lg leading-[normal]">
+                    Get Started
+                  </span>
+                  <ChevronRightIcon className="w-5 h-5 text-white" />
+                </Button>
               </div>
             </div>
+          </div>
+        </div>
+      </header>
 
-            <div className="mt-10 sm:mt-16 flex justify-center lg:absolute lg:right-[-8px] lg:top-[-32px] lg:mt-0">
-              <img
-                className="w-full max-w-[420px] sm:max-w-[460px] lg:max-w-[502px] h-auto object-cover object-top rounded-[5px] opacity-100 shadow-[0_18px_30px_rgba(0,0,0,0.25)]"
-                alt="Managing Director"
-                src="/chairperson.png"
-              />
+      <AboutUsSection />
+
+      <TestimonialsSection />
+
+      <section className="relative w-full bg-white py-16">
+        <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-20">
+          <div className="relative">
+            <img className="w-full h-auto object-contain" alt="Project coverage map" src={mapImage} />
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={
+                {
+                  maskImage: `url(${mapImage})`,
+                  maskSize: "contain",
+                  maskRepeat: "no-repeat",
+                  maskPosition: "center",
+                  WebkitMaskImage: `url(${mapImage})`,
+                  WebkitMaskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                } as React.CSSProperties
+              }
+            >
+              {mapLocations.map((location, index) => (
+                <div
+                  key={`pin-${location.title}-${index}`}
+                  className="absolute -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: `${location.x}%`, top: `${location.y}%` }}
+                >
+                  <svg
+                    className="h-6 w-6 drop-shadow-[0_6px_10px_rgba(0,112,192,0.35)]"
+                    viewBox="0 0 24 24"
+                    role="img"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill="#0070c0"
+                      d="M12 2c-3.3 0-6 2.7-6 6 0 4.6 6 12 6 12s6-7.4 6-12c0-3.3-2.7-6-6-6z"
+                    />
+                    <circle cx="12" cy="8" r="2.6" fill="#ffffff" />
+                  </svg>
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0">
+              {mapLocations.map((location, index) => (
+                <div
+                  key={`tooltip-${location.title}-${index}`}
+                  className="group absolute -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: `${location.x}%`, top: `${location.y}%` }}
+                >
+                  <button
+                    type="button"
+                    className="h-8 w-8 rounded-full opacity-0"
+                    aria-label={`${location.title}: ${location.detail}`}
+                  />
+                  <div className="pointer-events-auto absolute left-1/2 top-[-8px] w-[190px] -translate-x-1/2 -translate-y-full opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <div className="rounded-xl border border-[#e3e7ef] bg-white px-3 py-2 shadow-[0_10px_24px_rgba(15,23,42,0.15)]">
+                      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#0070c0]">
+                        {location.title}
+                      </span>
+                      <p className="text-xs text-[#4b5563]">
+                        {location.detail}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <HeroSection />
+
+      <CallToActionSection />
+
+      <ContactSection />
+
+      <section className="relative w-full border border-solid border-[#6f636366] bg-[#f8f5f0] py-[30px]">
+        <div className="w-full px-4 flex flex-col gap-[24px]">
+          <div className="flex items-center justify-center">
+            <div className="inline-flex h-9 items-center justify-center rounded-full border border-[#111111] px-5">
+              <span className="text-sm font-semibold tracking-[0.12em] text-[#444444]">
+                OUR VALUED PARTNERS
+              </span>
             </div>
           </div>
 
-        </div>
-      </section>
-
-      <section className="relative w-full bg-white pt-0 pb-12">
-        <div className="mx-auto w-full max-w-[1400px] opacity-100 px-6 sm:px-8 py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-[0.65fr_1.35fr] gap-8 items-start">
-            <div className="overflow-hidden rounded-[10px] shadow-[0_18px_30px_rgba(0,0,0,0.2)] opacity-100 -mt-16 sm:-mt-20 relative z-20">
-              <img
-                className="w-full h-auto object-cover"
-                alt="Safety helmet"
-                src="/downloads/mjlodvw6RB1obD/img/mask-group-5.png"
-              />
-            </div>
-
+          <div className="w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
             <div
-              className="flex flex-col gap-6 opacity-100 w-full p-6"
-              ref={statsSectionRef}
+              className="relative w-full overflow-hidden"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-left opacity-100">
-                    <div className="relative w-full max-w-[220px] opacity-100">
-                      <span className="font-bold text-[#4f4f4f] text-6xl sm:text-7xl lg:text-[140px] leading-[1]">
-                        {counts[index]}
-                        {stat.number.replace(/[0-9.]/g, "")}
-                      </span>
-                      <span className="font-medium text-[#4f4f4f] text-sm sm:text-base leading-none opacity-100 absolute right-0 top-6 bg-white px-2 py-1 flex items-center justify-center">
-                        {stat.label}
-                      </span>
+              <div
+                className="flex w-max gap-6 animate-marquee"
+                style={
+                  {
+                    "--duration": "45s",
+                    "--gap": "24px",
+                  } as React.CSSProperties
+                }
+              >
+                {[...logoMarqueeItems, ...logoMarqueeItems].map((logo, index) => (
+                  <div
+                    key={`logo-marquee-${logo.alt}-${index}`}
+                    className="group flex min-w-[170px] items-center justify-center rounded-3xl p-4 [perspective:800px] sm:min-w-[190px] lg:min-w-[220px]"
+                    aria-hidden={index >= logoMarqueeItems.length}
+                  >
+                    <div className="relative h-[170px] w-full">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                        <img
+                          className={`${logo.className} transition duration-300 group-hover:scale-[1.12]`}
+                          alt={logo.alt}
+                          src={logo.src}
+                        />
+                        <span className="text-xs font-semibold uppercase tracking-[0.12em] text-[#2c3e50] opacity-0 translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 text-center">
+                          {logo.name}
+                        </span>
+                      </div>
                     </div>
-                    <p className="font-medium text-[#6b6b6b] text-base sm:text-lg leading-[1.2] mt-2 max-w-[220px]">
-                      {stat.description}
-                    </p>
                   </div>
                 ))}
               </div>
-
-              <div className="flex flex-col gap-5">
-                <div className="grid grid-cols-[80px_1fr] gap-4 items-start">
-                  <span className="font-bold text-[#0070c0] text-base sm:text-lg leading-[1]">
-                    Vision
-                  </span>
-                  <p className="font-normal text-[#666666] text-sm sm:text-base lg:text-[18px] leading-[26px] sm:leading-[28px] text-justify">
-                    From the earliest conceptual sketches to the final touches on a completed project
-                    every step of our journey has been marked.
-                  </p>
-                </div>
-                <div className="grid grid-cols-[80px_1fr] gap-4 items-start border-t border-[#d9d9d9] pt-4">
-                  <span className="font-bold text-[#0070c0] text-base sm:text-lg leading-[1]">
-                    Mission
-                  </span>
-                  <p className="font-normal text-[#666666] text-sm sm:text-base lg:text-[18px] leading-[26px] sm:leading-[28px] text-justify">
-                    When our power of choice is untrammelled and when nothing prevents our being able
-                    to do what we like best every pleasure it.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative w-full py-16 sm:py-20 bg-[#F4F1E1]">
-        <div className="max-w-[900px] mx-auto px-6 sm:px-8 text-center">
-          <h2 className="font-bold text-[#2c3e50] text-3xl sm:text-4xl lg:text-[44px] leading-[normal] mb-4">
-            We make every trip a harmonious
-          </h2>
-          <h2 className="font-bold text-[#2c3e50] text-3xl sm:text-4xl lg:text-[44px] leading-[normal] mb-6">
-            blend of comfort and discovery.
-          </h2>
-          <p className="font-normal text-[#555555] text-base sm:text-lg leading-[normal] mb-8">
-            Start your adventure with Armonia - contact us now!
-          </p>
-          <Link
-            to="/contact-us"
-            className="inline-flex items-center justify-center w-full max-w-[360px] h-auto opacity-100"
-          >
-            <img className="w-full h-full object-contain" alt="Contact us" src="/button.png" />
-          </Link>
+      <section className="relative w-full bg-[#f2efe9] py-16">
+        <div className="max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-20">
+          <div className="flex flex-col gap-10">
+            <div className="flex items-center justify-between gap-6 flex-wrap">
+              <div className="flex items-center gap-4">
+                <div className="inline-flex h-9 items-center justify-center gap-2.5 px-5 py-2 rounded-[28px] border-b-2 [border-bottom-style:solid] border-l-2 [border-left-style:solid] border-[#111111]">
+                  <h2 className="font-bold text-[#444444] text-base leading-[normal]">
+                    BLOG
+                  </h2>
+                </div>
+                <span className="text-sm font-semibold text-[#6b6b6b]">
+                  Recently Added
+                </span>
+              </div>
+              <div className="flex items-center gap-6 flex-wrap">
+                {partnerShowcaseFilters.map((filter) => (
+                  <button
+                    key={filter}
+                    type="button"
+                    onClick={() => setActivePartnerFilter(filter)}
+                    className={`text-xs font-semibold tracking-[0.18em] uppercase transition-colors ${activePartnerFilter === filter ? "text-[#111111]" : "text-[#9c9c9c]"
+                      }`}
+                    aria-pressed={activePartnerFilter === filter}
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.2fr_1fr]">
+              {featuredPartnerShowcase && (
+                <div className="relative min-h-[360px] overflow-hidden rounded-[28px]">
+                  <img
+                    className="absolute inset-0 h-full w-full object-cover"
+                    alt={featuredPartnerShowcase.title}
+                    src={featuredPartnerShowcase.image}
+                  />
+                  <div className="absolute inset-0 bg-black/15" />
+                  <div className="absolute bottom-8 left-8 max-w-[380px]">
+                    <p className="text-lg font-semibold text-white/90">
+                      {featuredPartnerShowcase.title}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {partnerShowcaseCards.slice(0, 4).map((item) => (
+                  <div key={item.id} className="flex flex-col gap-3">
+                    <div className="overflow-hidden rounded-2xl bg-white shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+                      <img className="h-40 w-full object-cover" alt={item.title} src={item.image} />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-sm font-semibold text-[#111111]">
+                        {item.title}
+                      </p>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#6a8bc2]">
+                        {item.category}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

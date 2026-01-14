@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "../../../../components/ui/card";
+import { Card, CardContent } from "../../../../../components/ui/card";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 const sectorCards = [
@@ -83,9 +83,8 @@ export const HeroSection = (): JSX.Element => {
                   }
                 }}
                 aria-label={`View ${sector.title} services`}
-                className={`absolute left-1/2 top-1/2 w-[220px] sm:w-[240px] lg:w-[260px] -translate-x-1/2 -translate-y-1/2 overflow-hidden border-0 bg-transparent shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform cursor-pointer ${
-                  "pointer-events-auto"
-                }`}
+                className={`absolute left-1/2 top-1/2 w-[220px] sm:w-[240px] lg:w-[260px] -translate-x-1/2 -translate-y-1/2 overflow-hidden border-0 bg-transparent shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform cursor-pointer ${"pointer-events-auto"
+                  }`}
                 style={
                   {
                     transform: `translate(-50%, -50%) translateX(${translateX}px) scale(${cardScale})`,

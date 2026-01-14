@@ -1,4 +1,4 @@
-import React from "react";
+
 import { FooterSection } from "../../../components/sections/FooterSection";
 import { HeroWave } from "../../../components/sections/HeroWave";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
@@ -16,7 +16,7 @@ const navigationItems = [
 
 export const Projects = (): JSX.Element => {
   return (
-    <div className="w-full relative bg-[#f5f5f5]">
+    <div className="w-full relative bg-[#f8f9fa]">
       {/* Hero Section with Header */}
       <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">
         <img

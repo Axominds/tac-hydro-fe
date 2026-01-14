@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React, { JSX, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { Home as MainHome } from "./screens/Home";
-import { Home as AboutHome } from "./routes/Home/screens/Home";
+import { Home } from "./routes/Home/screens/Home";
+import { AboutUs } from "./routes/AboutUs/screens/AboutUs";
 import { Galleries } from "./routes/Galleries/screens/Galleries";
 import { Projects } from "./routes/Projects/screens/Projects";
 import { Services } from "./routes/Services/screens/Services";
-import { Contact } from "./routes/Contact/screens/Contact";
+import { ContactUs } from "./routes/ContactUs/screens/ContactUs";
 import { ServiceDetail } from "./routes/ServiceDetail/screens/ServiceDetail";
 
 const ScrollManager = (): null => {
@@ -42,14 +42,13 @@ export const App = (): JSX.Element => {
     <Router>
       <ScrollManager />
       <Routes>
-        <Route path="/" element={<MainHome />} />
-        <Route path="/about" element={<AboutHome />} />
-        <Route path="/about-us" element={<AboutHome />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/about-us" element={<AboutUs />} />
         <Route path="/galleries" element={<Galleries />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/services" element={<Services />} />
         <Route path="/service-detial" element={<ServiceDetail />} />
-        <Route path="/contact-us" element={<Contact />} />
+        <Route path="/contact-us" element={<ContactUs />} />
       </Routes>
     </Router>
   );

@@ -1,9 +1,7 @@
-import React from "react";
 import { FooterSection } from "../../../components/sections/FooterSection";
 import { HeroWave } from "../../../components/sections/HeroWave";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
 import { HERO_BG_PRIMARY } from "../../../assets";
-import { ContactSection } from "../../../screens/Home/sections/ContactSection";
 
 const navigationItems = [
   { label: "Home", href: "/" },
@@ -14,9 +12,9 @@ const navigationItems = [
   { label: "Contact Us", href: "/contact-us", isActive: true },
 ];
 
-export const Contact = (): JSX.Element => {
+export const ContactUs = (): JSX.Element => {
   return (
-    <div className="w-full relative bg-[#f5f5f5]">
+    <div className="w-full relative bg-[#f8f9fa]">
       <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">
         <img
           className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
@@ -38,7 +36,7 @@ export const Contact = (): JSX.Element => {
         <HeroWave className="text-white/70" />
       </section>
 
-      <section className="relative w-full bg-white py-16">
+      <section className="relative w-full bg-[#f8f9fa] py-16">
         <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-20">
           <div className="flex flex-col gap-3">
             <h2 className="text-2xl sm:text-[28px] font-bold text-[#111111]">
@@ -157,7 +155,7 @@ export const Contact = (): JSX.Element => {
                         Email
                       </p>
                       <p className="text-sm text-[#6b6b6b]">
-                       service@tachydro.com.np
+                        service@tachydro.com.np
                       </p>
                     </div>
                   </div>
@@ -218,7 +216,7 @@ export const Contact = (): JSX.Element => {
         </div>
       </section>
 
-      <section className="relative w-full bg-white pb-16">
+      <section className="relative w-full bg-[#f8f9fa] pb-16">
         <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-20">
           <div className="overflow-hidden rounded-2xl border border-[#e5e7eb] shadow-[0_12px_32px_rgba(15,23,42,0.08)]">
             <iframe

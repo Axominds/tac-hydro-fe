@@ -117,7 +117,7 @@ export const ServicesGridSection = (): JSX.Element => {
 
   return (
     <>
-      <section className="relative w-full py-16 bg-[#f5f5f5]">
+      <section className="relative w-full py-16 bg-[#f8f9fa]">
         <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
           <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6b6b6b] mb-4">
             Sectors
@@ -128,11 +128,10 @@ export const ServicesGridSection = (): JSX.Element => {
                 key={sector}
                 type="button"
                 onClick={() => setActiveSector(sector)}
-                className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${
-                  activeSector === sector
+                className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${activeSector === sector
                     ? "border-[#0070c0] bg-[#0070c0] text-white"
                     : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
-                }`}
+                  }`}
                 aria-pressed={activeSector === sector}
               >
                 {sector}
