@@ -12,7 +12,7 @@ const navigationItems = [
   { label: "Contact Us", href: "/contact-us", isActive: true },
 ];
 
-export const ContactUs = (): JSX.Element => {
+export const ContactUs = () => {
   return (
     <div className="w-full relative bg-[#f8f9fa]">
       <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">

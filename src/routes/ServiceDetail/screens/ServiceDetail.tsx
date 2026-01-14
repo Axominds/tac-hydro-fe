@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FooterSection } from "../../../components/sections/FooterSection";
 import { SiteHeader } from "../../../components/sections/SiteHeader";
@@ -74,7 +74,7 @@ const detailBullets = [
   "Confirming the schedule with all field stakeholders.",
 ];
 
-export const ServiceDetail = (): JSX.Element => {
+export const ServiceDetail = () => {
   const location = useLocation();
   const activeSlug = useMemo(() => {
     const params = new URLSearchParams(location.search);
@@ -110,8 +110,8 @@ export const ServiceDetail = (): JSX.Element => {
                 key={item.slug}
                 to={`/service-detial?item=${item.slug}`}
                 className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${item.slug === activeItem.slug
-                    ? "border-[#0070c0] bg-[#0070c0] text-white"
-                    : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
+                  ? "border-[#0070c0] bg-[#0070c0] text-white"
+                  : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
                   }`}
               >
                 {item.title}

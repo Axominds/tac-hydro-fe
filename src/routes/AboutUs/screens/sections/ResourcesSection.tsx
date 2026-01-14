@@ -1,6 +1,6 @@
-import React from "react";
 
-export const ResourcesSection = (): JSX.Element => {
+
+export const ResourcesSection = () => {
   const dots = [0, 1, 2, 3, 4];
   const activeDot = 2;
 
@@ -45,12 +45,11 @@ export const ResourcesSection = (): JSX.Element => {
             className="absolute bottom-[4.58%] left-1/2 -translate-x-1/2 flex items-center gap-2"
             aria-hidden="true"
           >
-            {dots.map((dot, index) => (
+            {dots.map((_, index) => (
               <div
                 key={`dot-${index}`}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === activeDot ? "bg-white" : "bg-white/40"
-                }`}
+                className={`w-2 h-2 rounded-full transition-colors ${index === activeDot ? "bg-white" : "bg-white/40"
+                  }`}
               />
             ))}
           </div>

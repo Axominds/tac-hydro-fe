@@ -26,7 +26,15 @@
 }
 
 .animate-marquee {
-  animation: marquee var(--duration) infinite linear;
+  animation: marquee var(--duration, 30s) infinite linear;
+}
+
+.animate-marquee-slow {
+  animation: marquee 40s infinite linear;
+}
+
+.animate-marquee-slower {
+  animation: marquee 60s infinite linear;
 }
 
 .animate-marquee-vertical {

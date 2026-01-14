@@ -14,7 +14,7 @@ const navigationItems = [
   { label: "Contact Us", href: "/contact-us" },
 ];
 
-export const Projects = (): JSX.Element => {
+export const Projects = () => {
   return (
     <div className="w-full relative bg-[#f8f9fa]">
       {/* Hero Section with Header */}

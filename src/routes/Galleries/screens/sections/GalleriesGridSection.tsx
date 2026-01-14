@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const yearTabs = [{ year: "2026" }, { year: "2025" }, { year: "2024" }, { year: "2023" }];
 
@@ -85,7 +85,7 @@ const galleryData = {
   ],
 };
 
-export const GalleriesGridSection = (): JSX.Element => {
+export const GalleriesGridSection = () => {
   const [activeYear, setActiveYear] = useState("2026");
 
   const currentGalleryItems = galleryData[activeYear as keyof typeof galleryData] || [];
@@ -102,8 +102,8 @@ export const GalleriesGridSection = (): JSX.Element => {
               type="button"
               aria-pressed={activeYear === tab.year}
               className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${activeYear === tab.year
-                  ? "border-[#0070c0] bg-[#0070c0] text-white"
-                  : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
+                ? "border-[#0070c0] bg-[#0070c0] text-white"
+                : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
                 }`}
             >
               {tab.year}

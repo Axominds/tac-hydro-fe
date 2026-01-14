@@ -14,7 +14,7 @@ const navigationItems = [
   { label: "Contact Us", href: "/contact-us" },
 ];
 
-export const Galleries = (): JSX.Element => {
+export const Galleries = () => {
   return (
     <div className="w-full relative bg-[#f8f9fa]">
       {/* Hero Section with Header */}

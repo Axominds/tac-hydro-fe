@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, CardContent } from "../../../../components/ui/card";
 
 const projectsData = [
@@ -22,7 +21,7 @@ const projectsData = [
   },
 ];
 
-export const HeroSection = (): JSX.Element => {
+export const HeroSection = () => {
   return (
     <section className="relative w-full py-20 bg-[url(/downloads/mjlodvw6RB1obD/img/vector-3.svg)] bg-cover bg-center">
       <div className="container mx-auto px-8">
@@ -34,9 +33,8 @@ export const HeroSection = (): JSX.Element => {
           {projectsData.map((project, index) => (
             <Card
               key={project.id}
-              className={`shadow-[0px_4px_4px_#00000040] overflow-hidden border-0 ${
-                index === 2 ? "mt-5" : ""
-              }`}
+              className={`shadow-[0px_4px_4px_#00000040] overflow-hidden border-0 ${index === 2 ? "mt-5" : ""
+                }`}
             >
               <CardContent className="p-0 relative">
                 <div className="relative w-full aspect-[375/460]">

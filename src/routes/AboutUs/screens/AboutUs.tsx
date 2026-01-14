@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { FooterSection } from "../../../components/sections/FooterSection";
 import { HeroWave } from "../../../components/sections/HeroWave";
@@ -14,57 +13,7 @@ const navigationItems = [
   { label: "Contact Us", href: "/contact-us" },
 ];
 
-const stats = [
-  { number: "80", label: "+projects", description: "We recently done our 80+ quality project" },
-  { number: "90", label: "+team", description: "My agency consists of 90+ team members" },
-  { number: "7k", label: "+clients", description: "Our happy client our service" },
-];
-
-export const AboutUs = (): JSX.Element => {
-  const [counts, setCounts] = useState(() => stats.map(() => 0));
-  const [statsAnimationSeed, setStatsAnimationSeed] = useState(0);
-  const statsSectionRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!statsSectionRef.current) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setStatsAnimationSeed((prev) => prev + 1);
-        }
-      },
-      { threshold: 0.35 }
-    );
-
-    observer.observe(statsSectionRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (statsAnimationSeed === 0) {
-      return;
-    }
-    const targets = stats.map((stat) => parseFloat(stat.number) || 0);
-    const duration = 1200;
-    const startTime = performance.now();
-    let frameId = 0;
-
-    setCounts(stats.map(() => 0));
-
-    const tick = (now: number) => {
-      const progress = Math.min((now - startTime) / duration, 1);
-      setCounts(targets.map((value) => Math.floor(value * progress)));
-      if (progress < 1) {
-        frameId = window.requestAnimationFrame(tick);
-      }
-    };
-
-    frameId = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frameId);
-  }, [statsAnimationSeed]);
+export const AboutUs = () => {
 
   return (
     <div className="w-full relative bg-white">
@@ -156,65 +105,6 @@ export const AboutUs = (): JSX.Element => {
         </div>
       </section>
 
-      <section className="relative w-full bg-[#f8f9fa] pt-0 pb-12">
-        <div className="mx-auto w-full max-w-[1400px] opacity-100 px-6 sm:px-8 py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-[0.65fr_1.35fr] gap-8 items-start">
-            <div className="overflow-hidden rounded-[10px] shadow-[0_18px_30px_rgba(0,0,0,0.2)] opacity-100 -mt-16 sm:-mt-20 relative z-20">
-              <img
-                className="w-full h-auto object-cover"
-                alt="Safety helmet"
-                src="/downloads/mjlodvw6RB1obD/img/mask-group-5.png"
-              />
-            </div>
-
-            <div
-              className="flex flex-col gap-6 opacity-100 w-full p-6"
-              ref={statsSectionRef}
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-left opacity-100">
-                    <div className="relative w-full max-w-[220px] opacity-100">
-                      <span className="font-bold text-[#4f4f4f] text-6xl sm:text-7xl lg:text-[140px] leading-[1]">
-                        {counts[index]}
-                        {stat.number.replace(/[0-9.]/g, "")}
-                      </span>
-                      <span className="font-medium text-[#4f4f4f] text-sm sm:text-base leading-none opacity-100 absolute right-0 top-6 bg-white px-2 py-1 flex items-center justify-center">
-                        {stat.label}
-                      </span>
-                    </div>
-                    <p className="font-medium text-[#6b6b6b] text-base sm:text-lg leading-[1.2] mt-2 max-w-[220px]">
-                      {stat.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col gap-5">
-                <div className="grid grid-cols-[80px_1fr] gap-4 items-start">
-                  <span className="font-bold text-[#0070c0] text-base sm:text-lg leading-[1]">
-                    Vision
-                  </span>
-                  <p className="font-normal text-[#666666] text-sm sm:text-base lg:text-[18px] leading-[26px] sm:leading-[28px] text-justify">
-                    From the earliest conceptual sketches to the final touches on a completed project
-                    every step of our journey has been marked.
-                  </p>
-                </div>
-                <div className="grid grid-cols-[80px_1fr] gap-4 items-start border-t border-[#d9d9d9] pt-4">
-                  <span className="font-bold text-[#0070c0] text-base sm:text-lg leading-[1]">
-                    Mission
-                  </span>
-                  <p className="font-normal text-[#666666] text-sm sm:text-base lg:text-[18px] leading-[26px] sm:leading-[28px] text-justify">
-                    When our power of choice is untrammelled and when nothing prevents our being able
-                    to do what we like best every pleasure it.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="relative w-full py-16 sm:py-20 bg-[#f8f9fa]">
         <div className="max-w-[900px] mx-auto px-6 sm:px-8 text-center">
@@ -237,6 +127,6 @@ export const AboutUs = (): JSX.Element => {
       </section>
 
       <FooterSection />
-    </div>
+    </div >
   );
 };

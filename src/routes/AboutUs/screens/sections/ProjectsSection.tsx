@@ -1,4 +1,3 @@
-import React from "react";
 import { Badge } from "../../../../components/ui/badge";
 import { Card, CardContent } from "../../../../components/ui/card";
 
@@ -48,7 +47,7 @@ const smallArticles = [
   },
 ];
 
-export const ProjectsSection = (): JSX.Element => {
+export const ProjectsSection = () => {
   return (
     <section
       id="project"
@@ -66,9 +65,8 @@ export const ProjectsSection = (): JSX.Element => {
                 key={index}
                 type="button"
                 aria-pressed={item.active}
-                className={`${
-                  item.active ? "font-bold text-[#111111]" : "font-normal text-[#888888]"
-                } text-[13px] leading-[normal] hover:text-[#111111] transition-colors`}
+                className={`${item.active ? "font-bold text-[#111111]" : "font-normal text-[#888888]"
+                  } text-[13px] leading-[normal] hover:text-[#111111] transition-colors`}
               >
                 {item.label}
               </button>
@@ -121,9 +119,8 @@ export const ProjectsSection = (): JSX.Element => {
             {smallArticles.map((article, index) => (
               <Card
                 key={index}
-                className={`relative overflow-hidden border-0 shadow-none bg-transparent cursor-pointer hover:opacity-80 transition-opacity ${
-                  index === 4 ? "col-span-2" : ""
-                }`}
+                className={`relative overflow-hidden border-0 shadow-none bg-transparent cursor-pointer hover:opacity-80 transition-opacity ${index === 4 ? "col-span-2" : ""
+                  }`}
               >
                 <CardContent className="p-0">
                   <div className="relative">

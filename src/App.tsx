@@ -1,5 +1,5 @@
-import React, { JSX, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Home } from "./routes/Home/screens/Home";
 import { AboutUs } from "./routes/AboutUs/screens/AboutUs";
 import { Galleries } from "./routes/Galleries/screens/Galleries";
@@ -37,7 +37,7 @@ const ScrollManager = (): null => {
   return null;
 };
 
-export const App = (): JSX.Element => {
+export const App = () => {
   return (
     <Router>
       <ScrollManager />

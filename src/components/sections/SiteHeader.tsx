@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { FacebookIcon, LinkedinIcon } from "lucide-react";
 import { cn } from "../../lib/utils";
@@ -30,7 +30,7 @@ export const SiteHeader = ({
   logoClassName,
   logoSrc = LOGO_PRIMARY,
   logoAlt = "TAC Hydro Consultancy logo",
-}: SiteHeaderProps): JSX.Element => {
+}: SiteHeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navWrapperClass =
     "relative z-20 flex items-center flex-wrap justify-center gap-3 rounded-[40px] border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-white/0 px-2 py-2 shadow-[0_25px_45px_rgba(0,0,0,0.45)] backdrop-blur-[30px]";
@@ -167,26 +167,26 @@ export const SiteHeader = ({
               </NavLink>
             ))}
             <div className="flex items-center gap-3 pt-3">
-            <a
-              href="https://www.facebook.com/tachydro"
-              target="_blank"
-              rel="noreferrer"
-              className={socialGlass}
-            >
-              <FacebookIcon className="w-4 h-4" />
-              <span className="sr-only">Facebook</span>
-            </a>
-            <a
-              href="https://www.linkedin.com/company/tachydro/"
-              target="_blank"
-              rel="noreferrer"
-              className={socialGlass}
-            >
-              <LinkedinIcon className="w-4 h-4" />
-              <span className="sr-only">LinkedIn</span>
-            </a>
+              <a
+                href="https://www.facebook.com/tachydro"
+                target="_blank"
+                rel="noreferrer"
+                className={socialGlass}
+              >
+                <FacebookIcon className="w-4 h-4" />
+                <span className="sr-only">Facebook</span>
+              </a>
+              <a
+                href="https://www.linkedin.com/company/tachydro/"
+                target="_blank"
+                rel="noreferrer"
+                className={socialGlass}
+              >
+                <LinkedinIcon className="w-4 h-4" />
+                <span className="sr-only">LinkedIn</span>
+              </a>
             </div>
-            {cta}
+
           </nav>
         </div>
       )}

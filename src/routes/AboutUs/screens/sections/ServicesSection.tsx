@@ -1,7 +1,6 @@
-import React from "react";
 import { Button } from "../../../../components/ui/button";
 
-export const ServicesSection = (): JSX.Element => {
+export const ServicesSection = () => {
   return (
     <section
       id="services"

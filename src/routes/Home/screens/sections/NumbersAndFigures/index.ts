@@ -1,0 +1,1 @@
+export { NumbersAndFiguresSection } from "./NumbersAndFigures";

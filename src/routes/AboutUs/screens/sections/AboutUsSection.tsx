@@ -1,6 +1,6 @@
-import React from "react";
 
-export const AboutUsSection = (): JSX.Element => {
+
+export const AboutUsSection = () => {
   const historyParagraphs = [
     "IQ organic solutions is pioneer to be Pakistan no.1 organic",
     "product brand incorporating various segments of skin, hair",

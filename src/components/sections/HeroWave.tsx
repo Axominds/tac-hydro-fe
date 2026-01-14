@@ -1,4 +1,3 @@
-import React from "react";
 import { cn } from "../../lib/utils";
 
 type HeroWaveProps = {
@@ -6,7 +5,7 @@ type HeroWaveProps = {
   backgroundColor?: string;
 };
 
-export const HeroWave = ({ className, backgroundColor = "#f8f9fa" }: HeroWaveProps): JSX.Element => {
+export const HeroWave = ({ className, backgroundColor = "#f8f9fa" }: HeroWaveProps) => {
   return (
     <div
       className={cn(

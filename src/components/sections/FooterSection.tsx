@@ -6,7 +6,7 @@ import {
   MapPinIcon,
   PhoneIcon,
 } from "lucide-react";
-import React from "react";
+
 import { LOGO_FOOTER } from "../../assets";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
@@ -31,7 +31,7 @@ const services = [
   "Product Development",
 ];
 
-export const FooterSection = (): JSX.Element => {
+export const FooterSection = () => {
   const currentYear = new Date().getFullYear();
   const linkHrefs: Record<string, string> = {
     Home: "/",
@@ -43,7 +43,7 @@ export const FooterSection = (): JSX.Element => {
   };
 
   return (
-    <footer className="w-full bg-[#6fb7e6] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20">
+    <footer id="footer-section" className="w-full bg-[#6fb7e6] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20">
       <div className="max-w-[1449px] mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           <div className="flex flex-col">

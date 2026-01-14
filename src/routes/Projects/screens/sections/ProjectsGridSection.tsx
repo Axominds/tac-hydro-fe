@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
 
 const projectItems = [
@@ -55,7 +55,7 @@ const projectItems = [
   },
 ];
 
-export const ProjectsGridSection = (): JSX.Element => {
+export const ProjectsGridSection = () => {
   const [selectedProject, setSelectedProject] = useState<(typeof projectItems)[0] | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRightIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
@@ -62,7 +62,7 @@ const serviceItems = [
   },
 ];
 
-export const ServicesGridSection = (): JSX.Element => {
+export const ServicesGridSection = () => {
   const [selectedService, setSelectedService] = useState<(typeof serviceItems)[0] | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [activeSector, setActiveSector] = useState(sectorFilters[0]);
@@ -129,8 +129,8 @@ export const ServicesGridSection = (): JSX.Element => {
                 type="button"
                 onClick={() => setActiveSector(sector)}
                 className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors ${activeSector === sector
-                    ? "border-[#0070c0] bg-[#0070c0] text-white"
-                    : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
+                  ? "border-[#0070c0] bg-[#0070c0] text-white"
+                  : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
                   }`}
                 aria-pressed={activeSector === sector}
               >
