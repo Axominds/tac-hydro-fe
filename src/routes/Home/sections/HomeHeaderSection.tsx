@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { ChevronRightIcon } from "lucide-react";
-import { HERO_BG_ALT } from "../../../../../assets";
-import { Button } from "../../../../../components/ui/button";
-import { SiteHeader } from "../../../../../components/sections/SiteHeader";
+import { HERO_BG_ALT } from "../../../assets";
+import { Button } from "../../../components/ui/button";
+import { SiteHeader } from "../../../components/sections/SiteHeader";
 
 const typewriterWords = ["INNOVATE", "ENGINEER", "SUSTAIN"];
 

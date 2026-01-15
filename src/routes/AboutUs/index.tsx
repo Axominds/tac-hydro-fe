@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { AboutUs } from "./screens/AboutUs";
+import { AboutUs } from "./AboutUs";
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>

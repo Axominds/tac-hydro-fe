@@ -1,1 +1,0 @@
-export { SectorsOfServicesSection } from "./SectorsOfServices";

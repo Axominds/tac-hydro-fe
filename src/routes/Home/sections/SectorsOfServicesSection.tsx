@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Card, CardContent } from "../../../../../components/ui/card";
+import { Card, CardContent } from "../../../components/ui/card";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 const sectorData = [
     {

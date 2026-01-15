@@ -1,14 +1,14 @@
-import { NumbersAndFiguresSection } from "./sections/NumbersAndFigures";
-import { HomeHeaderSection } from "./sections/HomeHeader";
-import { ExpertiseAndServicesSection } from "./sections/ExpertiseAndServices";
-import { ProfessionalFrameworkSection } from "./sections/ProfessionalFramework";
+import { NumbersAndFiguresSection } from "../../components/sections/NumbersAndFiguresSection";
+import { HomeHeaderSection } from "./sections/HomeHeaderSection";
+import { ExpertiseAndServicesSection } from "./sections/ExpertiseAndServicesSection";
+import { ProfessionalFrameworkSection } from "./sections/ProfessionalFrameworkSection";
 import { MapSection } from "./sections/MapSection";
-import { ValuedPartnersSection } from "./sections/ValuedPartners";
-import { SectorsOfServicesSection } from "./sections/SectorsOfServices";
+import { ValuedPartnersSection } from "./sections/ValuedPartnersSection";
+import { SectorsOfServicesSection } from "./sections/SectorsOfServicesSection";
 import { VideoSection } from "./sections/VideoSection";
-import { NewsAndArticlesSection } from "./sections/NewsAndArticles";
+import { NewsAndArticlesSection } from "./sections/NewsAndArticlesSection";
 import { MoveDownSection } from "./sections/MoveDownSection";
-import { FooterSection } from "../../../components/sections/FooterSection";
+import { FooterSection } from "../../components/sections/FooterSection";
 
 const navigationItems = [
   { label: "Home", href: "/", isActive: true },

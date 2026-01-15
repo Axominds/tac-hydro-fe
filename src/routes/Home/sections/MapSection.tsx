@@ -128,7 +128,7 @@ export const MapSection = () => {
 
                         <div className="mt-8 p-6 bg-blue-600 rounded-3xl text-white shadow-lg shadow-blue-200">
                             <p className="text-xs font-bold uppercase tracking-widest mb-2 opacity-80">Statistics</p>
-                            <div className="text-3xl font-bold mb-1">80+</div>
+                            <div className="text-3xl font-bold mb-1">120+</div>
                             <p className="text-white/80 text-sm">Successfully completed projects across the country.</p>
                         </div>
                     </div>

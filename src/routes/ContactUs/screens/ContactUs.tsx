@@ -1,7 +1,6 @@
 import { FooterSection } from "../../../components/sections/FooterSection";
-import { HeroWave } from "../../../components/sections/HeroWave";
-import { SiteHeader } from "../../../components/sections/SiteHeader";
-import { HERO_BG_PRIMARY } from "../../../assets";
+import { SecondaryHeader } from "../../../components/sections/secondaryHeader";
+
 
 const navigationItems = [
   { label: "Home", href: "/" },
@@ -15,26 +14,11 @@ const navigationItems = [
 export const ContactUs = () => {
   return (
     <div className="w-full relative bg-[#f8f9fa]">
-      <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">
-        <img
-          className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
-          alt="Hero Background"
-          src={HERO_BG_PRIMARY}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0b1522]/90 via-[#0b1522]/50 to-[#0b1522]/90 pointer-events-none" />
-
-        <SiteHeader navigationItems={navigationItems} />
-
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
-          <h1 className="font-semibold text-white text-3xl sm:text-4xl lg:text-[60px] leading-[1.05] mb-6">
-            Contact Us
-          </h1>
-          <p className="font-normal text-white/75 text-sm sm:text-base lg:text-[17px] leading-[normal] max-w-[560px] px-4">
-            Let us know how we can support your next hydropower project.
-          </p>
-        </div>
-        <HeroWave className="text-white/70" />
-      </section>
+      <SecondaryHeader
+        title="Contact Us"
+        description="Let us know how we can support your next hydropower project."
+        navigationItems={navigationItems}
+      />
 
       <section className="relative w-full bg-[#f8f9fa] py-16">
         <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-20">

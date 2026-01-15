@@ -1,1 +1,0 @@
-export { HomeHeaderSection } from "./HomeHeader";

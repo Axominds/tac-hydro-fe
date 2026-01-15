@@ -1,1 +1,0 @@
-export { ValuedPartnersSection } from "./ValuedPartners";
