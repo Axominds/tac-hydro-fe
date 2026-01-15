@@ -59,9 +59,16 @@ export const SiteHeader = ({
           innerClassName,
         )}
       >
-        <NavLink to="/" className="inline-flex" aria-label="Go to home page">
+        <NavLink
+          to="/"
+          className={cn(
+            "group relative inline-flex items-center p-3 rounded-[32px] border border-white/20 bg-gradient-to-br from-white/10 via-white/5 to-white/0 backdrop-blur-[30px] shadow-[0_15px_35px_rgba(0,0,0,0.25)] transition-all duration-300 hover:border-white/40 hover:bg-white/15",
+            "sm:p-4"
+          )}
+          aria-label="Go to home page"
+        >
           <img
-            className={cn("w-[200px] h-auto sm:w-[240px] lg:w-[277px]", logoClassName)}
+            className={cn("w-[180px] h-auto sm:w-[200px] lg:w-[240px]", logoClassName)}
             alt={logoAlt}
             src={logoSrc}
           />
