@@ -1,7 +1,7 @@
 
 export const AboutUsSection = () => {
     return (
-        <section className="w-full relative min-h-screen flex items-center py-16 sm:py-24 bg-[#f8f9fa]">
+        <section id="about-us-section" className="w-full relative min-h-screen flex items-center py-16 sm:py-24 bg-[#f8f9fa]">
             <div className="max-w-[1240px] mx-auto px-6 sm:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                     {/* Image Column */}

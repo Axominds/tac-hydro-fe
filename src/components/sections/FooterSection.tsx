@@ -5,6 +5,7 @@ import {
   MailIcon,
   MapPinIcon,
   PhoneIcon,
+  ArrowUp,
 } from "lucide-react";
 
 import { LOGO_FOOTER } from "../../assets";
@@ -40,6 +41,13 @@ export const FooterSection = () => {
     Galleries: "/galleries",
     "Contact Us": "/contact-us",
     Projects: "/projects",
+  };
+
+  const handleScrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -175,6 +183,13 @@ export const FooterSection = () => {
           <p className="font-normal text-white text-sm sm:text-base lg:text-lg leading-7">
             ©{currentYear} TAC Hydro Consultancy Pvt Ltd. All Rights Reserved.
           </p>
+          <button
+            onClick={handleScrollToTop}
+            className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-white/40 text-white hover:bg-white/10 transition-all transform hover:scale-110 active:scale-95"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="w-6 h-6" />
+          </button>
         </div>
       </div>
     </footer>

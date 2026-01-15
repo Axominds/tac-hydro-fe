@@ -7,7 +7,7 @@ import { ValuedPartnersSection } from "./sections/ValuedPartnersSection";
 import { SectorsOfServicesSection } from "./sections/SectorsOfServicesSection";
 import { VideoSection } from "./sections/VideoSection";
 import { NewsAndArticlesSection } from "./sections/NewsAndArticlesSection";
-import { MoveDownSection } from "./sections/MoveDownSection";
+import { MoveDownSection } from "../../components/sections/MoveDownSection";
 import { FooterSection } from "../../components/sections/FooterSection";
 
 const navigationItems = [
@@ -17,6 +17,17 @@ const navigationItems = [
   { label: "Services", href: "/services" },
   { label: "Galleries", href: "/galleries" },
   { label: "Contact Us", href: "/contact-us" },
+];
+
+const HOME_SECTIONS = [
+  "numbers-and-figures",
+  "expertise-and-services",
+  "professional-framework",
+  "sectors-of-services",
+  "video-section",
+  "map-section",
+  "valued-partners",
+  "news-and-articles",
 ];
 
 export const Home = () => {
@@ -31,7 +42,7 @@ export const Home = () => {
       <MapSection />
       <ValuedPartnersSection />
       <NewsAndArticlesSection />
-      <MoveDownSection />
+      <MoveDownSection sections={HOME_SECTIONS} />
       <FooterSection />
     </div>
   );

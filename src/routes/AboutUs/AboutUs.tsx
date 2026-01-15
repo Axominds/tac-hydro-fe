@@ -4,6 +4,8 @@ import { SecondaryHeader } from "../../components/sections/secondaryHeader";
 import { NumbersAndFiguresSection } from "../../components/sections/NumbersAndFiguresSection";
 import { AboutUsSection } from "./sections/AboutUsSection";
 import { TopManagementSection } from "./sections/TopManagementSection";
+import { SDGSection } from "./sections/SDGSection";
+import { MoveDownSection } from "../../components/sections/MoveDownSection";
 
 const navigationItems = [
   { label: "Home", href: "/" },
@@ -12,6 +14,13 @@ const navigationItems = [
   { label: "Services", href: "/services" },
   { label: "Galleries", href: "/galleries" },
   { label: "Contact Us", href: "/contact-us" },
+];
+
+const ABOUT_SECTIONS = [
+  "numbers-and-figures",
+  "about-us-section",
+  "top-management-section",
+  "sdg-section",
 ];
 
 export const AboutUs = () => {
@@ -25,30 +34,9 @@ export const AboutUs = () => {
       />
       <NumbersAndFiguresSection />
       <AboutUsSection />
-
       <TopManagementSection />
-
-      {/* CTA Section */}
-      <section className="relative w-full py-16 sm:py-20 bg-[#f8f9fa]">
-        <div className="max-w-[900px] mx-auto px-6 sm:px-8 text-center">
-          <h2 className="font-bold text-[#2c3e50] text-3xl sm:text-4xl lg:text-[44px] leading-[normal] mb-4">
-            We make every trip a harmonious
-          </h2>
-          <h2 className="font-bold text-[#2c3e50] text-3xl sm:text-4xl lg:text-[44px] leading-[normal] mb-6">
-            blend of comfort and discovery.
-          </h2>
-          <p className="font-normal text-[#555555] text-base sm:text-lg leading-[normal] mb-8">
-            Start your adventure with Armonia - contact us now!
-          </p>
-          <Link
-            to="/contact-us"
-            className="inline-flex items-center justify-center w-full max-w-[360px] h-auto opacity-100"
-          >
-            <img className="w-full h-full object-contain" alt="Contact us" src="/button.png" />
-          </Link>
-        </div>
-      </section>
-
+      <SDGSection />
+      <MoveDownSection sections={ABOUT_SECTIONS} />
       <FooterSection />
     </div >
   );

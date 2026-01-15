@@ -1,18 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { ArrowDown } from "lucide-react";
 
-const SECTIONS = [
-    "numbers-and-figures",
-    "expertise-and-services",
-    "professional-framework",
-    "sectors-of-services",
-    "video-section",
-    "map-section",
-    "valued-partners",
-    "news-and-articles",
-];
+interface MoveDownSectionProps {
+    sections: string[];
+    footerId?: string;
+}
 
-export const MoveDownSection = () => {
+export const MoveDownSection = ({ sections, footerId = "footer-section" }: MoveDownSectionProps) => {
     const [targetId, setTargetId] = useState<string | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -21,8 +15,8 @@ export const MoveDownSection = () => {
 
         let currentSectionIndex = -1;
 
-        for (let i = 0; i < SECTIONS.length; i++) {
-            const section = document.getElementById(SECTIONS[i]);
+        for (let i = 0; i < sections.length; i++) {
+            const section = document.getElementById(sections[i]);
             if (section) {
                 const { top, bottom } = section.getBoundingClientRect();
                 const absoluteTop = top + window.scrollY;
@@ -35,8 +29,8 @@ export const MoveDownSection = () => {
             }
         }
 
-        if (currentSectionIndex !== -1 && currentSectionIndex < SECTIONS.length - 1) {
-            setTargetId(SECTIONS[currentSectionIndex + 1]);
+        if (currentSectionIndex !== -1 && currentSectionIndex < sections.length - 1) {
+            setTargetId(sections[currentSectionIndex + 1]);
             setIsVisible(true);
         } else {
             setTargetId(null);
@@ -44,14 +38,14 @@ export const MoveDownSection = () => {
         }
 
         // Hide if near footer
-        const footer = document.getElementById("footer-section");
+        const footer = document.getElementById(footerId);
         if (footer) {
             const footerTop = footer.getBoundingClientRect().top;
             if (footerTop < window.innerHeight) {
                 setIsVisible(false);
             }
         }
-    }, []);
+    }, [sections, footerId]);
 
     useEffect(() => {
         window.addEventListener("scroll", updateTarget, { passive: true });

@@ -1,15 +1,15 @@
 
 export const TopManagementSection = () => {
     return (
-        <section className="w-full relative min-h-screen flex items-center py-16 sm:py-24 bg-[#f8f9fa]">
+        <section id="top-management-section" className="w-full relative flex items-center py-10 sm:py-16 bg-[#f8f9fa]">
             <div className="max-w-[1240px] mx-auto px-6 sm:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                     {/* Text Column - First in grid for desktop, but visually on the left */}
-                    <div className="flex flex-col gap-8 order-2 lg:order-1">
+                    <div className="flex flex-col gap-6 order-2 lg:order-1">
                         <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-[#2c3e50] leading-tight">
                             Top Management's Commitment
                         </h2>
-                        <div className="flex flex-col gap-6 text-[#555555] text-lg leading-relaxed">
+                        <div className="flex flex-col gap-4 text-[#555555] text-lg leading-relaxed">
                             <p>
                                 Dear Clients and Partners,
                             </p>
