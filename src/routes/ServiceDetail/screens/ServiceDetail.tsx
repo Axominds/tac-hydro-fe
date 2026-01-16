@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FooterSection } from "../../../components/sections/FooterSection";
-import { SiteHeader } from "../../../components/sections/SiteHeader";
+import { HeaderSection } from "../../../components/sections/HeaderSection";
 import { HERO_BG_PRIMARY } from "../../../assets";
 
 const navigationItems = [
@@ -91,7 +91,7 @@ export const ServiceDetail = () => {
           src={HERO_BG_PRIMARY}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0b1522]/85 via-[#0b1522]/45 to-[#0b1522]/85 pointer-events-none" />
-        <SiteHeader navigationItems={navigationItems} />
+        <HeaderSection navigationItems={navigationItems} />
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
           <span className="text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-3">
             SERVICE DETAIL

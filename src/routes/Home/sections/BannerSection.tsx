@@ -2,15 +2,10 @@ import { useState, useEffect } from "react";
 import { ChevronRightIcon } from "lucide-react";
 import { HERO_BG_ALT } from "../../../assets";
 import { Button } from "../../../components/ui/button";
-import { SiteHeader } from "../../../components/sections/SiteHeader";
 
 const typewriterWords = ["INNOVATE", "ENGINEER", "SUSTAIN"];
 
-interface HomeHeaderProps {
-    navigationItems: { label: string; href: string; isActive?: boolean }[];
-}
-
-export const HomeHeaderSection = ({ navigationItems }: HomeHeaderProps) => {
+export const BannerSection = () => {
     const [typewriterText, setTypewriterText] = useState("");
     const [typewriterIndex, setTypewriterIndex] = useState(0);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -82,10 +77,6 @@ export const HomeHeaderSection = ({ navigationItems }: HomeHeaderProps) => {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent pointer-events-none" />
 
-            <SiteHeader
-                navigationItems={navigationItems}
-                headerClassName="absolute top-0 left-0 right-0 animate-fade-in opacity-0"
-            />
 
             <div className="absolute inset-0 z-10">
                 <div className="h-full mx-auto px-4 sm:px-8 lg:px-20 flex items-center justify-start">

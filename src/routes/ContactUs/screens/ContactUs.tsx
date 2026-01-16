@@ -1,23 +1,17 @@
 import { FooterSection } from "../../../components/sections/FooterSection";
-import { SecondaryHeader } from "../../../components/sections/secondaryHeader";
+import { HeaderSection } from "../../../components/sections/HeaderSection";
+import { BannerSection } from "../../../components/sections/BannerSection";
 
 
-const navigationItems = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/about-us" },
-  { label: "Projects", href: "/projects" },
-  { label: "Services", href: "/services" },
-  { label: "Galleries", href: "/galleries" },
-  { label: "Contact Us", href: "/contact-us", isActive: true },
-];
+
 
 export const ContactUs = () => {
   return (
     <div className="w-full relative bg-[#f8f9fa]">
-      <SecondaryHeader
+      <HeaderSection />
+      <BannerSection
         title="Contact Us"
         description="Let us know how we can support your next hydropower project."
-        navigationItems={navigationItems}
       />
 
       <section className="relative w-full bg-[#f8f9fa] py-16">

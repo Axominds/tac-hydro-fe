@@ -1,24 +1,19 @@
 import { HeroWave } from "./HeroWave";
-import { SiteHeader, NavigationItem } from "./SiteHeader";
 
-interface SecondaryHeaderProps {
+interface BannerSectionProps {
   title?: string;
   description?: string;
-  navigationItems: NavigationItem[];
 }
 
-export const SecondaryHeader = ({
+export const BannerSection = ({
   title = "ABOUT TAC HYDRO",
   description = "LEADING ENGINEERING INNOVATION SINCE 2005",
-  navigationItems,
-}: SecondaryHeaderProps) => {
+}: BannerSectionProps) => {
   return (
     <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0b1522] via-[#15233e] to-[#0b1522]" />
 
-      {/* Header Navigation */}
-      <SiteHeader navigationItems={navigationItems} />
 
       {/* Hero Content */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">

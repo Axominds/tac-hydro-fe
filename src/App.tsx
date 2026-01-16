@@ -2,6 +2,9 @@ import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Home } from "./routes/Home/Home";
 import { AboutUs } from "./routes/AboutUs/AboutUs";
+import { OrganizationChart } from "./routes/AboutUs/screens/OrganizationChart";
+import { ProfessionalFramework } from "./routes/AboutUs/screens/ProfessionalFramework";
+import { OurTeam } from "./routes/AboutUs/screens/OurTeam";
 import { Galleries } from "./routes/Galleries/Galleries";
 import { Projects } from "./routes/Projects/Projects";
 import { Services } from "./routes/Services/Services";
@@ -44,6 +47,9 @@ export const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/about-us/our-organization-chart" element={<OrganizationChart />} />
+        <Route path="/about-us/our-professional-framework" element={<ProfessionalFramework />} />
+        <Route path="/about-us/our-team" element={<OurTeam />} />
         <Route path="/galleries" element={<Galleries />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/services" element={<Services />} />
