@@ -150,7 +150,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
         position: "Mechanical Engineer",
         education: "Bachelor in Mechanical Engineering, Kathmandu University | Diploma in Mechanical Engineering, Manmohan Memorial Polytechnic",
         bio: "Mr. Niroula is a detail oriented Mechanical Engineer at TAC Hydro Consultancy specializing in hydropower with practical experience in technical design machining and fabrication. He possesses significant expertise in vibrational characteristics of Francis turbines and has contributed to techno economic feasibility studies for rural energy systems. His professional background includes hands on experience in technical design and internship roles where he developed skills in SolidWorks CAD and analytical problem solving. With a strong commitment to sustainable energy solutions he provides critical support in the design and technical analysis of hydro mechanical components contributing to the delivery of innovative and practical engineering solutions.",
-        image: "https://images.unsplash.com/photo-1566492031773-4fbc752fdb78?q=80&w=1000&auto=format&fit=crop"
+        image: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1000&auto=format&fit=crop"
     },
     {
         id: "sashikant-chaudhary",
@@ -285,7 +285,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
         position: "Civil Engineer",
         education: "Bachelor’s in Civil Engineering",
         bio: "Mr. Rana is a Civil Engineer primarily engaged in the site supervision and technical monitoring of hydropower projects. His expertise lies in coordinating field activities, managing site logistics, and ensuring that civil structures are built to meet both safety and environmental standards.",
-        image: "https://images.unsplash.com/photo-1548449112-96a38a643324?q=80&w=1000&auto=format&fit=crop"
+        image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1000&auto=format&fit=crop"
     },
     {
         id: "rajendra-pulami",

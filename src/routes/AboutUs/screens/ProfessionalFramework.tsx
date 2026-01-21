@@ -1,7 +1,6 @@
 import { HeaderSection } from "../../../components/sections/HeaderSection";
 import { BannerSection } from "../../../components/sections/BannerSection";
 import { ProfessionalFrameworkSection } from "../../Home/sections/ProfessionalFrameworkSection";
-import { WhyChooseUsSection } from "../sections/WhyChooseUsSection";
 import { MoveDownSection } from "../../../components/sections/MoveDownSection";
 import { FooterSection } from "../../../components/sections/FooterSection";
 
@@ -20,11 +19,8 @@ export const ProfessionalFramework = () => {
                 title="PROFESSIONAL FRAMEWORK"
                 description="ENGINEERING EXCELLENCE & INTEGRITY"
             />
-
-            <WhyChooseUsSection />
-
-            {/* Reusing Home Section as requested */}
-            <ProfessionalFrameworkSection />
+            {/* Reusing Home Section as requested, enabling details view */}
+            <ProfessionalFrameworkSection showDetails={true} />
 
             <MoveDownSection sections={FRAMEWORK_SECTIONS} />
             <FooterSection />

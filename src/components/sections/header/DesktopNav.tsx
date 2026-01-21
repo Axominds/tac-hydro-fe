@@ -93,7 +93,7 @@ export const DesktopNav = ({
                                                 <NavLink
                                                     key={`${dropdownItem.label}-${dropdownIndex}`}
                                                     to={dropdownItem.href}
-                                                    className="block px-4 py-3 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white transition-all duration-200 first:rounded-t-2xl last:rounded-b-2xl"
+                                                    className="block px-4 py-3 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white transition-all duration-200 first:rounded-t-2xl last:rounded-b-2xl whitespace-nowrap"
                                                     onClick={() => setOpenDropdown(null)}
                                                 >
                                                     {dropdownItem.label}
