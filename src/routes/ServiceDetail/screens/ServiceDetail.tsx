@@ -1,15 +1,16 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FooterSection } from "../../../components/sections/FooterSection";
-import { SiteHeader } from "../../../components/sections/SiteHeader";
+import { HeaderSection } from "../../../components/sections/HeaderSection";
 import { HERO_BG_PRIMARY } from "../../../assets";
 
 const navigationItems = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Project", href: "/projects" },
+  { label: "About Us", href: "/about-us" },
+  { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services", isActive: true },
-  { label: "Gallery", href: "/gallery" },
+  { label: "Galleries", href: "/galleries" },
+  { label: "Contact Us", href: "/contact-us" },
 ];
 
 const detailItems = [
@@ -73,7 +74,7 @@ const detailBullets = [
   "Confirming the schedule with all field stakeholders.",
 ];
 
-export const ServiceDetail = (): JSX.Element => {
+export const ServiceDetail = () => {
   const location = useLocation();
   const activeSlug = useMemo(() => {
     const params = new URLSearchParams(location.search);
@@ -82,7 +83,7 @@ export const ServiceDetail = (): JSX.Element => {
   const activeItem = detailItems.find((item) => item.slug === activeSlug) || detailItems[0];
 
   return (
-    <div className="w-full relative bg-[#f5f5f5]">
+    <div className="w-full relative bg-[#f8f9fa]">
       <section className="relative w-full min-h-[260px] sm:min-h-[320px] lg:h-[360px]">
         <img
           className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
@@ -90,29 +91,28 @@ export const ServiceDetail = (): JSX.Element => {
           src={HERO_BG_PRIMARY}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0b1522]/85 via-[#0b1522]/45 to-[#0b1522]/85 pointer-events-none" />
-        <SiteHeader navigationItems={navigationItems} />
+        <HeaderSection navigationItems={navigationItems} />
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
-          <span className="[font-family:'Montserrat',Helvetica] text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-3">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70 mb-3">
             SERVICE DETAIL
           </span>
-          <h1 className="[font-family:'Playfair_Display',Helvetica] font-semibold italic text-white text-3xl sm:text-4xl lg:text-[48px] tracking-[0] leading-[1.1]">
+          <h1 className="font-semibold text-white text-3xl sm:text-4xl lg:text-[48px] leading-[1.1]">
             {activeItem.title}
           </h1>
         </div>
       </section>
 
-      <section className="relative w-full bg-white py-12">
+      <section className="relative w-full bg-[#f8f9fa] py-12">
         <div className="mx-auto w-full px-6 sm:px-10 lg:px-20">
           <div className="flex flex-wrap items-center gap-3 mb-8">
             {detailItems.map((item) => (
               <Link
                 key={item.slug}
                 to={`/service-detial?item=${item.slug}`}
-                className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${
-                  item.slug === activeItem.slug
-                    ? "border-[#0070c0] bg-[#0070c0] text-white"
-                    : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
-                }`}
+                className={`rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors ${item.slug === activeItem.slug
+                  ? "border-[#0070c0] bg-[#0070c0] text-white"
+                  : "border-[#d9d9d9] bg-white text-[#6b6b6b] hover:border-[#0070c0] hover:text-[#0070c0]"
+                  }`}
               >
                 {item.title}
               </Link>
@@ -130,7 +130,7 @@ export const ServiceDetail = (): JSX.Element => {
 
             <div className="mt-6 space-y-4 text-sm text-[#4b5563]">
               {detailCopy.map((line) => (
-                <p key={line} className="[font-family:'Montserrat',Helvetica] leading-[1.7]">
+                <p key={line} className="leading-[1.7]">
                   {line}
                 </p>
               ))}
@@ -149,7 +149,7 @@ export const ServiceDetail = (): JSX.Element => {
 
             <ul className="mt-6 list-disc pl-5 text-sm text-[#4b5563] space-y-2">
               {detailBullets.map((bullet) => (
-                <li key={bullet} className="[font-family:'Montserrat',Helvetica] leading-[1.7]">
+                <li key={bullet} className="leading-[1.7]">
                   {bullet}
                 </li>
               ))}

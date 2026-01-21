@@ -1,12 +1,15 @@
-import React, { useEffect } from "react";
-import { HashRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { Homepage as MainHomepage } from "./screens/Homepage";
-import { Homepage as AboutUsHomepage } from "./routes/Homepage/screens/Homepage";
-import { Gallery } from "./routes/Gallery/screens/Gallery";
-import { Projects } from "./routes/Projects/screens/Projects";
-import { Services } from "./routes/Services/screens/Services";
-import { Contact } from "./routes/Contact/screens/Contact";
-import { ServiceDetail } from "./routes/ServiceDetail/screens/ServiceDetail";
+import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { Home } from "./routes/Home/Home";
+import { AboutUs } from "./routes/AboutUs/AboutUs";
+import { OrganizationChart } from "./routes/AboutUs/screens/OrganizationChart";
+import { ProfessionalFramework } from "./routes/AboutUs/screens/ProfessionalFramework";
+import { OurTeam } from "./routes/AboutUs/screens/OurTeam";
+import { Galleries } from "./routes/Galleries/Galleries";
+import { Projects } from "./routes/Projects/Projects";
+import { Services } from "./routes/Services/Services";
+import { ContactUs } from "./routes/ContactUs/ContactUs";
+import { ServiceDetail } from "./routes/ServiceDetail/ServiceDetail";
 
 const ScrollManager = (): null => {
   const location = useLocation();
@@ -19,8 +22,8 @@ const ScrollManager = (): null => {
       targetId = decodeURIComponent(location.hash.replace("#", ""));
     } else if (location.pathname === "/services" && params.get("sector")) {
       targetId = "services-filter";
-    } else if (location.pathname === "/gallery" && params.get("year")) {
-      targetId = "gallery-filter";
+    } else if (location.pathname === "/galleries" && params.get("year")) {
+      targetId = "galleries-filter";
     }
 
     if (targetId) {
@@ -37,18 +40,21 @@ const ScrollManager = (): null => {
   return null;
 };
 
-export const App = (): JSX.Element => {
+export const App = () => {
   return (
     <Router>
       <ScrollManager />
       <Routes>
-        <Route path="/" element={<MainHomepage />} />
-        <Route path="/about" element={<AboutUsHomepage />} />
-        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/about-us/our-organization-chart" element={<OrganizationChart />} />
+        <Route path="/about-us/our-professional-framework" element={<ProfessionalFramework />} />
+        <Route path="/about-us/our-team" element={<OurTeam />} />
+        <Route path="/galleries" element={<Galleries />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/services" element={<Services />} />
         <Route path="/service-detial" element={<ServiceDetail />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/contact-us" element={<ContactUs />} />
       </Routes>
     </Router>
   );
