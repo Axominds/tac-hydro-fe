@@ -3,7 +3,7 @@ import { ChevronRightIcon } from "lucide-react";
 import { HERO_BG_ALT } from "../../../assets";
 import { Button } from "../../../components/ui/button";
 
-const typewriterWords = ["INNOVATE", "ENGINEER", "SUSTAIN"];
+const typewriterWords = ["COLLABORATE", "PARTNER", "INNOVATE"];
 
 export const BannerSection = () => {
     const [typewriterText, setTypewriterText] = useState("");
@@ -11,13 +11,13 @@ export const BannerSection = () => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleGetStarted = () => {
-        const target = document.getElementById("numbers-and-figures");
+        const target = document.getElementById("collaborative-advantage");
         if (!target) return;
 
         const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
         const startPosition = window.pageYOffset;
         const distance = targetPosition - startPosition;
-        const duration = 1500; // Longer duration for slow start
+        const duration = 1500;
         let start: number | null = null;
 
         const easeInOutQuart = (t: number) => {
@@ -83,7 +83,7 @@ export const BannerSection = () => {
                     <div className="translate-y-[6.5rem] sm:translate-y-[7rem]">
                         <div className="max-w-[720px] animate-fade-in opacity-0 [--animation-delay:200ms] lg:max-w-[995px]">
                             <h1 className="font-bold text-white text-3xl sm:text-4xl lg:text-[52px] sm:leading-[1.1] lg:leading-[1.1] mb-2">
-                                <span className="block">Empowering Sustainable Resources Through Engineering Excellence</span>
+                                <span className="block">Building Partnerships for Sustainable Energy Solutions</span>
                             </h1>
                             <div className="mt-0 flex items-center gap-2 min-h-[32px]">
                                 <span className="font-bold text-white text-xl sm:text-2xl lg:text-[32px] leading-[1]">
@@ -93,7 +93,8 @@ export const BannerSection = () => {
                             </div>
                             <div className="bg-white mt-3" />
                             <p className="font-semibold text-white text-base sm:text-lg lg:text-[20px] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[640px]">
-                                Transforming natural potential into sustainable legacies through technical mastery.
+                                Join forces with TacHydro to create innovative, sustainable hydropower solutions
+                                that drive positive environmental and social impact.
                             </p>
 
                             <Button

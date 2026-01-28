@@ -65,39 +65,48 @@ export const ExpertiseAndServicesSection = () => {
             <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50" />
             <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-50 rounded-full blur-3xl opacity-50" />
 
-            <div className="relative mx-auto max-w-[1400px] px-6 sm:px-8 lg:px-20">
+            <div className="relative mx-auto max-w-[1200px] px-6 sm:px-8 lg:px-20">
                 <div className="mb-16">
                     <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight text-center">
                         Our Expertise and Services
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {expertiseData.map((category, idx) => (
                         <div
                             key={idx}
-                            className={`group relative flex flex-col p-8 rounded-[24px] bg-white border border-slate-200 ${category.hoverBorder} ${category.hoverBg} transition-all duration-500 overflow-hidden cursor-default min-h-[480px] items-center justify-center text-center`}
+                            className={`group relative flex flex-col p-8 rounded-[24px] bg-white border border-slate-200 ${category.hoverBorder} ${category.hoverBg} transition-all duration-500 overflow-hidden cursor-default min-h-[480px] items-start justify-start text-center`}
                         >
                             {/* Content Container */}
-                            <div className="flex flex-col z-10 transition-all duration-500 transform translate-y-0 group-hover:-translate-y-4 items-center w-full">
+                            <div className="flex flex-col z-10 transition-all duration-500 items-center w-full">
                                 {/* Icon & Title */}
                                 <div className="flex flex-col items-center">
-                                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-blue-50 group-hover:bg-white/20 mb-6 transition-all duration-500">
-                                        <category.icon className={`w-8 h-8 ${category.iconColor} group-hover:text-white transition-colors duration-500`} />
+                                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-blue-50 group-hover:bg-white/20 mb-6 transition-all duration-500 group-hover:scale-105 group-hover:-translate-y-1">
+                                        <category.icon className={`w-8 h-8 ${category.iconColor} group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:rotate-[360deg]`} />
                                     </div>
 
-                                    <h3 className="text-xl lg:text-2xl font-bold text-slate-900 group-hover:text-white transition-colors duration-500 mb-0 group-hover:mb-6">
+                                    <h3 className="text-xl lg:text-2xl font-bold text-slate-900 group-hover:text-white transition-colors duration-500 mb-6">
                                         {category.title}
                                     </h3>
                                 </div>
 
-                                {/* Sliding Details Section - Extends Upwards */}
-                                <div className="h-0 opacity-0 group-hover:h-auto group-hover:opacity-100 transition-all duration-500 ease-out overflow-hidden w-full">
+                                {/* Details Section */}
+                                <div className="w-full">
                                     <ul className="space-y-3 pb-2 flex flex-col items-start px-4">
                                         {category.items.map((item, itemIdx) => (
-                                            <li key={itemIdx} className="flex items-start gap-3">
-                                                <div className="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-blue-400 group-hover:bg-white/60 transition-colors" />
-                                                <span className="text-sm font-medium text-slate-600 group-hover:text-white/90 leading-snug transition-colors text-left">
+                                            <li key={itemIdx} className="group/item flex items-start gap-3">
+                                                <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center transition-all duration-300 group-hover:bg-white/20 group-hover:scale-110 group-hover/item:scale-110 group-hover/item:rotate-[10deg] group-hover/item:translate-x-1">
+                                                    <svg
+                                                        viewBox="0 0 24 24"
+                                                        className="w-3 h-3 text-blue-600 transition-all duration-300 group-hover:text-white group-hover:scale-110 group-hover/item:scale-110 group-hover/item:rotate-[360deg]"
+                                                        fill="currentColor"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path d="M9.55 17.2 4.8 12.45l1.4-1.4 3.35 3.35 8.25-8.25 1.4 1.4z" />
+                                                    </svg>
+                                                </div>
+                                                <span className="text-sm font-medium text-slate-600 group-hover:text-white/90 leading-snug transition-all text-left group-hover/item:translate-x-1">
                                                     {item}
                                                 </span>
                                             </li>
