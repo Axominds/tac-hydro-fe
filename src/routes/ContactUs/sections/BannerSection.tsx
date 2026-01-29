@@ -54,13 +54,14 @@ export const BannerSection = () => {
                     <div className="translate-y-[2rem] sm:translate-y-[2.5rem] flex flex-col items-center">
                         <div className="max-w-[720px] animate-fade-in opacity-0 [--animation-delay:200ms] lg:max-w-[995px] flex flex-col items-center">
                             <h1 className="font-bold text-white text-3xl sm:text-4xl lg:text-[52px] sm:leading-[1.1] lg:leading-[1.1] mb-2 text-center">
-                                <span className="block">Building Partnerships for Sustainable Energy Solutions</span>
+                                <span className="block">Engineering the Future of Sustainable Energy</span>
                             </h1>
 
                             <div className="bg-white mt-3" />
                             <p className="font-semibold text-white text-base sm:text-lg lg:text-[20px] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[640px] text-center">
-                                Join forces with TacHydro to create innovative, sustainable hydropower solutions
-                                that drive positive environmental and social impact.
+                                Join our elite technical ecosystem. We combine localized
+                                Himalayan expertise with world-class engineering standards to deliver high-impact
+                                infrastructure.
                             </p>
 
                             <Button

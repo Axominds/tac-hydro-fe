@@ -1,76 +1,101 @@
+import { Compass, Sliders, FileSignature, Rocket, TrendingUp } from "lucide-react";
+
 export const PartnershipRoadMapSection = () => {
     const roadmapSteps = [
         {
-            step: "01",
-            title: "Initial Consultation",
-            description: "We begin with a comprehensive discussion to understand your project goals, requirements, and vision."
+            icon: <Compass className="w-8 h-8 text-blue-600" />,
+            milestone: "Milestone 01",
+            title: "Strategic Discovery",
+            description: "Initial consultation to evaluate value proposition and goal alignment. We conduct deep-dive synergy sessions to define clear project KPIs and operational boundaries."
         },
         {
-            step: "02",
-            title: "Feasibility Assessment",
-            description: "Our team conducts detailed technical and economic feasibility studies to evaluate project viability."
+            icon: <Sliders className="w-8 h-8 text-green-600" />,
+            milestone: "Milestone 02",
+            title: "Resource Alignment",
+            description: "Defining technical requirements, financial commitments, and risk-sharing models. Establishing the resource framework for long-term project viability."
         },
         {
-            step: "03",
-            title: "Partnership Agreement",
-            description: "We formalize our collaboration with clear terms, responsibilities, and mutual commitments."
+            icon: <FileSignature className="w-8 h-8 text-purple-600" />,
+            milestone: "Milestone 03",
+            title: "Formalization",
+            description: "Execution of MoUs or JVs with clearly defined KPIs and governance structures. Setting the legal and operational foundation for collaboration."
         },
         {
-            step: "04",
-            title: "Project Planning",
-            description: "Together, we develop comprehensive project plans, timelines, and resource allocation strategies."
+            icon: <Rocket className="w-8 h-8 text-orange-600" />,
+            milestone: "Milestone 04",
+            title: "Implementation and Execution",
+            description: "Active project execution with integrated teams and agile communication channels. Deploying specialized talent across on-site and remote environments."
         },
         {
-            step: "05",
-            title: "Implementation",
-            description: "Our teams work collaboratively to execute the project with regular communication and progress updates."
-        },
-        {
-            step: "06",
-            title: "Ongoing Support",
-            description: "We provide continuous support, monitoring, and optimization throughout the project lifecycle."
+            icon: <TrendingUp className="w-8 h-8 text-red-600" />,
+            milestone: "Milestone 05",
+            title: "Growth & Evolution",
+            description: "Annual reviews to scale the partnership into new markets or technologies. Continuous evaluation of performance to drive perpetual innovation."
         }
     ];
 
     return (
-        <section id="partnership-roadmap" className="relative w-full min-h-screen bg-[#f8f9fa] flex items-center">
-            <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-20 py-16 w-full">
-                <div className="flex flex-col gap-6 text-center mb-12">
+        <section id="partnership-roadmap" className="relative w-full min-h-screen bg-[#f8f9fa] flex items-center py-20">
+            <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-20 w-full">
+                <div className="flex flex-col gap-6 text-center mb-16">
                     <h2 className="text-3xl sm:text-4xl lg:text-[48px] font-bold text-[#111111]">
                         Partnership Roadmap
                     </h2>
                     <p className="text-base sm:text-lg text-[#6b6b6b] max-w-[800px] mx-auto">
-                        Our structured approach ensures a smooth collaboration journey from initial contact to project success.
+                        Strengthening the bridge between specialized consulting and operational reality through shared milestones
                     </p>
                 </div>
 
                 <div className="relative">
                     {/* Vertical line connector for mobile/tablet */}
-                    <div className="absolute left-8 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#0070c0] to-[#d4002a] lg:hidden" />
+                    <div className="absolute left-8 top-0 bottom-0 w-[2px] bg-[#0070c0] lg:hidden" />
 
-                    <div className="space-y-8 lg:space-y-12">
+                    {/* Center vertical line for desktop */}
+                    <div className="absolute left-1/2 top-0 bottom-0 w-[2px] bg-[#0070c0] hidden lg:block -translate-x-1/2" />
+
+                    <div className="space-y-12">
                         {roadmapSteps.map((item, index) => (
-                            <div
-                                key={index}
-                                className={`flex flex-col lg:flex-row gap-6 lg:gap-12 items-start lg:items-center ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
-                                    }`}
-                            >
-                                {/* Step number circle */}
-                                <div className="relative z-10 flex-shrink-0">
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#0070c0] to-[#d4002a] flex items-center justify-center shadow-[0_8px_24px_rgba(0,112,192,0.3)]">
-                                        <span className="text-2xl font-bold text-white">{item.step}</span>
+                            <div key={index} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+
+                                {/* Mobile: Left aligned with line */}
+                                <div className="flex flex-col md:hidden pl-20 relative w-full">
+                                    <div className="absolute left-0 w-16 h-16 -ml-0 rounded-full bg-white border-4 border-[#0070c0] flex items-center justify-center shadow-lg z-10">
+                                        {item.icon}
+                                    </div>
+                                    <div className="bg-white rounded-2xl p-6 shadow-md border-l-4 border-[#0070c0]">
+                                        <div className="mb-2">
+                                            <span className="block text-sm font-bold text-blue-600 uppercase tracking-wider mb-1">
+                                                {item.milestone}
+                                            </span>
+                                            <h3 className="text-xl font-bold text-[#111111]">
+                                                {item.title}
+                                            </h3>
+                                        </div>
+                                        <p className="text-sm text-[#6b6b6b]">{item.description}</p>
                                     </div>
                                 </div>
 
-                                {/* Content card */}
-                                <div className={`flex-1 bg-white rounded-2xl p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] hover:shadow-[0_15px_40px_rgba(15,23,42,0.12)] transition-all duration-300 ${index % 2 === 0 ? 'lg:text-left' : 'lg:text-right'
-                                    }`}>
-                                    <h3 className="text-xl sm:text-2xl font-bold text-[#111111] mb-3">
-                                        {item.title}
-                                    </h3>
-                                    <p className="text-sm sm:text-base text-[#6b6b6b] leading-relaxed">
-                                        {item.description}
-                                    </p>
+                                {/* Desktop: Centered timeline */}
+                                <div className="hidden md:flex items-center justify-center w-full">
+                                    <div className={`w-[45%] ${index % 2 === 0 ? 'text-right pr-12' : 'order-last text-left pl-12'}`}>
+                                        <div className="bg-white rounded-2xl p-8 shadow-[0_10px_30px_rgba(15,23,42,0.08)] hover:shadow-[0_20px_50px_rgba(15,23,42,0.15)] transition-all duration-300 hover:-translate-y-1">
+                                            <div className="mb-3">
+                                                <span className="block text-sm font-bold text-blue-600 uppercase tracking-wider mb-1">
+                                                    {item.milestone}
+                                                </span>
+                                                <h3 className="text-xl font-bold text-[#111111]">
+                                                    {item.title}
+                                                </h3>
+                                            </div>
+                                            <p className="text-sm text-[#6b6b6b] leading-relaxed">{item.description}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="absolute left-1/2 -translate-x-1/2 w-16 h-16 rounded-full bg-white border-4 border-[#0070c0] flex items-center justify-center shadow-[0_8px_24px_rgba(0,112,192,0.3)] z-10">
+                                        {item.icon}
+                                    </div>
+
+                                    <div className="w-[45%]" />
                                 </div>
                             </div>
                         ))}

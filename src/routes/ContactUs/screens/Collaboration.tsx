@@ -11,7 +11,7 @@ const COLLABORATION_SECTIONS = [
     "collaborative-advantage",
     "partnership-roadmap",
     "collaborative-ecosystem",
-    "innitate-synergy",
+    "initiate-synergy",
 ];
 
 export const Collaboration = () => {
