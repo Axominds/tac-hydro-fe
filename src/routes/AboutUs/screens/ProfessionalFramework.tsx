@@ -19,7 +19,7 @@ export const ProfessionalFramework = () => {
                 title="PROFESSIONAL FRAMEWORK"
                 description="ENGINEERING EXCELLENCE & INTEGRITY"
             />
-            <ProfessionalFrameworkSection showDetails={true} />
+            <ProfessionalFrameworkSection />
 
             <MoveDownSection sections={FRAMEWORK_SECTIONS} />
             <FooterSection />

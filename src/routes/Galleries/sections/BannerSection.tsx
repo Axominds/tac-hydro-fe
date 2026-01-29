@@ -4,13 +4,13 @@ import { Button } from "../../../components/ui/button";
 
 export const BannerSection = () => {
     const handleGetStarted = () => {
-        const target = document.getElementById("collaborative-advantage");
+        const target = document.getElementById("gallery-section");
         if (!target) return;
 
         const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
         const startPosition = window.pageYOffset;
         const distance = targetPosition - startPosition;
-        const duration = 1500;
+        const duration = 1500; // Longer duration for slow start
         let start: number | null = null;
 
         const easeInOutQuart = (t: number) => {
@@ -54,13 +54,12 @@ export const BannerSection = () => {
                     <div className="translate-y-[2rem] sm:translate-y-[2.5rem] flex flex-col items-center">
                         <div className="max-w-[720px] animate-fade-in opacity-0 [--animation-delay:200ms] lg:max-w-[995px] flex flex-col items-center">
                             <h1 className="font-bold text-white text-3xl sm:text-4xl lg:text-[52px] sm:leading-[1.1] lg:leading-[1.1] mb-2 text-center">
-                                <span className="block">Building Partnerships for Sustainable Energy Solutions</span>
+                                <span className="block">Capturing the Current</span>
                             </h1>
 
                             <div className="bg-white mt-3" />
                             <p className="font-semibold text-white text-base sm:text-lg lg:text-[20px] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[640px] text-center">
-                                Join forces with TacHydro to create innovative, sustainable hydropower solutions
-                                that drive positive environmental and social impact.
+                                A Visual Archive of Our Projects and Team Culture
                             </p>
 
                             <Button

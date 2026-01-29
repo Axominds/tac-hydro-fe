@@ -70,8 +70,17 @@ export const BannerSection = () => {
 
     return (
         <header className="relative w-full min-h-screen">
+            <style>
+                {`
+                    @keyframes slowZoom {
+                        0% { transform: scale(1); }
+                        100% { transform: scale(1.1); }
+                    }
+                `}
+            </style>
             <img
                 className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                style={{ animation: 'slowZoom 20s ease-in-out infinite alternate' }}
                 alt="Hero Background"
                 src={HERO_BG_ALT}
             />
