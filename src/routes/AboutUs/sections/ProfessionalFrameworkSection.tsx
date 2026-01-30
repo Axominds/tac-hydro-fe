@@ -71,7 +71,7 @@ export const ProfessionalFrameworkSection = () => {
                                     <h3 className="text-xl font-bold text-slate-900 leading-tight">
                                         {item.title}
                                     </h3>
-                                    <p className="text-slate-600 text-sm leading-relaxed mt-2 line-clamp-3">
+                                    <p className="text-slate-600 text-sm leading-relaxed mt-2">
                                         {item.description}
                                     </p>
                                 </div>

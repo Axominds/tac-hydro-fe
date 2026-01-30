@@ -150,7 +150,7 @@ export const CurrentVacancySection = () => {
                                                 <h5 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                                                     {role.title}
                                                 </h5>
-                                                <p className="text-gray-500 text-sm line-clamp-3 leading-relaxed">
+                                                <p className="text-gray-500 text-sm leading-relaxed">
                                                     {role.description}
                                                 </p>
                                             </div>
@@ -213,6 +213,17 @@ export const CurrentVacancySection = () => {
                         {/* Modal Body */}
                         <div className="flex-1 overflow-y-auto px-8 py-8">
                             <div className="space-y-12">
+                                {/* Job Overview Section */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3 text-slate-900">
+                                        <FileTextIcon className="w-5 h-5 text-blue-600" />
+                                        <h4 className="font-bold text-lg leading-none">Job Overview</h4>
+                                    </div>
+                                    <p className="text-slate-600 text-[15px] leading-relaxed pl-8 text-justify">
+                                        {viewingRole.description}
+                                    </p>
+                                </div>
+
                                 {/* Job Details Sections */}
                                 <div className="grid lg:grid-cols-2 gap-10">
                                     {/* Responsibilities */}
