@@ -1,7 +1,7 @@
 import { FooterSection } from "../../components/sections/FooterSection";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "../../components/sections/BannerSection";
-import { NumbersAndFiguresSection } from "../../components/sections/NumbersAndFiguresSection";
+import { NumbersAndFiguresSection } from "./sections/NumbersAndFiguresSection";
 import { AboutUsSection } from "./sections/AboutUsSection";
 import { TopManagementSection } from "./sections/TopManagementSection";
 import { SDGSection } from "./sections/SDGSection";

@@ -69,9 +69,18 @@ export const BannerSection = () => {
     }, [isDeleting, typewriterIndex, typewriterText]);
 
     return (
-        <header className="relative w-full min-h-screen">
+        <header className="relative w-full min-h-screen overflow-hidden">
+            <style>
+                {`
+                    @keyframes slowZoom {
+                        0% { transform: scale(1); }
+                        100% { transform: scale(1.1); }
+                    }
+                `}
+            </style>
             <img
                 className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                style={{ animation: 'slowZoom 20s ease-in-out infinite alternate' }}
                 alt="Hero Background"
                 src={HERO_BG_ALT}
             />
@@ -93,8 +102,7 @@ export const BannerSection = () => {
                             </div>
                             <div className="bg-white mt-3" />
                             <p className="font-semibold text-white text-base sm:text-lg lg:text-[20px] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[640px]">
-                                TacHydro exists to bring low carbon solutions to minimize the impact of energy
-                                creation on the environment.
+                                Transforming natural potential into sustainable legacies through technical mastery.
                             </p>
 
                             <Button

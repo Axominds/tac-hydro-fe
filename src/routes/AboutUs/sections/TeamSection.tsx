@@ -1,7 +1,6 @@
 
 import { FC, useState, useEffect } from "react";
 import { TEAM_MEMBERS, TeamMember } from "../data/teamData";
-import { cn } from "../../../lib/utils";
 import { X } from "lucide-react";
 
 // Categorize members

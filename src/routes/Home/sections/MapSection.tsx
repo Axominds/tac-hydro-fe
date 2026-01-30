@@ -1,5 +1,6 @@
+import { useMemo, useState } from "react";
 import { Navigation } from "lucide-react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -102,43 +103,41 @@ const createCustomIcon = (color: string) => {
 };
 
 export const MapSection = () => {
+    const [activeScope, setActiveScope] = useState<ProjectScope | "All">("All");
+
+    const filteredLocations = useMemo(() => {
+        if (activeScope === "All") {
+            return mapLocations;
+        }
+        return mapLocations.filter((location) => location.scope === activeScope);
+    }, [activeScope]);
+
     return (
-        <section id="map-section" className="relative w-full bg-[#f8f9fa] min-h-screen flex items-center justify-center py-6 sm:py-10 overflow-hidden">
-            {/* Background Aesthetic Elements */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-100/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-
-            <div className="relative mx-auto max-w-[1340px] px-6 w-full">
-                <div className="mb-6 text-center">
-                    <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight mb-4">
-                        Project Footprint Across Nepal
-                    </h2>
-                    <p className="text-slate-500 max-w-2xl mx-auto">
-                        Our engineering expertise reaches every corner of the nation, delivering sustainable energy solutions through various project scopes.
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 items-stretch">
+        <section id="map-section" className="relative w-full bg-[#f8f9fa] h-screen overflow-hidden">
+            <div className="relative w-full h-full">
+                <div className="relative h-full">
                     {/* Map Container */}
-                    <div className="relative bg-white rounded-[40px] p-2 shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden h-[450px] lg:h-[550px]">
+                    <div className="relative bg-white overflow-hidden h-full">
                         {/* North Indicator */}
-                        <div className="absolute top-6 right-6 flex flex-col items-center gap-1 z-[1000] bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-sm border border-slate-100">
+                        <div className="absolute top-6 right-6 flex flex-col items-center gap-1 z-40 bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-sm border border-slate-100">
                             <Navigation className="w-6 h-6 text-slate-400 -rotate-45" fill="currentColor" />
                             <span className="text-[10px] font-bold text-slate-400 tracking-widest">NORTH</span>
                         </div>
 
                         <MapContainer
-                            center={[28.3949, 84.1240]} // Center of Nepal
+                            center={[28.3949, 83.1]} // Stronger west shift so Nepal sits more to the right
                             zoom={7}
-                            style={{ height: "100%", width: "100%", borderRadius: "32px" }}
+                            style={{ height: "100%", width: "100%" }}
                             scrollWheelZoom={false}
-                            className="z-10"
+                            className="z-10 map-with-controls"
+                            zoomControl={false}
                         >
+                            <ZoomControl position="topright" />
                             <TileLayer
                                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                             />
-                            {mapLocations.map((location) => {
+                            {filteredLocations.map((location) => {
                                 const colors = scopeColors[location.scope];
                                 return (
                                     <Marker
@@ -161,30 +160,37 @@ export const MapSection = () => {
                     </div>
 
                     {/* Legend / Index Container */}
-                    <div className="flex flex-col gap-6 bg-white rounded-[40px] p-8 shadow-xl border border-slate-100">
-                        <h3 className="text-xl font-bold text-slate-900 border-b border-slate-200 pb-4">
-                            Project Scopes
+                    <div className="absolute left-6 top-6 z-40 flex flex-col gap-6 bg-white/95 backdrop-blur-sm rounded-[32px] p-6 shadow-xl border border-slate-100 max-w-[320px] w-full">
+                        <h3 className="text-lg font-bold text-slate-900 border-b border-slate-200 pb-3">
+                            Scope Color Key
                         </h3>
-                        <div className="flex flex-col gap-4 flex-grow">
+                        <div className="flex flex-col gap-4">
+                            <button
+                                type="button"
+                                onClick={() => setActiveScope("All")}
+                                className={`flex items-center gap-4 text-left group ${activeScope === "All" ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
+                                aria-pressed={activeScope === "All"}
+                            >
+                                <div className="w-3 h-3 rounded-full bg-slate-400 ring-4 ring-offset-2 ring-transparent group-hover:ring-slate-200 transition-all" />
+                                <span className="text-sm font-semibold text-slate-700 leading-tight">All Scopes</span>
+                            </button>
                             {(Object.keys(scopeColors) as ProjectScope[]).map((scope) => {
                                 const colors = scopeColors[scope];
                                 return (
-                                    <div key={scope} className="flex items-center gap-4 group">
+                                    <button
+                                        key={scope}
+                                        type="button"
+                                        onClick={() => setActiveScope(scope)}
+                                        className={`flex items-center gap-4 text-left group ${activeScope === scope ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
+                                        aria-pressed={activeScope === scope}
+                                    >
                                         <div className={`w-3 h-3 rounded-full ${colors.bg} ring-4 ring-offset-2 ring-transparent group-hover:ring-blue-100 transition-all`} style={{ backgroundColor: colors.pin }} />
                                         <span className="text-sm font-medium text-slate-600 leading-tight">
                                             {scope}
                                         </span>
-                                    </div>
+                                    </button>
                                 );
                             })}
-                        </div>
-
-                        <div className="mt-auto pt-6 border-t border-slate-100">
-                            <div className="p-6 bg-blue-600 rounded-3xl text-white shadow-lg shadow-blue-200">
-                                <p className="text-xs font-bold uppercase tracking-widest mb-2 opacity-80">Total Statistics</p>
-                                <div className="text-3xl font-bold mb-1">120+</div>
-                                <p className="text-white/80 text-sm">Successfully completed engineering projects across Nepal.</p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -200,6 +206,14 @@ export const MapSection = () => {
                 }
                 .custom-popup .leaflet-popup-content {
                     margin: 8px 12px;
+                }
+                .map-with-controls .leaflet-top,
+                .map-with-controls .leaflet-bottom {
+                    z-index: 40;
+                }
+                .map-with-controls .leaflet-top.leaflet-right {
+                    top: 88px;
+                    right: 24px;
                 }
                 @keyframes ping {
                     75%, 100% {

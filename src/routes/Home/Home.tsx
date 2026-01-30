@@ -1,8 +1,7 @@
-import { NumbersAndFiguresSection } from "../../components/sections/NumbersAndFiguresSection";
+import { NumbersAndFiguresSection } from "./sections/NumbersAndFiguresSection";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "./sections/BannerSection";
 import { ExpertiseAndServicesSection } from "./sections/ExpertiseAndServicesSection";
-import { ProfessionalFrameworkSection } from "./sections/ProfessionalFrameworkSection";
 import { MapSection } from "./sections/MapSection";
 import { ValuedPartnersSection } from "./sections/ValuedPartnersSection";
 import { SectorsOfServicesSection } from "./sections/SectorsOfServicesSection";
@@ -16,7 +15,6 @@ import { FooterSection } from "../../components/sections/FooterSection";
 const HOME_SECTIONS = [
   "numbers-and-figures",
   "expertise-and-services",
-  "professional-framework",
   "sectors-of-services",
   "video-section",
   "map-section",
@@ -31,7 +29,6 @@ export const Home = () => {
       <BannerSection />
       <NumbersAndFiguresSection />
       <ExpertiseAndServicesSection />
-      <ProfessionalFrameworkSection />
       <SectorsOfServicesSection />
       <VideoSection />
       <MapSection />

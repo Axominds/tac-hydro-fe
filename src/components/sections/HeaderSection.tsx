@@ -35,7 +35,14 @@ const NAV_ITEMS: NavigationItem[] = [
   { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
   { label: "Galleries", href: "/galleries" },
-  { label: "Contact Us", href: "/contact-us" },
+  {
+    label: "Contact Us",
+    href: "/contact-us",
+    dropdown: [
+      { label: "Collaboration", href: "/contact-us/collaboration" },
+      { label: "Career", href: "/contact-us/career" },
+    ],
+  },
 ];
 
 export const HeaderSection = ({
@@ -170,5 +177,4 @@ export const HeaderSection = ({
     </header>
   );
 };
-
 
