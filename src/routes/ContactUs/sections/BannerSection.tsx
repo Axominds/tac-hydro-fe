@@ -1,10 +1,9 @@
-import { ChevronRightIcon } from "lucide-react";
 import { HERO_BG_ALT } from "../../../assets";
 import { Button } from "../../../components/ui/button";
 
 export const BannerSection = () => {
-    const handleGetStarted = () => {
-        const target = document.getElementById("collaborative-advantage");
+    const scrollToSection = (id: string) => {
+        const target = document.getElementById(id);
         if (!target) return;
 
         const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
@@ -31,7 +30,7 @@ export const BannerSection = () => {
     };
 
     return (
-        <header className="relative w-full min-h-screen">
+        <header id="collaboration-banner" className="relative w-full min-h-screen overflow-hidden">
             <style>
                 {`
                     @keyframes slowZoom {
@@ -48,7 +47,6 @@ export const BannerSection = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent pointer-events-none" />
 
-
             <div className="absolute inset-0 z-10 flex flex-col justify-center items-center text-center">
                 <div className="h-full mx-auto px-4 sm:px-8 lg:px-20 flex items-center justify-center">
                     <div className="translate-y-[2rem] sm:translate-y-[2.5rem] flex flex-col items-center">
@@ -58,22 +56,27 @@ export const BannerSection = () => {
                             </h1>
 
                             <div className="bg-white mt-3" />
-                            <p className="font-semibold text-white text-base sm:text-lg lg:text-[20px] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[640px] text-center">
-                                Join our elite technical ecosystem. We combine localized
-                                Himalayan expertise with world-class engineering standards to deliver high-impact
-                                infrastructure.
+                            <p className="font-semibold text-white text-base sm:text-lg lg:text-[20px] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[720px] text-center">
+                                Join our elite technical ecosystem. We combine localized Himalayan expertise with world-class engineering standards to deliver high-impact infrastructure.
                             </p>
 
-                            <Button
-                                type="button"
-                                onClick={handleGetStarted}
-                                className="mt-6 inline-flex items-center justify-center gap-[9px] px-6 sm:px-[29px] py-2.5 rounded-[32px] border border-white/40 bg-gradient-to-br from-white/60 via-white/10 to-white/10 backdrop-blur-[30px] font-bold text-white text-sm sm:text-base lg:text-lg shadow-[0_25px_45px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_65px_rgba(0,0,0,0.45)] active:translate-y-0.5"
-                            >
-                                <span className="font-bold text-white text-sm sm:text-base lg:text-lg leading-[normal]">
-                                    Get Started
-                                </span>
-                                <ChevronRightIcon className="w-5 h-5 text-white" />
-                            </Button>
+                            <div className="mt-8 flex flex-col sm:flex-row gap-4 items-center">
+                                <Button
+                                    type="button"
+                                    onClick={() => scrollToSection("initiate-synergy")}
+                                    className="inline-flex items-center justify-center px-6 sm:px-[29px] py-2.5 rounded-[32px] border border-white/40 bg-gradient-to-br from-white/60 via-white/10 to-white/10 backdrop-blur-[30px] font-bold text-white text-sm sm:text-base lg:text-lg shadow-[0_25px_45px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_65px_rgba(0,0,0,0.45)] active:translate-y-0.5"
+                                >
+                                    Start a Partnership
+                                </Button>
+
+                                <Button
+                                    type="button"
+                                    onClick={() => scrollToSection("partnership-roadmap")}
+                                    className="inline-flex items-center justify-center px-6 sm:px-[29px] py-2.5 rounded-[32px] border border-white/40 bg-white/10 backdrop-blur-[30px] font-bold text-white text-sm sm:text-base lg:text-lg shadow-[0_25px_45px_rgba(0,0,0,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_65px_rgba(0,0,0,0.45)] active:translate-y-0.5"
+                                >
+                                    View Roadmap
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>

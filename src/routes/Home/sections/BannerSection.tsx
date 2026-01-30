@@ -69,7 +69,7 @@ export const BannerSection = () => {
     }, [isDeleting, typewriterIndex, typewriterText]);
 
     return (
-        <header className="relative w-full min-h-screen">
+        <header className="relative w-full min-h-screen overflow-hidden">
             <style>
                 {`
                     @keyframes slowZoom {
