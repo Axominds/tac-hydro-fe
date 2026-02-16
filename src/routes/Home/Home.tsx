@@ -1,7 +1,7 @@
 import { NumbersAndFiguresSection } from "./sections/NumbersAndFiguresSection";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "./sections/BannerSection";
-import { ExpertiseAndServicesSection } from "./sections/ExpertiseAndServicesSection";
+import { ExpertiseAndServicesSection } from "../../components/sections/ExpertiseAndServicesSection";
 import { MapSection } from "./sections/MapSection";
 import { ValuedPartnersSection } from "./sections/ValuedPartnersSection";
 import { SectorsOfServicesSection } from "./sections/SectorsOfServicesSection";
