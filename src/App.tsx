@@ -9,7 +9,7 @@ import { Galleries } from "./routes/Galleries/Galleries";
 import { Projects } from "./routes/Projects/Projects";
 import { Services } from "./routes/Services/Services";
 import { ContactUs, Collaboration, Career } from "./routes/ContactUs/ContactUs";
-import { ServiceDetail } from "./routes/ServiceDetail/ServiceDetail";
+
 
 const ScrollManager = (): null => {
   const location = useLocation();
@@ -53,7 +53,7 @@ export const App = () => {
         <Route path="/galleries" element={<Galleries />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/services" element={<Services />} />
-        <Route path="/service-detial" element={<ServiceDetail />} />
+
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/contact-us/collaboration" element={<Collaboration />} />
         <Route path="/contact-us/career" element={<Career />} />
