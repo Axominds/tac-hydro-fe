@@ -17,13 +17,11 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
-type ProjectScope =
-    | "Feasibility Study"
-    | "Detailed Engineering Design"
-    | "Hydromechanical Design"
-    | "Construction Supervision"
-    | "Due Diligence Appraisal"
-    | "Project Monitoring and Bill Verification";
+import { projectData, ProjectDivision } from "../../Projects/data/projectData";
+
+// ... entries ...
+
+type ProjectScope = ProjectDivision;
 
 interface MapLocation {
     id: string;
@@ -36,55 +34,17 @@ interface MapLocation {
 const scopeColors: Record<ProjectScope, { pin: string; bg: string; border: string }> = {
     "Feasibility Study": { pin: "#F7DF1E", bg: "bg-yellow-400", border: "border-yellow-200" },
     "Detailed Engineering Design": { pin: "#4CAF50", bg: "bg-green-500", border: "border-green-200" },
-    "Hydromechanical Design": { pin: "#795548", bg: "bg-amber-800", border: "border-amber-900" },
     "Construction Supervision": { pin: "#03A9F4", bg: "bg-sky-500", border: "border-sky-200" },
     "Due Diligence Appraisal": { pin: "#F44336", bg: "bg-red-500", border: "border-red-200" },
-    "Project Monitoring and Bill Verification": { pin: "#1A237E", bg: "bg-indigo-900", border: "border-indigo-800" },
 };
 
-const mapLocations: MapLocation[] = [
-    // Sudurpashchim (Far West)
-    { id: "west-seti", coords: [29.4117, 80.8611], title: "West Seti", scope: "Feasibility Study" },
-    { id: "chameliya", coords: [29.7439, 80.5833], title: "Chameliya", scope: "Detailed Engineering Design" },
-    { id: "seti-river-3", coords: [29.5500, 81.0500], title: "Seti River-3", scope: "Hydromechanical Design" },
-
-    // Karnali & Mid-West
-    { id: "upper-karnali", coords: [28.8993, 81.4875], title: "Upper Karnali", scope: "Detailed Engineering Design" },
-    { id: "bheri-babai", coords: [28.4500, 81.6500], title: "Bheri Babai", scope: "Hydromechanical Design" },
-    { id: "tila-1", coords: [29.1500, 81.8500], title: "Tila-1", scope: "Feasibility Study" },
-    { id: "mugu-karnali", coords: [29.6500, 82.2500], title: "Mugu Karnali", scope: "Detailed Engineering Design" },
-
-    // Gandaki & Lumbini
-    { id: "upper-marsyangdi", coords: [28.2500, 84.4500], title: "Upper Marsyangdi", scope: "Detailed Engineering Design" },
-    { id: "modi-khola", coords: [28.2720, 83.7411], title: "Modi Khola", scope: "Hydromechanical Design" },
-    { id: "kaligandaki-a", coords: [27.9250, 83.6000], title: "Kaligandaki A", scope: "Project Monitoring and Bill Verification" },
-    { id: "setu-khola", coords: [28.2000, 83.9500], title: "Setu Khola", scope: "Feasibility Study" },
-    { id: "jhimruk", coords: [28.1000, 82.8500], title: "Jhimruk", scope: "Construction Supervision" },
-    { id: "dordi-khola", coords: [28.2500, 84.5500], title: "Dordi Khola", scope: "Detailed Engineering Design" },
-
-    // Bagmati & Central
-    { id: "upper-tamakoshi", coords: [27.8439, 86.2181], title: "Upper Tamakoshi", scope: "Construction Supervision" },
-    { id: "khimti-1", coords: [27.6000, 86.1500], title: "Khimti-1", scope: "Due Diligence Appraisal" },
-    { id: "trishuli", coords: [27.9212, 85.1462], title: "Trishuli", scope: "Project Monitoring and Bill Verification" },
-    { id: "sunkoshi", coords: [27.7806, 85.9170], title: "Sunkoshi", scope: "Hydromechanical Design" },
-    { id: "balephi-a", coords: [27.8500, 85.8500], title: "Balephi-A", scope: "Detailed Engineering Design" },
-    { id: "likhu-4", coords: [27.5500, 86.3500], title: "Likhu-4", scope: "Feasibility Study" },
-    { id: "devighat", coords: [27.8800, 85.1000], title: "Devighat", scope: "Project Monitoring and Bill Verification" },
-    { id: "khempalung", coords: [27.7000, 86.9500], title: "Khempalung", scope: "Detailed Engineering Design" },
-
-    // Koshi & East
-    { id: "arun-iii", coords: [27.5100, 87.1931], title: "Arun III", scope: "Project Monitoring and Bill Verification" },
-    { id: "lower-arun", coords: [27.3500, 87.1500], title: "Lower Arun", scope: "Feasibility Study" },
-    { id: "tamur", coords: [27.1500, 87.7500], title: "Tamur", scope: "Hydromechanical Design" },
-    { id: "kabeli-a", coords: [27.2500, 87.8500], title: "Kabeli A", scope: "Construction Supervision" },
-    { id: "dudh-koshi-pr", coords: [27.2000, 86.7000], title: "Dudh Koshi", scope: "Due Diligence Appraisal" },
-    { id: "mai-khola", coords: [26.9500, 87.9500], title: "Mai Khola", scope: "Due Diligence Appraisal" },
-    { id: "puwa-khola", coords: [27.0500, 88.0200], title: "Puwa Khola", scope: "Feasibility Study" },
-    { id: "hewa-khola", coords: [27.1800, 87.7200], title: "Hewa Khola", scope: "Hydromechanical Design" },
-    { id: "upper-arun", coords: [27.7500, 87.4500], title: "Upper Arun", scope: "Detailed Engineering Design" },
-    { id: "solu-khola", coords: [27.4500, 86.7500], title: "Solu Khola", scope: "Construction Supervision" },
-    { id: "ingwa-khola", coords: [27.3000, 87.9000], title: "Ingwa Khola", scope: "Feasibility Study" },
-];
+const mapLocations: MapLocation[] = projectData.map(project => ({
+    id: project.id,
+    coords: project.location,
+    title: project.title,
+    scope: project.division,
+    capacity: project.technicalHighlights["Capacity"]
+}));
 
 const createCustomIcon = (color: string) => {
     return L.divIcon({
@@ -132,7 +92,7 @@ export const MapSection = () => {
                             className="z-10 map-with-controls"
                             zoomControl={false}
                         >
-                            <ZoomControl position="topright" />
+                            <ZoomControl position="bottomright" />
                             <TileLayer
                                 url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -209,12 +169,9 @@ export const MapSection = () => {
                 }
                 .map-with-controls .leaflet-top,
                 .map-with-controls .leaflet-bottom {
-                    z-index: 40;
+                    z-index: 1000 !important;
                 }
-                .map-with-controls .leaflet-top.leaflet-right {
-                    top: 88px;
-                    right: 24px;
-                }
+
                 @keyframes ping {
                     75%, 100% {
                         transform: scale(2);
