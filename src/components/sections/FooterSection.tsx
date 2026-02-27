@@ -1,5 +1,4 @@
 import {
-  ArrowRightIcon,
   FacebookIcon,
   LinkedinIcon,
   MailIcon,
