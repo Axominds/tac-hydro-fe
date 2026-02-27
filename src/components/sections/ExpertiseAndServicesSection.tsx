@@ -12,7 +12,7 @@ const expertiseData = [
             "Project Identification",
             "Desk Study",
             "Topographical Study",
-            "Feasibility Study",
+            "Detailed Feasibility Study",
             "Due Diligence Appraisal",
             "Engineering Support During Development",
         ],
@@ -39,7 +39,7 @@ const expertiseData = [
         hoverBorder: "hover:border-amber-600",
         items: [
             "Construction Supervision and Quality Control",
-            "Project Monitoring and Bill Verification",
+            "Progress Monitoring and Bill Vetting",
             "Lenders Technical Consultant",
             "Contract Management and Time Control",
         ],

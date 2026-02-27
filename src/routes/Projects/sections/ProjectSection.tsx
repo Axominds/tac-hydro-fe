@@ -17,10 +17,11 @@ import {
 } from "lucide-react";
 
 const divisions: ProjectDivision[] = [
-    "Feasibility Study",
+    "Detailed Feasibility Study",
     "Detailed Engineering Design",
     "Construction Supervision",
-    "Due Diligence Appraisal"
+    "Due Diligence Appraisal",
+    "Progress Monitoring and Bill Vetting"
 ];
 
 export const ProjectSection = () => {
