@@ -9,39 +9,19 @@ import {
 } from "lucide-react";
 
 import { LOGO_FOOTER } from "../../assets";
-import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
+import { ProjectScope } from "../../routes/Projects/data/projectData";
 
-const usefulLinks = [
-  { name: "Home", column: 1 },
-  { name: "About Us", column: 1 },
-  { name: "Services", column: 1 },
-  { name: "Galleries", column: 1 },
-  { name: "Contact Us", column: 1 },
-  { name: "Projects", column: 2 },
-  { name: "Team", column: 2 },
-  { name: "Career", column: 2 },
-  { name: "News & Articles", column: 2 },
-];
-
-const services = [
-  "Project Development",
-  "Project Engineering",
-  "Project Management",
-  "Specialized Hydromech, Works",
-  "Product Development",
+const projectScopes: ProjectScope[] = [
+  "Detailed Feasibility Study",
+  "Detailed Engineering Design",
+  "Construction Supervision",
+  "Due Diligence Appraisal",
+  "Progress Monitoring and Bill Vetting"
 ];
 
 export const FooterSection = () => {
   const currentYear = new Date().getFullYear();
-  const linkHrefs: Record<string, string> = {
-    Home: "/",
-    "About Us": "/about-us",
-    Services: "/services",
-    Galleries: "/galleries",
-    "Contact Us": "/contact-us",
-    Projects: "/projects",
-  };
 
   const handleScrollToTop = () => {
     window.scrollTo({
@@ -51,7 +31,7 @@ export const FooterSection = () => {
   };
 
   return (
-    <footer id="footer-section" className="w-full bg-[#5fa6d5] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20">
+    <footer id="footer-section" className="w-full bg-[#1a365d] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20">
       <div className="max-w-[1449px] mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           <div className="flex flex-col">
@@ -64,19 +44,6 @@ export const FooterSection = () => {
             <div className="font-semibold text-white text-base sm:text-lg leading-7 mb-4">
               Empowering Sustainable Resources Through Engineering Excellence
             </div>
-
-            <p className="font-medium text-white text-sm sm:text-base leading-7 mb-6">
-              From the earliest conceptual sketches to the final touches on a completed project
-              every step of our journey has been marked.
-            </p>
-
-            <Button
-              variant="link"
-              className="font-semibold text-white text-base sm:text-lg leading-7 p-0 h-auto justify-start w-fit hover:no-underline"
-            >
-              Read More
-              <ArrowRightIcon className="ml-2 w-4 h-4" />
-            </Button>
 
             <div className="flex gap-4 mt-8">
               <a
@@ -100,46 +67,26 @@ export const FooterSection = () => {
             </div>
           </div>
 
+          {/* Spacer column to push content to the right on desktop */}
+          <div className="hidden lg:block"></div>
+
           <div className="flex flex-col">
             <div className="mb-6">
               <h3 className="font-extrabold text-[#f0f1ff] text-base sm:text-lg tracking-[2.00px] leading-[normal] mb-6">
-                USEFUL LINKS
+                OUR PROJECTS
               </h3>
               <Separator className="bg-white/30 w-full sm:w-[165px]" />
             </div>
 
-            <div className="grid grid-cols-2 gap-x-6 sm:gap-x-10 lg:gap-x-16 gap-y-4 sm:gap-y-5">
-              {usefulLinks.map((link, index) => (
+            <div className="flex flex-col gap-4">
+              {projectScopes.map((scope, index) => (
                 <a
                   key={index}
-                  href={linkHrefs[link.name] ?? "/about-us"}
-                  target={link.name === "Facebook" || link.name === "LinkedIn" ? "_blank" : undefined}
-                  rel={link.name === "Facebook" || link.name === "LinkedIn" ? "noreferrer" : undefined}
-                  className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 hover:text-[#f0f1ff] transition-colors"
+                  href={`/projects?scope=${encodeURIComponent(scope)}`}
+                  className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-6 hover:text-blue-400 transition-colors whitespace-normal text-left decoration-0"
                 >
-                  {link.name}
+                  {scope}
                 </a>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            <div className="mb-6">
-              <h3 className="font-extrabold text-[#f0f1ff] text-base sm:text-lg tracking-[2.00px] leading-[normal] mb-6">
-                OUR SERVICES
-              </h3>
-              <Separator className="bg-white/30 w-full sm:w-[165px]" />
-            </div>
-
-            <div className="flex flex-col gap-5">
-              {services.map((service, index) => (
-                <Button
-                  key={index}
-                  variant="link"
-                  className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 p-0 h-auto justify-start hover:no-underline whitespace-normal text-left"
-                >
-                  {service}
-                </Button>
               ))}
             </div>
           </div>
@@ -156,14 +103,14 @@ export const FooterSection = () => {
               <div className="flex gap-3 items-start">
                 <MapPinIcon className="w-4 h-5 text-white flex-shrink-0 mt-1" />
                 <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7">
-                  Kupandol, Lalitpur 44600 , Nepal
+                  Sanepa - 02, Lalitpur 44600 , Nepal
                 </span>
               </div>
 
               <div className="flex gap-3 items-center">
                 <PhoneIcon className="w-[21px] h-[21px] text-white flex-shrink-0" />
                 <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap">
-                  +977 01-5422896
+                  +977 01-5439239
                 </span>
               </div>
 

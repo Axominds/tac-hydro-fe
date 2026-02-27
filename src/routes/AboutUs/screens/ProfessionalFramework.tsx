@@ -16,8 +16,8 @@ export const ProfessionalFramework = () => {
         <div className="w-full relative bg-white">
             <HeaderSection />
             <BannerSection
-                title="PROFESSIONAL FRAMEWORK"
-                description="ENGINEERING EXCELLENCE & INTEGRITY"
+                title="Professional Framework"
+                description="Engineering Excellence & Integrity"
             />
             <ProfessionalFrameworkSection />
 

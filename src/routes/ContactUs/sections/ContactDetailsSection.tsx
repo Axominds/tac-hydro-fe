@@ -22,8 +22,8 @@ export const ContactDetailsSection = () => {
                                     </div>
                                     <div>
                                         <p className="text-[11px] text-blue-400 uppercase tracking-[0.2em] font-bold mb-1">Call Us</p>
-                                        <a href="tel:+977015422896" className="text-lg font-semibold hover:text-blue-400 transition-colors">
-                                            +977 01-5422896
+                                        <a href="tel:+977015439239" className="text-lg font-semibold hover:text-blue-400 transition-colors">
+                                            +977 01-5439239
                                         </a>
                                     </div>
                                 </div>
@@ -47,7 +47,7 @@ export const ContactDetailsSection = () => {
                                     <div>
                                         <p className="text-[11px] text-blue-400 uppercase tracking-[0.2em] font-bold mb-1">Visit Us</p>
                                         <p className="text-lg font-semibold leading-snug">
-                                            Kupondole, Lalitpur, Nepal
+                                            Sanepa - 02, Lalitpur 44600, Nepal
                                         </p>
                                     </div>
                                 </div>

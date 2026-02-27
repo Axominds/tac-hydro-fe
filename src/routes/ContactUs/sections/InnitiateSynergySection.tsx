@@ -53,8 +53,8 @@ export const InnitiateSynergySection = () => {
                                 </div>
                                 <div>
                                     <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-0.5">Direct Line</p>
-                                    <a href="tel:+977015422896" className="text-sm font-semibold hover:text-[#d4002a] transition-colors">
-                                        +977 01-5422896
+                                    <a href="tel:+977015439239" className="text-sm font-semibold hover:text-[#d4002a] transition-colors">
+                                        +977 01-5439239
                                     </a>
                                 </div>
                             </div>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
 import { Project, projectData, ProjectScope } from "../data/projectData";
 import { ProjectCard } from "./ProjectCard";
@@ -13,8 +14,10 @@ import {
     Maximize,
     Settings,
     ShieldCheck,
-    ArrowUpRight
+    ArrowUpRight,
+    ZoomIn
 } from "lucide-react";
+import { ImageViewer } from "../../../components/ui/ImageViewer";
 
 const scopes: ProjectScope[] = [
     "Detailed Feasibility Study",
@@ -25,10 +28,27 @@ const scopes: ProjectScope[] = [
 ];
 
 export const ProjectSection = () => {
+    const location = useLocation();
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeScope, setActiveScope] = useState<ProjectScope>("Detailed Feasibility Study");
+    const [viewerImageIndex, setViewerImageIndex] = useState<number | null>(null);
+
+    // Handle URL query parameters for filtering
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const scopeParam = params.get("scope") as ProjectScope;
+        if (scopeParam && scopes.includes(scopeParam)) {
+            setActiveScope(scopeParam);
+
+            // Optional: scroll to the projects section when a scope is selected from URL
+            const section = document.getElementById("projects-section");
+            if (section) {
+                section.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    }, [location.search]);
 
     const handleProjectClick = (project: Project) => {
         setSelectedProject(project);
@@ -178,12 +198,19 @@ export const ProjectSection = () => {
                                     {selectedProject.images && selectedProject.images.length > 0 && (
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             {selectedProject.images.slice(0, 4).map((image, idx) => (
-                                                <div key={idx} className="relative aspect-video rounded-xl overflow-hidden shadow-sm group">
+                                                <div
+                                                    key={idx}
+                                                    onClick={() => setViewerImageIndex(idx)}
+                                                    className="relative aspect-video rounded-xl overflow-hidden shadow-sm group cursor-pointer"
+                                                >
                                                     <img
                                                         src={image}
                                                         alt={`${selectedProject.title} view ${idx + 1}`}
                                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                                     />
+                                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                                                        <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transform scale-50 group-hover:scale-100 transition-all duration-300 w-6 h-6" />
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
@@ -250,6 +277,15 @@ export const ProjectSection = () => {
                     )}
                 </DialogContent>
             </Dialog>
+
+            {selectedProject && (
+                <ImageViewer
+                    images={selectedProject.images || []}
+                    initialIndex={viewerImageIndex ?? 0}
+                    isOpen={viewerImageIndex !== null}
+                    onClose={() => setViewerImageIndex(null)}
+                />
+            )}
         </section >
     );
 };
