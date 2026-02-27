@@ -121,7 +121,7 @@ export const MapSection = () => {
                     {/* Legend / Index Container */}
                     <div className="absolute left-6 top-6 z-40 flex flex-col gap-6 bg-white/95 backdrop-blur-sm rounded-[32px] p-6 shadow-xl border border-slate-100 max-w-[320px] w-full">
                         <h3 className="text-lg font-bold text-slate-900 border-b border-slate-200 pb-3">
-                            Scope Color Key
+                            Our Project Footprint
                         </h3>
                         <div className="flex flex-col gap-4">
                             <button

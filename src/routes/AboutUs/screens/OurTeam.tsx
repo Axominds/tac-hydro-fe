@@ -15,8 +15,8 @@ export const OurTeam = () => {
         <div className="w-full relative bg-white">
             <HeaderSection />
             <BannerSection
-                title="MEET OUR TEAM"
-                description="THE MINDS BEHIND OUR INNOVATION"
+                title="Meet Our Team"
+                description="The Minds Behind Our Innovation"
             />
 
             <TeamSection />

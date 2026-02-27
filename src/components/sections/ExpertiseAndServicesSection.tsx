@@ -66,27 +66,27 @@ export const ExpertiseAndServicesSection = () => {
             <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-50 rounded-full blur-3xl opacity-50" />
 
             <div className="relative mx-auto max-w-[1200px] px-6 sm:px-8 lg:px-20">
-                <div className="mb-16">
+                <div className="mb-10">
                     <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight text-center">
                         Our Expertise and Services
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {expertiseData.map((category, idx) => (
                         <div
                             key={idx}
-                            className={`group relative flex flex-col p-8 rounded-[24px] bg-white border border-slate-200 ${category.hoverBorder} ${category.hoverBg} transition-all duration-500 overflow-hidden cursor-default min-h-[480px] items-start justify-start text-center`}
+                            className={`group relative flex flex-col p-6 rounded-[24px] bg-white border border-slate-200 ${category.hoverBorder} ${category.hoverBg} transition-all duration-500 overflow-hidden cursor-default min-h-[400px] items-start justify-start text-center`}
                         >
                             {/* Content Container */}
                             <div className="flex flex-col z-10 transition-all duration-500 items-center w-full">
                                 {/* Icon & Title */}
                                 <div className="flex flex-col items-center">
-                                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-blue-50 group-hover:bg-white/20 mb-6 transition-all duration-500 group-hover:scale-105 group-hover:-translate-y-1">
+                                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-blue-50 group-hover:bg-white/20 mb-4 transition-all duration-500 group-hover:scale-105 group-hover:-translate-y-1">
                                         <category.icon className={`w-8 h-8 ${category.iconColor} group-hover:text-white transition-all duration-500 group-hover:scale-110 group-hover:rotate-[360deg]`} />
                                     </div>
 
-                                    <h3 className="text-xl lg:text-2xl font-bold text-slate-900 group-hover:text-white transition-colors duration-500 mb-6">
+                                    <h3 className="text-xl lg:text-2xl font-bold text-slate-900 group-hover:text-white transition-colors duration-500 mb-4">
                                         {category.title}
                                     </h3>
                                 </div>

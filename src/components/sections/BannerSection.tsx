@@ -6,14 +6,13 @@ interface BannerSectionProps {
 }
 
 export const BannerSection = ({
-  title = "ABOUT TAC HYDRO",
-  description = "LEADING ENGINEERING INNOVATION SINCE 2005",
+  title = "About TAC Hydro",
+  description = "Leading Engineering Innovation Since 2005",
 }: BannerSectionProps) => {
   return (
     <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">
       {/* Background Gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0b1522] via-[#15233e] to-[#0b1522]" />
-
 
       {/* Hero Content */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">

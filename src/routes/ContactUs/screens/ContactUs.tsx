@@ -10,7 +10,7 @@ export const ContactUs = () => {
       <HeaderSection />
       <BannerSection
         title="Contact Us"
-        description="Let us know how we can support your next hydropower project."
+        description="Let Us Know How We Can Support Your Next Hydropower Project."
       />
       <ContactDetailsSection />
       <ContactMapSection />

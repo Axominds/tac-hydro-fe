@@ -15,8 +15,8 @@ export const OrganizationChart = () => {
         <div className="w-full relative bg-white">
             <HeaderSection />
             <BannerSection
-                title="ORGANIZATIONAL CHART"
-                description="STRUCTURED FOR EXCELLENCE AND INNOVATION"
+                title="Organizational Chart"
+                description="Structured For Excellence And Innovation"
             />
             <OrganizationChartSection />
             <MoveDownSection sections={ORG_CHART_SECTIONS} />

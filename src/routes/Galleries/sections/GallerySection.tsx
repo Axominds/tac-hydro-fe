@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { cn } from "../../../lib/utils";
+import { ImageViewer } from "../../../components/ui/ImageViewer";
+import { ZoomIn } from "lucide-react";
 
 // Define the asset paths directly since we don't have a dynamic loader
 // Based on the file listing provided
@@ -87,6 +89,7 @@ type FilterType = "All" | "Our Projects" | "Team Culture";
 
 export const GallerySection = () => {
     const [activeFilter, setActiveFilter] = useState<FilterType>("All");
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
     const getImages = () => {
         switch (activeFilter) {
@@ -128,19 +131,29 @@ export const GallerySection = () => {
                     {images.map((src, index) => (
                         <div
                             key={`${src}-${index}`}
-                            className="group relative overflow-hidden rounded-xl shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 bg-white aspect-[4/3]"
+                            onClick={() => setSelectedImageIndex(index)}
+                            className="group relative overflow-hidden rounded-xl shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 bg-white aspect-[4/3] border border-gray-100"
                         >
                             <img
                                 src={src}
                                 alt={`Gallery image ${index + 1}`}
                                 loading="lazy"
-                                className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                                className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
                             />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+                                <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transform scale-50 group-hover:scale-100 transition-all duration-300 w-8 h-8" />
+                            </div>
                         </div>
                     ))}
                 </div>
             </div>
+
+            <ImageViewer
+                images={images}
+                initialIndex={selectedImageIndex ?? 0}
+                isOpen={selectedImageIndex !== null}
+                onClose={() => setSelectedImageIndex(null)}
+            />
         </section>
     );
 };

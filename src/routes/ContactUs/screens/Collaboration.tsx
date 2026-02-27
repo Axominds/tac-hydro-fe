@@ -1,5 +1,5 @@
 import { HeaderSection } from "../../../components/sections/HeaderSection";
-import { BannerSection } from "../sections/BannerSection";
+import { BannerSection } from "../../../components/sections/BannerSection";
 import { CollaborativeAdvantageSection } from "../sections/CollaborativeAdvantageSection";
 import { PartnershipRoadMapSection } from "../sections/PartnershipRoadMapSection";
 import { OurCollaborativeEcosystemSection } from "../sections/OurCollaborativeEcosystemSection";
@@ -18,7 +18,10 @@ export const Collaboration = () => {
     return (
         <div className="w-full relative bg-white">
             <HeaderSection />
-            <BannerSection />
+            <BannerSection
+                title="Collaboration"
+                description="Partnering With Us For Sustainable Development."
+            />
             <CollaborativeAdvantageSection />
             <PartnershipRoadMapSection />
             <OurCollaborativeEcosystemSection />

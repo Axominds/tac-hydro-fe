@@ -22,8 +22,8 @@ export const AboutUs = () => {
     <div className="w-full relative bg-white">
       <HeaderSection />
       <BannerSection
-        title="ABOUT TAC HYDRO"
-        description="LEADING ENGINEERING INNOVATION SINCE 2005"
+        title="About TAC HYDRO"
+        description="Leading Engineering Innovation Since 2005"
       />
       <NumbersAndFiguresSection />
       <AboutUsSection />

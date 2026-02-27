@@ -23,6 +23,9 @@ type HeaderSectionProps = {
 
 const NAV_ITEMS: NavigationItem[] = [
   { label: "Home", href: "/" },
+  { label: "Projects", href: "/projects" },
+  { label: "Services", href: "/services" },
+  { label: "Galleries", href: "/galleries" },
   {
     label: "About Us",
     href: "/about-us",
@@ -32,9 +35,6 @@ const NAV_ITEMS: NavigationItem[] = [
       { label: "Our Professional Framework", href: "/about-us/our-professional-framework" },
     ]
   },
-  { label: "Projects", href: "/projects" },
-  { label: "Services", href: "/services" },
-  { label: "Galleries", href: "/galleries" },
   {
     label: "Contact Us",
     href: "/contact-us",

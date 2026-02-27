@@ -150,9 +150,9 @@ const partnerLogos = [
 
 export const ValuedPartnersSection = () => {
     return (
-        <section id="valued-partners" className="relative w-full min-h-screen bg-[#f8f9fa] flex items-center justify-center py-20 overflow-hidden">
+        <section id="valued-partners" className="relative w-full min-h-[50vh] bg-[#f8f9fa] flex items-center justify-center py-10 overflow-hidden">
             <div className="mx-auto w-full max-w-[1400px]">
-                <div className="flex flex-col items-center mb-12 text-center px-6 -mt-10">
+                <div className="flex flex-col items-center mb-10 text-center px-6">
                     <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
                         Valued Partners
                     </h2>
@@ -164,14 +164,14 @@ export const ValuedPartnersSection = () => {
                 </div>
 
                 <div className="relative w-full overflow-hidden">
-                    <div className="flex animate-marquee-slower whitespace-nowrap gap-12 group py-20 w-max">
+                    <div className="flex animate-marquee-slower whitespace-nowrap gap-12 group py-8 w-max">
                         {[...partnerLogos, ...partnerLogos].map((partner, index) => (
                             <div
                                 key={`${partner.id}-${index}`}
-                                className="relative flex-shrink-0 min-w-[260px] h-[240px] flex items-center justify-center p-10 bg-slate-200/50 rounded-[40px] border border-slate-300/40 transition-all duration-500 hover:-translate-y-12 hover:scale-105 active:scale-95 group/card overflow-hidden"
+                                className="relative flex-shrink-0 min-w-[200px] h-[180px] flex items-center justify-center p-6 bg-slate-200/50 rounded-[32px] border border-slate-300/40 transition-all duration-500 hover:-translate-y-8 hover:scale-105 active:scale-95 group/card overflow-hidden"
                             >
                                 <img
-                                    className="max-w-full h-20 object-contain filter drop-shadow-[0_0_1px_rgba(0,0,0,0.1)] transition-transform duration-500 group-hover/card:scale-110"
+                                    className="max-w-full h-16 object-contain filter drop-shadow-[0_0_1px_rgba(0,0,0,0.1)] transition-transform duration-500 group-hover/card:scale-110"
                                     alt={partner.name}
                                     src={partner.logo}
                                 />
