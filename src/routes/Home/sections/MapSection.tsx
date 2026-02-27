@@ -17,11 +17,9 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
-import { projectData, ProjectDivision } from "../../Projects/data/projectData";
+import { projectData, ProjectScope } from "../../Projects/data/projectData";
 
 // ... entries ...
-
-type ProjectScope = ProjectDivision;
 
 interface MapLocation {
     id: string;
@@ -43,7 +41,7 @@ const mapLocations: MapLocation[] = projectData.map(project => ({
     id: project.id,
     coords: project.location,
     title: project.title,
-    scope: project.division,
+    scope: project.scope,
     capacity: project.technicalHighlights["Capacity"]
 }));
 

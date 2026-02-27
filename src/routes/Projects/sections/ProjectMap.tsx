@@ -3,7 +3,7 @@ import { Navigation } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { projectData, type ProjectDivision } from "../data/projectData";
+import { projectData, type ProjectScope } from "../data/projectData";
 
 // Fix for leaflet default icon missing in build
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -18,7 +18,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
-const divisionColors: Record<ProjectDivision, { pin: string; bg: string; border: string }> = {
+const scopeColors: Record<ProjectScope, { pin: string; bg: string; border: string }> = {
     "Detailed Feasibility Study": { pin: "#F7DF1E", bg: "bg-yellow-400", border: "border-yellow-200" }, // Yellow
     "Detailed Engineering Design": { pin: "#4CAF50", bg: "bg-green-500", border: "border-green-200" }, // Green
     "Construction Supervision": { pin: "#03A9F4", bg: "bg-sky-500", border: "border-sky-200" }, // Sky Blue
@@ -47,15 +47,15 @@ interface ProjectMapProps {
 }
 
 export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
-    // Only filtering by divisions present in projectData.ts
-    const [activeDivision, setActiveDivision] = useState<ProjectDivision | "All">("All");
+    // Only filtering by scopes present in projectData.ts
+    const [activeScope, setActiveScope] = useState<ProjectScope | "All">("All");
 
     const filteredProjects = useMemo(() => {
-        if (activeDivision === "All") {
+        if (activeScope === "All") {
             return projectData;
         }
-        return projectData.filter((project) => project.division === activeDivision);
-    }, [activeDivision]);
+        return projectData.filter((project) => project.scope === activeScope);
+    }, [activeScope]);
 
     return (
         <div className="relative w-full h-[600px] lg:h-[700px] rounded-[32px] overflow-hidden shadow-xl border border-slate-100">
@@ -79,7 +79,7 @@ export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 />
                 {filteredProjects.map((project) => {
-                    const colors = divisionColors[project.division];
+                    const colors = scopeColors[project.scope];
                     return (
                         <Marker
                             key={project.id}
@@ -95,7 +95,7 @@ export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
                                 <div className="p-1 cursor-pointer" onClick={() => onProjectSelect && onProjectSelect(project.id)}>
                                     <h4 className="font-bold text-slate-900 mb-1">{project.title}</h4>
                                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ color: colors.pin, backgroundColor: `${colors.pin}15` }}>
-                                        {project.division}
+                                        {project.scope}
                                     </span>
                                 </div>
                             </Popup>
@@ -107,29 +107,29 @@ export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
             {/* Legend / Filter */}
             <div className="absolute left-6 top-6 z-[400] flex flex-col gap-4 bg-white/95 backdrop-blur-sm rounded-[24px] p-5 shadow-lg border border-slate-100 max-w-[280px] w-full">
                 <h3 className="text-sm font-bold text-slate-900 border-b border-slate-200 pb-2">
-                    Project Divisions
+                    Project Scopes
                 </h3>
                 <div className="flex flex-col gap-3">
                     <button
                         type="button"
-                        onClick={() => setActiveDivision("All")}
-                        className={`flex items-center gap-3 text-left group ${activeDivision === "All" ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
+                        onClick={() => setActiveScope("All")}
+                        className={`flex items-center gap-3 text-left group ${activeScope === "All" ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
                     >
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-400 ring-4 ring-offset-2 ring-transparent group-hover:ring-slate-200 transition-all" />
                         <span className="text-xs font-semibold text-slate-700">All Projects</span>
                     </button>
-                    {(Object.keys(divisionColors) as ProjectDivision[]).map((division) => {
-                        const colors = divisionColors[division];
+                    {(Object.keys(scopeColors) as ProjectScope[]).map((scope) => {
+                        const colors = scopeColors[scope];
                         return (
                             <button
-                                key={division}
+                                key={scope}
                                 type="button"
-                                onClick={() => setActiveDivision(division)}
-                                className={`flex items-center gap-3 text-left group ${activeDivision === division ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
+                                onClick={() => setActiveScope(scope)}
+                                className={`flex items-center gap-3 text-left group ${activeScope === scope ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
                             >
                                 <div className={`w-2.5 h-2.5 rounded-full ${colors.bg} ring-4 ring-offset-2 ring-transparent group-hover:ring-blue-100 transition-all`} style={{ backgroundColor: colors.pin }} />
                                 <span className="text-xs font-medium text-slate-600">
-                                    {division}
+                                    {scope}
                                 </span>
                             </button>
                         );
