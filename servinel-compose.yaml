@@ -1,0 +1,5 @@
+app_name: Tac-Hydro
+services:
+  - name: frontend
+    command: pnpm run dev
+    working_directory: .

@@ -17,11 +17,9 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
-import { projectData, ProjectDivision } from "../../Projects/data/projectData";
+import { projectData, ProjectScope } from "../../Projects/data/projectData";
 
 // ... entries ...
-
-type ProjectScope = ProjectDivision;
 
 interface MapLocation {
     id: string;
@@ -32,17 +30,18 @@ interface MapLocation {
 }
 
 const scopeColors: Record<ProjectScope, { pin: string; bg: string; border: string }> = {
-    "Feasibility Study": { pin: "#F7DF1E", bg: "bg-yellow-400", border: "border-yellow-200" },
+    "Detailed Feasibility Study": { pin: "#F7DF1E", bg: "bg-yellow-400", border: "border-yellow-200" },
     "Detailed Engineering Design": { pin: "#4CAF50", bg: "bg-green-500", border: "border-green-200" },
     "Construction Supervision": { pin: "#03A9F4", bg: "bg-sky-500", border: "border-sky-200" },
     "Due Diligence Appraisal": { pin: "#F44336", bg: "bg-red-500", border: "border-red-200" },
+    "Progress Monitoring and Bill Vetting": { pin: "#9C27B0", bg: "bg-purple-500", border: "border-purple-200" },
 };
 
 const mapLocations: MapLocation[] = projectData.map(project => ({
     id: project.id,
     coords: project.location,
     title: project.title,
-    scope: project.division,
+    scope: project.scope,
     capacity: project.technicalHighlights["Capacity"]
 }));
 

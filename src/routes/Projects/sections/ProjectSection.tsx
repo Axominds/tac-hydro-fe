@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
-import { Project, projectData, ProjectDivision } from "../data/projectData";
+import { Project, projectData, ProjectScope } from "../data/projectData";
 import { ProjectCard } from "./ProjectCard";
 import { ScrollArea } from "../../../components/ui/scroll-area";
 
@@ -16,148 +16,128 @@ import {
     ArrowUpRight
 } from "lucide-react";
 
-const divisions: ProjectDivision[] = [
-    "Feasibility Study",
+const scopes: ProjectScope[] = [
+    "Detailed Feasibility Study",
     "Detailed Engineering Design",
     "Construction Supervision",
-    "Due Diligence Appraisal"
+    "Due Diligence Appraisal",
+    "Progress Monitoring and Bill Vetting"
 ];
 
 export const ProjectSection = () => {
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [activeScope, setActiveScope] = useState<ProjectScope>("Detailed Feasibility Study");
 
     const handleProjectClick = (project: Project) => {
         setSelectedProject(project);
         setIsModalOpen(true);
     };
 
-    const [isHeaderVisible, setIsHeaderVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-
-            // Header logic mirror:
-            // < 20: visible
-            // scrolling down (> last): hidden
-            // scrolling up (< last): visible
-
-            if (currentScrollY < 20) {
-                setIsHeaderVisible(true);
-            } else if (currentScrollY > lastScrollY) {
-                setIsHeaderVisible(false);
-            } else if (currentScrollY < lastScrollY) {
-                setIsHeaderVisible(true);
-            }
-
-            setLastScrollY(currentScrollY);
-        };
-
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY]);
+    const filteredProjects = projectData.filter(p =>
+        p.scope === activeScope &&
+        (p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
     return (
-        <section id="projects-section" className="relative w-full py-16 lg:py-24 bg-[#f8f9fa]">
+        <section id="projects-section" className="relative w-full py-16 lg:py-24 bg-[#f8f9fa] min-h-screen">
             <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
+                <div className="flex flex-col lg:flex-row gap-12">
 
-                {/* Sticky Navigation & Search */}
-                <div
-                    className={`sticky z-30 bg-[#f8f9fa]/95 backdrop-blur-sm py-4 mb-12 border-b border-slate-200 transition-all duration-300 ${isHeaderVisible ? 'top-[72px] sm:top-[88px]' : 'top-0'
-                        }`}
-                >
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        {/* Division Nav */}
-                        <nav className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0">
-                            {divisions.map((division) => (
-                                <a
-                                    key={division}
-                                    href={`#${division.toLowerCase().replace(/\s+/g, '-')}`}
-                                    className="whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        const element = document.getElementById(division.toLowerCase().replace(/\s+/g, '-'));
-                                        if (element) {
-                                            const y = element.getBoundingClientRect().top + window.scrollY - 180; // Offset for sticky headers
-                                            window.scrollTo({ top: y, behavior: 'smooth' });
-                                        }
-                                    }}
-                                >
-                                    {division}
-                                </a>
-                            ))}
-                        </nav>
+                    {/* Sidebar / Sidebar filtering */}
+                    <aside className="lg:w-80 flex-shrink-0">
+                        <div className="sticky top-32 space-y-8 animate-in fade-in slide-in-from-left duration-700">
+                            <div>
+                                <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-6">
+                                    Project Scopes
+                                </h2>
+                                <nav className="space-y-2">
+                                    {scopes.map((scope) => {
+                                        const count = projectData.filter(p => p.scope === scope).length;
+                                        const isActive = activeScope === scope;
 
-                        {/* Search Bar */}
-                        <div className="relative w-full md:w-72">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                            <input
-                                type="text"
-                                placeholder="Search projects..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-full text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                            />
-                        </div>
-                    </div>
-                </div>
+                                        return (
+                                            <button
+                                                key={scope}
+                                                onClick={() => setActiveScope(scope)}
+                                                className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-left transition-all duration-300 group ${isActive
+                                                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                                                    : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-100"
+                                                    }`}
+                                            >
+                                                <span className={`text-sm font-bold ${isActive ? "text-white" : "text-slate-700"}`}>
+                                                    {scope}
+                                                </span>
+                                                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isActive ? "bg-white/20 text-white" : "bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600"
+                                                    }`}>
+                                                    {count}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </nav>
+                            </div>
 
-                {/* Project Divisions */}
-                <div className="space-y-24 min-h-[50vh]">
-                    {divisions.map((division) => {
-                        const divisionProjects = projectData.filter(p =>
-                            p.division === division &&
-                            (p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                p.description.toLowerCase().includes(searchQuery.toLowerCase()))
-                        );
-
-                        if (divisionProjects.length === 0 && searchQuery) return null;
-                        // Show all divisions if no search, or only matching ones if search is active
-                        if (divisionProjects.length === 0) return null;
-
-                        return (
-                            <div key={division} className="scroll-mt-48" id={division.toLowerCase().replace(/\s+/g, '-')}>
-                                <div className="flex items-center gap-4 mb-8">
-                                    <h2 className="text-2xl font-bold text-slate-900 border-l-4 border-blue-600 pl-4">
-                                        {division}
-                                    </h2>
-                                    <div className="h-px bg-slate-200 flex-1" />
-                                    <span className="text-sm font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
-                                        {divisionProjects.length}
-                                    </span>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    {divisionProjects.map((project) => (
-                                        <ProjectCard
-                                            key={project.id}
-                                            project={project}
-                                            onClick={handleProjectClick}
-                                        />
-                                    ))}
+                            {/* Search moved to Sidebar for context */}
+                            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">Search</h3>
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="Quick search..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                                    />
                                 </div>
                             </div>
-                        );
-                    })}
+                        </div>
+                    </aside>
 
-                    {/* Empty State */}
-                    {projectData.filter(p =>
-                        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        p.description.toLowerCase().includes(searchQuery.toLowerCase())
-                    ).length === 0 && (
-                            <div className="text-center py-20">
-                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
-                                    <Search className="w-8 h-8 text-slate-400" />
-                                </div>
-                                <h3 className="text-xl font-bold text-slate-900 mb-2">No projects found</h3>
-                                <p className="text-slate-500">
-                                    We couldn't find any projects matching "{searchQuery}"
+                    {/* Main Content Area */}
+                    <div className="flex-1 min-h-[600px] animate-in fade-in slide-in-from-bottom duration-700 delay-200">
+                        <div className="flex items-center justify-between mb-10 pb-6 border-b border-slate-200/60">
+                            <div>
+                                <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+                                    {activeScope}
+                                </h1>
+                                <p className="text-slate-500 mt-1 font-medium italic">
+                                    Showing {filteredProjects.length} projects in this category
                                 </p>
                             </div>
+                        </div>
+
+                        {filteredProjects.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+                                {filteredProjects.map((project) => (
+                                    <ProjectCard
+                                        key={project.id}
+                                        project={project}
+                                        onClick={handleProjectClick}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border-2 border-dashed border-slate-100">
+                                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                                    <Search className="w-8 h-8 text-slate-300" />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-2">No projects found</h3>
+                                <p className="text-slate-500 max-w-xs">
+                                    We couldn't find any projects matching "{searchQuery}" in this category.
+                                </p>
+                                <button
+                                    onClick={() => setSearchQuery("")}
+                                    className="mt-6 text-blue-600 font-bold hover:underline"
+                                >
+                                    Clear search
+                                </button>
+                            </div>
                         )}
+                    </div>
                 </div>
             </div>
 
@@ -170,7 +150,7 @@ export const ProjectSection = () => {
                                 <div className="flex flex-col gap-2">
                                     <div className="flex items-center gap-3">
                                         <span className="inline-flex px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold uppercase tracking-wider">
-                                            {selectedProject.division}
+                                            {selectedProject.scope}
                                         </span>
                                     </div>
                                     <DialogTitle className="text-2xl lg:text-3xl font-bold text-slate-900 leading-tight">
