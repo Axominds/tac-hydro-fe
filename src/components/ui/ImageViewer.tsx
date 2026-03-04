@@ -121,7 +121,7 @@ export const ImageViewer = ({ images, initialIndex, isOpen, onClose }: ImageView
                                 alt="Full view"
                                 className="max-h-[85vh] lg:max-h-[90vh] max-w-full object-contain shadow-2xl rounded-lg pointer-events-none"
                                 draggable={false}
-                            />
+                             loading="lazy" decoding="async"/>
                         </div>
                     )}
 

@@ -207,7 +207,7 @@ export const ProjectSection = () => {
                                                         src={image}
                                                         alt={`${selectedProject.title} view ${idx + 1}`}
                                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                                    />
+                                                     loading="lazy" decoding="async"/>
                                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                                                         <ZoomIn className="text-white opacity-0 group-hover:opacity-100 transform scale-50 group-hover:scale-100 transition-all duration-300 w-6 h-6" />
                                                     </div>

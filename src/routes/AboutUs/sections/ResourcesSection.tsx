@@ -11,7 +11,7 @@ export const ResourcesSection = () => {
         alt=""
         aria-hidden="true"
         src="/downloads/mjlodvw6RB1obD/img/vector-1.png"
-      />
+       loading="lazy" decoding="async"/>
 
       <div className="relative w-full pt-[23.67%] pb-[7.42%]">
         <div className="relative w-full h-full">
@@ -20,13 +20,13 @@ export const ResourcesSection = () => {
             alt=""
             aria-hidden="true"
             src="/downloads/mjlodvw6RB1obD/img/vector-4.svg"
-          />
+           loading="lazy" decoding="async"/>
 
           <img
             className="absolute w-[95.05%] h-full top-0 left-0 object-cover"
             alt="Project development background"
             src="/downloads/mjlodvw6RB1obD/img/rectangle-213.png"
-          />
+           loading="lazy" decoding="async"/>
 
           <div className="relative w-full px-[4.17%] pt-[21.93%] pb-[53.08%]">
             <div className="max-w-[42.63%]">

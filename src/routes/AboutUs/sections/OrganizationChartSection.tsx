@@ -10,7 +10,7 @@ export const OrganizationChartSection: FC = () => {
                         src="/organization_chart.png"
                         alt="TAC Hydro Organizational Chart"
                         className="w-full h-full max-h-[90vh] object-contain rounded-lg shadow-lg border border-gray-100 transition-transform duration-500 hover:scale-105 cursor-zoom-in"
-                    />
+                     loading="lazy" decoding="async"/>
                 </div>
             </div>
         </section>

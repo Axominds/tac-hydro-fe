@@ -83,7 +83,7 @@ export const BannerSection = () => {
                 style={{ animation: 'slowZoom 20s ease-in-out infinite alternate' }}
                 alt="Hero Background"
                 src={HERO_BG_ALT}
-            />
+             loading="lazy" decoding="async"/>
             <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent pointer-events-none" />
 
 

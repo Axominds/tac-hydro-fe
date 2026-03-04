@@ -36,7 +36,7 @@ export const LogoContainer = ({
                 )}
                 alt={logoAlt}
                 src={logoSrc}
-            />
+             loading="lazy" decoding="async"/>
         </NavLink>
     );
 };

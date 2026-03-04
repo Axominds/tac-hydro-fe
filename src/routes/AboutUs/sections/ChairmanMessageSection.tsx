@@ -56,7 +56,7 @@ export const ChairmanMessageSection = () => {
               src="/chairperson.png"
               alt="Chairman"
               className="absolute inset-0 w-full h-full object-cover object-top"
-            />
+             loading="lazy" decoding="async"/>
           </div>
         </div>
       </div>

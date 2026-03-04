@@ -49,7 +49,7 @@ export const SDGSection = () => {
               src="/sustainableDevelopmentGoals/sdg_logo.png"
               alt="UN SDG Logo"
               className="h-16 md:h-20 object-contain w-fit"
-            />
+             loading="lazy" decoding="async"/>
             <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-[#2c3e50] leading-tight">
               Our Contribution to the Sustainable Development Goals (SDGs)
             </h2>
@@ -58,7 +58,7 @@ export const SDGSection = () => {
             src="/sustainableDevelopmentGoals/sdg_wheel_with_icon.png"
             alt="SDG Color Wheel"
             className="h-32 md:h-40 object-contain"
-          />
+           loading="lazy" decoding="async"/>
         </div>
 
         <p className="text-[#555555] text-lg leading-relaxed mb-8 max-w-4xl">

@@ -44,7 +44,7 @@ export const TopManagementSection = () => {
               src="/commitment.jpg"
               alt="Managing Director"
               className="absolute inset-0 w-full h-full object-cover object-top"
-            />
+             loading="lazy" decoding="async"/>
           </div>
         </div>
       </div>

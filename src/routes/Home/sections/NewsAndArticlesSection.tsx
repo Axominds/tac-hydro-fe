@@ -98,7 +98,7 @@ export const NewsAndArticlesSection = () => {
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     alt={item.title}
                                     src={item.image}
-                                />
+                                 loading="lazy" decoding="async"/>
                                 <div className="absolute top-6 left-6">
                                     <div className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-bold text-blue-600 uppercase tracking-widest shadow-lg">
                                         {item.category}

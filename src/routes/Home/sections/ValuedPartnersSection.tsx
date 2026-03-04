@@ -174,7 +174,7 @@ export const ValuedPartnersSection = () => {
                                     className="max-w-full h-16 object-contain filter drop-shadow-[0_0_1px_rgba(0,0,0,0.1)] transition-transform duration-500 group-hover/card:scale-110"
                                     alt={partner.name}
                                     src={partner.logo}
-                                />
+                                 loading="lazy" decoding="async"/>
                                 <div className="absolute inset-x-0 bottom-0 p-6 flex items-end justify-center opacity-0 group-hover/card:opacity-100 transition-all duration-500">
                                     <span className="text-slate-900 font-bold text-base text-center whitespace-normal leading-tight">
                                         {partner.name}
