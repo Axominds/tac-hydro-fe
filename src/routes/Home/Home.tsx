@@ -9,9 +9,11 @@ import { VideoSection } from "./sections/VideoSection";
 import { NewsAndArticlesSection } from "./sections/NewsAndArticlesSection";
 import { MoveDownSection } from "../../components/sections/MoveDownSection";
 import { FooterSection } from "../../components/sections/FooterSection";
+import { SDGSection } from "../../components/sections/SDGSection";
 
 const HOME_SECTIONS = [
   "stats-and-professional-framework",
+  "sdg-section",
   "expertise-and-services",
   "sectors-of-services",
   "video-section",
@@ -29,6 +31,7 @@ export const Home = () => {
       <HeaderSection />
       <BannerSection />
       <StatsAndProfessionalFrameworkSection />
+      <SDGSection />
       <ExpertiseAndServicesSection />
       <SectorsOfServicesSection />
       <VideoSection />

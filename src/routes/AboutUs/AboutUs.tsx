@@ -4,7 +4,7 @@ import { BannerSection } from "../../components/sections/BannerSection";
 import { AboutUsSection } from "./sections/AboutUsSection";
 import { ChairmanMessageSection } from "./sections/ChairmanMessageSection";
 import { TopManagementSection } from "./sections/TopManagementSection";
-import { SDGSection } from "./sections/SDGSection";
+import { SDGSection } from "../../components/sections/SDGSection";
 import { MoveDownSection } from "../../components/sections/MoveDownSection";
 import { StatsSection } from "../../components/sections/StatsSection";
 
