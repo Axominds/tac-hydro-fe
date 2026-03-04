@@ -11,7 +11,7 @@ export const BannerSection = () => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleGetStarted = () => {
-        const target = document.getElementById("numbers-and-figures");
+        const target = document.getElementById("stats-and-professional-framework");
         if (!target) return;
 
         const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
