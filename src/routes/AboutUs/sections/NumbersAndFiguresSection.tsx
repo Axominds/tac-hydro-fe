@@ -5,7 +5,7 @@ const stats = [
     { number: "20", label: "Years", description: "Decades of institutional expertise and stability." },
     { number: "120", label: "Projects", description: "Diverse portfolio of successful energy solutions." },
     { number: "50", label: "Team members", description: "Deep technical bench for engineering precision." },
-    { number: "60", label: "Clients", description: "Diverse network global & local partnerships." },
+    { number: "60", label: "Clients", description: "Diverse network of global & local partnerships." },
 ];
 
 export const NumbersAndFiguresSection = () => {

@@ -174,7 +174,7 @@ export const ProjectSection = () => {
                                         </span>
                                     </div>
                                     <DialogTitle className="text-2xl lg:text-3xl font-bold text-slate-900 leading-tight">
-                                        {selectedProject.title}
+                                        {selectedProject.title} ({selectedProject.installedCapacity})
                                     </DialogTitle>
                                 </div>
                             </DialogHeader>

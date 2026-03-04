@@ -30,7 +30,7 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
             {/* Content */}
             <div className="p-6 pt-2">
                 <h3 className="text-lg font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
-                    {project.title}
+                    {project.title} ({project.installedCapacity})
                 </h3>
             </div>
         </div>

@@ -7,7 +7,7 @@ export const OrganizationChartSection: FC = () => {
             <div className="w-full mx-auto flex flex-col items-center flex-1">
                 <div className="w-full flex justify-center flex-1 min-h-0 overflow-hidden">
                     <img
-                        src="/organization_chart.jpg"
+                        src="/organization_chart.png"
                         alt="TAC Hydro Organizational Chart"
                         className="w-full h-full max-h-[90vh] object-contain rounded-lg shadow-lg border border-gray-100 transition-transform duration-500 hover:scale-105 cursor-zoom-in"
                     />

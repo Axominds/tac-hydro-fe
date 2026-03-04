@@ -5,14 +5,14 @@ import { X } from "lucide-react";
 
 // Categorize members
 const BOARD_OF_DIRECTORS = TEAM_MEMBERS.filter(m => m.category === "BOD");
-const DEPARTMENT_HEADS = TEAM_MEMBERS.filter(m => m.category === "Department Heads");
-const DESIGN_HEADS = TEAM_MEMBERS.filter(m => m.category === "Design Heads");
+const DEPARTMENT_LEADS = TEAM_MEMBERS.filter(m => m.category === "Department Leads");
+const DESIGN_LEADS = TEAM_MEMBERS.filter(m => m.category === "Design Leads");
 const ENGINEER_PROFESSIONALS = TEAM_MEMBERS.filter(m => m.category === "Engineering Professionals");
 
 const SECTIONS = [
     { title: "BOARD OF DIRECTORS", items: BOARD_OF_DIRECTORS },
-    { title: "DEPARTMENT HEADS", items: DEPARTMENT_HEADS },
-    { title: "DESIGN HEADS", items: DESIGN_HEADS },
+    { title: "DEPARTMENT LEADS", items: DEPARTMENT_LEADS },
+    { title: "DESIGN LEADS", items: DESIGN_LEADS },
     { title: "OUR PROFESSIONALS", items: ENGINEER_PROFESSIONALS },
 ];
 
@@ -95,7 +95,7 @@ export const TeamSection: FC = () => {
                         className="absolute inset-0 bg-[#0b1522]/60 backdrop-blur-sm animate-in fade-in duration-300"
                         onClick={closeModal}
                     ></div>
-                    <div className="relative w-full max-w-4xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] animate-in fade-in zoom-in-95 duration-300">
+                    <div className="relative w-full max-w-4xl bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] min-h-0 animate-in fade-in zoom-in-95 duration-300">
                         {/* Close Button */}
                         <button
                             onClick={closeModal}
@@ -105,18 +105,19 @@ export const TeamSection: FC = () => {
                         </button>
 
                         {/* Left Side: Photo & Key Info */}
-                        <div className="w-full md:w-2/5 bg-slate-50 p-8 flex flex-col items-center text-center justify-center border-b md:border-b-0 md:border-r border-slate-100 relative overflow-hidden text-balance">
+                        <div className="w-full md:w-2/5 md:max-w-[40%] bg-slate-50 p-8 flex flex-col items-center text-center justify-center border-b md:border-b-0 md:border-r border-slate-100 relative overflow-y-auto custom-scrollbar text-balance">
                             {/* Decorative elements */}
                             <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100/50 rounded-bl-[100px] -z-0"></div>
                             <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-100/50 rounded-tr-[80px] -z-0"></div>
 
-                            <div className="w-56 h-56 rounded-full shadow-2xl overflow-hidden border-[6px] border-white relative z-10 mb-6 group">
+                            <div className="w-56 h-56 rounded-full shadow-2xl overflow-hidden border-[6px] border-white relative z-10 mb-6 group shrink-0">
                                 <img
                                     src={selectedMember.image}
                                     alt={selectedMember.name}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
                             </div>
+
                             <h2 className="text-2xl md:text-3xl font-bold text-slate-900 relative z-10 leading-tight mb-2">{selectedMember.name}</h2>
                             <p className="text-blue-600 font-bold uppercase tracking-wide text-sm md:text-base relative z-10">{selectedMember.position}</p>
 
@@ -128,7 +129,7 @@ export const TeamSection: FC = () => {
                         </div>
 
                         {/* Right Side: Scrollable Content */}
-                        <div className="w-full md:w-3/5 relative flex flex-col h-full bg-white">
+                        <div className="w-full md:w-3/5 md:flex-1 relative flex flex-col min-h-0 bg-white">
                             <button
                                 onClick={closeModal}
                                 className="hidden md:block absolute top-6 right-6 z-20 p-2 bg-slate-50 rounded-full hover:bg-slate-100 transition-colors"
@@ -136,7 +137,7 @@ export const TeamSection: FC = () => {
                                 <X className="w-5 h-5 text-slate-400 hover:text-red-500 transition-colors" />
                             </button>
 
-                            <div className="flex-1 overflow-y-auto p-8 md:p-10 custom-scrollbar">
+                            <div className="flex-1 min-h-0 overflow-y-auto p-8 pb-3 md:p-10 md:pb-3 custom-scrollbar overscroll-contain">
                                 <div className="space-y-10">
                                     {/* Education Section */}
                                     {selectedMember.education && (
@@ -176,8 +177,8 @@ export const TeamSection: FC = () => {
                             </div>
 
                             {/* Bottom styling */}
-                            <div className="p-6 border-t border-slate-50 flex justify-center opacity-30 bg-white relative z-10">
-                                <img src="/tac-logo-with-tagline-2.svg" alt="TAC Hydro" className="h-6 grayscale" />
+                            <div className="p-3 border-t border-slate-50 flex justify-center opacity-30 bg-white relative z-10 shrink-0">
+                                <img src="/tac-logo-with-tagline-2.svg" alt="TAC Hydro" className="h-4 md:h-5 grayscale opacity-70" />
                             </div>
                         </div>
                     </div>
@@ -185,18 +186,28 @@ export const TeamSection: FC = () => {
             )}
 
             <style>{`
+                .custom-scrollbar {
+                    scrollbar-width: thin !important;
+                    scrollbar-color: #64748b #f1f5f9 !important;
+                    overflow-y: auto !important;
+                }
                 .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
+                    width: 12px !important;
+                    display: block !important;
                 }
                 .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
+                    background: #f1f5f9 !important;
+                    border-radius: 10px !important;
+                    margin: 10px 0 !important;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background-color: #cbd5e1;
-                    border-radius: 20px;
+                    background-color: #64748b !important;
+                    border-radius: 10px !important;
+                    border: 3px solid #f1f5f9 !important;
+                    min-height: 50px !important;
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background-color: #94a3b8;
+                    background-color: #334155 !important;
                 }
             `}</style>
         </section>
