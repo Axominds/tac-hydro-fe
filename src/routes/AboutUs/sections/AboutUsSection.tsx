@@ -10,7 +10,7 @@ export const AboutUsSection = () => {
                             src="/downloads/mjlodvw6RB1obD/img/image-3-1.png"
                             alt="About TAC Hydro"
                             className="absolute inset-0 w-full h-full object-cover"
-                        />
+                         loading="lazy" decoding="async"/>
                     </div>
 
                     {/* Text Column */}

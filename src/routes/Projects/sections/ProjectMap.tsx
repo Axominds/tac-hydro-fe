@@ -93,7 +93,7 @@ export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
                         >
                             <Popup className="custom-popup">
                                 <div className="p-1 cursor-pointer" onClick={() => onProjectSelect && onProjectSelect(project.id)}>
-                                    <h4 className="font-bold text-slate-900 mb-1">{project.title}</h4>
+                                    <h4 className="font-bold text-slate-900 mb-1">{project.title} ({project.installedCapacity})</h4>
                                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ color: colors.pin, backgroundColor: `${colors.pin}15` }}>
                                         {project.scope}
                                     </span>

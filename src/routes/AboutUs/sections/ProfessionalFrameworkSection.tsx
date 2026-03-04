@@ -29,7 +29,7 @@ export const ProfessionalFrameworkSection = () => {
                                     src="/tunnel1.png"
                                     alt="Engineering Excellence"
                                     className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
-                                />
+                                 loading="lazy" decoding="async"/>
                                 <div className="absolute bottom-6 left-6 z-20">
                                     <div className="text-white text-xl font-bold">Engineering Excellence</div>
                                     <div className="text-white/80 text-sm">Delivering Value Since 2005</div>

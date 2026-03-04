@@ -81,13 +81,13 @@ export const ProjectsSection = () => {
                 className="absolute inset-0 w-full h-full object-cover"
                 alt="Featured project"
                 src="/downloads/mjlodvw6RB1obD/img/mask-group-4.png"
-              />
+               loading="lazy" decoding="async"/>
               <img
                 className="absolute inset-0 w-full h-full"
                 alt=""
                 aria-hidden="true"
                 src="/downloads/mjlodvw6RB1obD/img/vector-4.svg"
-              />
+               loading="lazy" decoding="async"/>
               <div className="absolute bottom-0 left-0 right-0 p-8">
                 <h3 className="font-bold text-white text-2xl leading-[normal] mb-2">
                   Behalf of the undersigned organizations
@@ -101,7 +101,7 @@ export const ProjectsSection = () => {
                     alt=""
                     aria-hidden="true"
                     src="/downloads/mjlodvw6RB1obD/img/vector-5.svg"
-                  />
+                   loading="lazy" decoding="async"/>
                   <div>
                     <div className="font-bold text-white text-[13px] leading-[normal]">
                       Alex H. Hiller
@@ -128,14 +128,14 @@ export const ProjectsSection = () => {
                       className={`w-full object-cover ${index === 4 ? "h-[280px]" : "h-[190px]"}`}
                       alt={article.title}
                       src={article.image}
-                    />
+                     loading="lazy" decoding="async"/>
                     {index === 4 && (
                       <img
                         className="absolute top-0 left-0 w-[250px] h-[207px] object-cover"
                         alt=""
                         aria-hidden="true"
                         src="/downloads/mjlodvw6RB1obD/img/vector-25.svg"
-                      />
+                       loading="lazy" decoding="async"/>
                     )}
                   </div>
                   <div className="mt-4">

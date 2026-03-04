@@ -12,7 +12,7 @@ export const ServicesSection = () => {
             className="w-[566px] h-[315.33px]"
             alt="Vector"
             src="/downloads/mjlodvw6RB1obD/img/vector.png"
-          />
+           loading="lazy" decoding="async"/>
         </div>
 
         <div className="flex flex-col gap-6 flex-1">

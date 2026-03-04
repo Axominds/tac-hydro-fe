@@ -1,7 +1,7 @@
 
 export interface TeamMember {
     id: string;
-    category: "BOD" | "Department Heads" | "Design Heads" | "Engineering Professionals";
+    category: "BOD" | "Department Leads" | "Design Leads" | "Engineering Professionals";
     name: string;
     position: string;
     education: string;
@@ -16,8 +16,8 @@ export const TEAM_MEMBERS: TeamMember[] = [
         category: "BOD",
         name: "Prahlad Chaudhary",
         position: "Chairman",
-        education: "",
-        bio: "",
+        education: "M.Sc. in Mech. Engineering (Machine Design), Don State Technical University | M.Sc. in Mech. Engineering (Hydropower Equipment) from Kathmandu University",
+        bio: "Mr. Chaudhary holds an M.Sc. in Machine Design with specialization in Hydropower Equipment and began his professional career in 1994. He brings nine years of experience in the design and manufacturing of hydro-mechanical and electro-mechanical equipment, followed by three years in hydropower plant operation as Plant Manager of the Chilime Hydropower Plant. He further served for five years as Project Manager during the construction of the 10 MW Siprin Khola Hydropower Project. Finally for last 14 years, he has been involved in feasibility studies and detailed design and construction supervision of numerous hydropower projects through TAC Hydro Consultancy Pvt. Ltd., giving him comprehensive expertise across the hydropower development and construction cycle.",
         image: "/chairperson.png" // Assuming existing image or placeholder
     },
     {
@@ -48,10 +48,10 @@ export const TEAM_MEMBERS: TeamMember[] = [
         image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1000&auto=format&fit=crop"
     },
 
-    // Department Heads
+    // Department Leads
     {
         id: "prayash-rijal",
-        category: "Department Heads",
+        category: "Department Leads",
         name: "Prayash Rijal",
         position: "Head of Dept. of Mechanical Engineering",
         education: "M.E. in Mechanical & Design Engineering | B.Tech in Mechanical Engineering",
@@ -60,16 +60,16 @@ export const TEAM_MEMBERS: TeamMember[] = [
     },
     {
         id: "rohit-gurung",
-        category: "Department Heads",
+        category: "Department Leads",
         name: "Rohit Gurung",
         position: "Head of Business Development Dept.",
-        education: "Diploma in Civil Engineering",
+        education: "Bachelors in Civil Engineering",
         bio: "Mr. Gurung leads the Business Development Department at TAC Hydro Consultancy with 12 years of professional experience. He is responsible for identifying strategic growth opportunities, managing high-level client relationships, and expanding the company's portfolio within the hydropower and infrastructure sectors. His role involves deep market analysis and the development of professional proposals to ensure the firm's competitive edge in the consultancy industry.",
         image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop"
     },
     {
         id: "subeen-lama",
-        category: "Department Heads",
+        category: "Department Leads",
         name: "Subeen Lama",
         position: "Head of Account and Administration Dept.",
         education: "Bachelors in Business Administration",
@@ -77,10 +77,10 @@ export const TEAM_MEMBERS: TeamMember[] = [
         image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop"
     },
 
-    // Design Heads
+    // Design Leads
     {
         id: "prithivi-raj-thapa",
-        category: "Design Heads",
+        category: "Design Leads",
         name: "Prithivi Raj Thapa",
         position: "Head of EM/TL Design",
         education: "Bachelor’s in Electrical engineering",
@@ -89,19 +89,19 @@ export const TEAM_MEMBERS: TeamMember[] = [
     },
     {
         id: "kundan-chauhan",
-        category: "Design Heads",
+        category: "Design Leads",
         name: "Kundan Chauhan",
         position: "Head of Civil Engineering and Design",
         education: "MSc in Hydropower Development, NTNU (Norway) | BE in Civil Engineering, KU",
-        bio: "Mr. Chauhan holds over 10 years of professional experience, including over 7 years specifically in the hydropower sector specializing in Feasibility Studies, Detailed Engineering Design (DED), and Project Management. His expertise spans projects ranging from 3.5 MW to 456 MW, with notable contributions to the Langtang Khola (20 MW), Jagdulla PROR (106 MW), and the Upper Tamakoshi Hydropower Project (456 MW). He possesses extensive knowledge in the layout planning and design of Headworks, Waterways, and Powerhouse complexes. Experienced in the issuance of construction drawings (IFCs) and project cost estimation, he has successfully delivered engineering solutions for projects such as Bhotekhoshi-1 (44 MW) and Super Lower Bagmati (42 MW).",
+        bio: "Mr. Chauhan holds over 10 years of professional experience, including over 7 years specifically in the hydropower sector specializing in Feasibility Studies, Detailed Engineering Design (DED), Design support during construction/Construction drawings, Construction supervision and Project Management as Senior Hydropower Engineer. His expertise spans projects ranging from 3.5 MW to 456 MW, with notable contributions to the Langtang Khola Hydroelectric Project (20 MW), Mewa Khola Hydropower Project (50 MW), Bhotekhosi-1 Hydropower Project (44 MW), Super Seti Hydropower Project (24 MW) and Jagdulla PROR Hydroelectric Project (106 MW). He possesses extensive knowledge in the layout planning and design of Headworks, Waterways, and Powerhouse complexes. Experienced in the issuance of construction drawings (IFCs) and project cost estimation, he has successfully delivered engineering solutions for different other hydropower projects such as Super Lower Bagmati Hydropower Projects (42 MW), Bagmati Small Hydropower Project (32 MW), Middle Trishuli Ganga Hydroelectric Project (15 MW) and Siwa Khola hydropower Project (9.3 MW). Also, he had been engaged during the headworks construction of Upper Tamakoshi Hydropower Project (456 MW).",
         image: "https://images.unsplash.com/photo-1487309078313-fad80c3ec1e5?q=80&w=1000&auto=format&fit=crop"
     },
     {
         id: "ghanshyam-rana",
-        category: "Design Heads",
+        category: "Design Leads",
         name: "Ghanshyam Rana",
         position: "Head of Project Management",
-        education: "Diploma in Civil Engineering",
+        education: "Bachelors in Civil Engineering",
         bio: "Mr. Rana oversees the Project Management department with 10 years of professional experience in the infrastructure and energy sectors. He is responsible for the overall coordination of project lifecycles, ensuring that feasibility studies and detailed designs are delivered on schedule and within budget. His expertise focuses on resource optimization, risk management, and maintaining seamless communication between multidisciplinary engineering teams and project stakeholders to ensure high-quality project delivery.",
         image: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?q=80&w=1000&auto=format&fit=crop"
     },
@@ -266,7 +266,7 @@ export const TEAM_MEMBERS: TeamMember[] = [
         name: "Shradha Kisi",
         position: "Business Management Engineer",
         education: "MBA in Project Management, Islington College, London Metropoliton University | Bachelor’s in Civil Engineering, Khwopa Engineering College, Purbanchal University",
-        bio: "Ms. Kisi is a versatile professional at TAC Hydro Consultancy who brings a strategic multidisciplinary approach to the hydropower sector with over 2 years of experience. She plays a dual role within the firm bridging the gap between technical civil design and overall business management. Her expertise lies in blending solid civil engineering foundations with a high level understanding of project lifecycles and infrastructure planning. She has supported the development of significant energy projects including Mewa Khola (50 MW) Super Lower Bagmati (41.86 MW) and Langtang Khola (20 MW) hydroelectric projects. Her ability to integrate technical design with management oversight ensures that project milestones are met with engineering precision and operational efficiency.",
+        bio: "Ms. Kisi is a versatile professional at TAC Hydro Consultancy who brings a strategic multidisciplinary approach to the hydropower sector with over 3 years of experience. She plays a dual role within the firm bridging the gap between technical civil design and overall business management. Her expertise lies in blending solid civil engineering foundations with a high-level understanding of project lifecycles and infrastructure planning. She has supported the development of significant energy projects including Mewa Khola HPP (50 MW), Super Lower Bagmati HPP (41.86 MW) and Langtang Khola HPP (20 MW). Her ability to integrate technical design with management oversight ensures that project milestones are met with engineering precision and operational efficiency.",
         image: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?q=80&w=1000&auto=format&fit=crop"
     },
     {
@@ -319,8 +319,8 @@ export const TEAM_MEMBERS: TeamMember[] = [
         category: "Engineering Professionals",
         name: "Ujwal Singh",
         position: "Assistant Admin",
-        education: "Pursuing Bachelor’s in Business Administration",
-        bio: "Mr. Singh provides vital administrative support to the TAC Hydro team, ensuring the smooth day-to-day operations of the office. He assists in project documentation, record-keeping, and the coordination of logistics for site visits and multidisciplinary team meetings.",
+        education: "Bachelor’s in Business Administration",
+        bio: "Mr. Singh provides vital administrative support to the TAC Hydro team, ensuring the smooth day-to-day operations of the office. He assists in project documentation, record-keeping, and the coordination of logistics for site visits and multidisciplinary team meetings. His organizational support allows the engineering and management teams to maintain a high level of productivity and focus on the delivery of technical solutions for the firm’s clients.",
         image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop"
     },
 ];

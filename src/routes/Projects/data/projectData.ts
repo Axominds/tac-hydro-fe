@@ -9,6 +9,7 @@ export type ProjectScope =
 export interface Project {
     id: string;
     title: string;
+    installedCapacity: string;
     scope: ProjectScope;
     location: [number, number]; // [latitude, longitude]
     role: string;
@@ -21,7 +22,8 @@ export const projectData: Project[] = [
     // --- DETAILED FEASIBILITY STUDY (15 Projects) ---
     {
         id: "fs-1",
-        title: "Ghatte Khola Small Hydropower Project (5 MW)",
+        title: "Ghatte Khola Small Hydropower Project",
+        installedCapacity: "5 MW",
         scope: "Detailed Feasibility Study",
         location: [27.78, 86.30],
         role: "TAC Hydro Engineers (P). Ltd. was commissioned to conduct the Updated Detailed Feasibility Study. Our role involves a comprehensive technical assessment, including the design and calculation of hydraulic structures, construction planning, and cost estimation to contributing renewable energy to the national grid via the Singati Substation.",
@@ -43,6 +45,7 @@ export const projectData: Project[] = [
     {
         id: "fs-2",
         title: "Lohore Khola Hydropower Project",
+        installedCapacity: "4.2 MW",
         scope: "Detailed Feasibility Study",
         location: [28.9, 81.8],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned by Lohore Khola Hydropower Company Pvt. Ltd. to conduct the Updated Feasibility Study for the 4.2 MW project. In this capacity, our firm was responsible for verifying the hydrological data and optimizing the technical layout of the civil and hydromechanical components. Our work ensured the technical and financial viability of the scheme, providing the essential Project Feasibility Study Report required for further project development and grid interconnection licensing.",
@@ -64,6 +67,7 @@ export const projectData: Project[] = [
     {
         id: "fs-3",
         title: "Tamor-Mewa Hydroelectric Project",
+        installedCapacity: "128 MW",
         scope: "Detailed Feasibility Study",
         location: [27.36, 87.65],
         role: "The Sanima Hydro and Engineering Pvt. Ltd (SHEPL)-TAC Hydro Consultancy Pvt. Ltd. J.V. was commissioned by Spark Hydroelectric Company Limited (SHECL) on October 8th 2024 to conduct the Updated Feasibility Study for the 128 MW project. In this capacity, our firm focused on re-evaluating the hydrological parameters, optimizing the project layout, and verifying the technical and economic viability of the scheme. Our work provided the refined technical framework and updated feasibility reporting necessary to move the project toward its next phase of development and detailed engineering.",
@@ -84,7 +88,8 @@ export const projectData: Project[] = [
     },
     {
         id: "fs-4",
-        title: "Rawa Khola Hydropower Project (6.7 MW)",
+        title: "Rawa Khola Hydropower Project",
+        installedCapacity: "6.7 MW",
         scope: "Detailed Feasibility Study",
         location: [27.32, 86.76],
         role: "TAC Hydro Consultancy Pvt. Ltd. provided consulting services for the Updated Feasibility Study of the Rawa Khola Hydropower Project (RKHP), developed by Haleshi Hydropower Private Limited in Khotang District, Eastern Nepal, to upgrade the project capacity from the existing 5.4 MW to 6.7 MW.",
@@ -107,6 +112,7 @@ export const projectData: Project[] = [
     {
         id: "fs-5",
         title: "Super Seti Hydropower Project (SSHP)",
+        installedCapacity: "24.0 MW",
         scope: "Detailed Feasibility Study",
         location: [28.45, 84.0],
         role: "TAC Hydro Consultancy was awarded the contract for the Inception Study, Updated Feasibility Study, Detailed Engineering Design of Civil works, Tender Documents Preparation, and Detailed Design of Hydromechanical works by SNEL.",
@@ -127,7 +133,8 @@ export const projectData: Project[] = [
     },
     {
         id: "fs-6",
-        title: "Lower Chameliya Hydropower Project (20MW)",
+        title: "Lower Chameliya Hydropower Project",
+        installedCapacity: "20 MW",
         scope: "Detailed Feasibility Study",
         location: [29.68, 80.62],
         role: "TAC Hydro Engineers (P). Ltd., in Joint Venture with ERMC (P). Ltd., was commissioned by the Department of Electricity Development (DoED) to conduct the Feasibility Study. Our role involves a comprehensive technical assessment, including the design and calculation of hydraulic structures, construction planning, and cost estimation.",
@@ -149,6 +156,7 @@ export const projectData: Project[] = [
     {
         id: "fs-7",
         title: "Lower Dudhkunda Hydropower Project",
+        installedCapacity: "9.6 MW",
         scope: "Detailed Feasibility Study",
         location: [27.5, 86.6],
         role: "Feasibility Study",
@@ -169,7 +177,8 @@ export const projectData: Project[] = [
     },
     {
         id: "fs-8",
-        title: "Lower Khani B Hydropower Project (6.2 MW)",
+        title: "Lower Khani B Hydropower Project",
+        installedCapacity: "6.2 MW",
         scope: "Detailed Feasibility Study",
         location: [27.82, 86.33],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned by Koplang Energy Hydropower Pvt. Ltd. to conduct the Updated Feasibility. Our firm is responsible for hydrological analysis, site investigations, project layout optimization, design review, cost estimation, and feasibility assessment.",
@@ -190,6 +199,7 @@ export const projectData: Project[] = [
     {
         id: "fs-9",
         title: "Mathillo Inkhu Hydropower Project",
+        installedCapacity: "24.22 MW",
         scope: "Detailed Feasibility Study",
         location: [27.55, 86.8],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned by the developer Universal Power Company for the works of feasibility study, hydrological analysis, optimization of project capacity, detail topographical survey, location of different component, hydraulic design and detail design of civil, hydromechanical, electromechanical and transmission line components.",
@@ -210,7 +220,8 @@ export const projectData: Project[] = [
     },
     {
         id: "fs-10",
-        title: "Middle Chameliya Hydropower Project (28.304 MW)",
+        title: "Middle Chameliya Hydropower Project",
+        installedCapacity: "28.304 MW",
         scope: "Detailed Feasibility Study",
         location: [29.73, 80.75],
         role: "TAC Hydro Consultancy Pvt. Ltd. provided consulting services for the preparation of the Detailed Feasibility Study of the project, including hydrological analysis, site investigations, project layout optimization, design review, cost estimation, and feasibility assessment.",
@@ -232,6 +243,7 @@ export const projectData: Project[] = [
     {
         id: "fs-11",
         title: "Sanjen Khola Hydropower Project",
+        installedCapacity: "78 MW",
         scope: "Detailed Feasibility Study",
         location: [28.2, 85.3],
         role: "TAC Hydro Consultancy Pvt. Ltd. was engaged as the Consultant for the preparation of the Detailed Feasibility Study, with responsibilities covering hydromechanical and electromechanical components of the project.",
@@ -252,7 +264,8 @@ export const projectData: Project[] = [
     },
     {
         id: "fs-12",
-        title: "Super Inkhu Hydropower Project (22.12 MW)",
+        title: "Super Inkhu Hydropower Project",
+        installedCapacity: "22.12 MW",
         scope: "Detailed Feasibility Study",
         location: [27.61, 86.79],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned to conduct the Detailed Feasibility Study, including hydrological analysis, optimization of project capacity, and design of all major components.",
@@ -274,6 +287,7 @@ export const projectData: Project[] = [
     {
         id: "fs-13",
         title: "Super Mai Hydropower Project",
+        installedCapacity: "7.8 MW",
         scope: "Detailed Feasibility Study",
         location: [26.9, 87.9],
         role: "TAC Hydro Consultancy was actively involved in the Feasibility study with further hydrological analysis and optimization of project capacity, detail topographical survey, survey data analysis and selection of most suitable waterway alignment, location of the diversion weir and other headworks components, location of powerhouse and transmission line alignment.",
@@ -294,7 +308,8 @@ export const projectData: Project[] = [
     },
     {
         id: "fs-14",
-        title: "Super Seti Hydropower Project (30 MW)",
+        title: "Super Seti Hydropower Project",
+        installedCapacity: "30 MW",
         scope: "Detailed Feasibility Study",
         location: [28.45, 84.1],
         role: "Feasibility Study",
@@ -315,7 +330,8 @@ export const projectData: Project[] = [
     },
     {
         id: "fs-15",
-        title: "Super Molung Hydropower Project (9.79 MW)",
+        title: "Super Molung Hydropower Project",
+        installedCapacity: "9.79 MW",
         scope: "Detailed Feasibility Study",
         location: [27.42, 86.39],
         role: "TAC Hydro Consultancy Pvt. Ltd. delivered consultancy services for the preparation of the Detailed Feasibility Study for the project, including hydrological assessments, site investigations, and design evaluation.",
@@ -338,7 +354,8 @@ export const projectData: Project[] = [
     // --- DETAILED ENGINEERING DESIGN (9 Projects) ---
     {
         id: "ded-1",
-        title: "Ghatte Khola Small Hydropower Project (5 MW)",
+        title: "Ghatte Khola Small Hydropower Project",
+        installedCapacity: "5 MW",
         scope: "Detailed Engineering Design",
         location: [27.78, 86.30],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned by Manakamana Engineering Hydropower Pvt. Ltd. to provide Engineering Supervision and Quality Control for the project. In this role, our firm was responsible for the complete technical design of the civil and hydromechanical components, translating the feasibility framework into actionable construction blueprints. Additionally, we provided on-site consulting services to supervise construction activities and managed technical coordination from our Kathmandu office to ensure the project met its commercial and engineering requirements.",
@@ -360,6 +377,7 @@ export const projectData: Project[] = [
     {
         id: "ded-2",
         title: "Lohore Khola Hydropower Project",
+        installedCapacity: "4.2 MW",
         scope: "Detailed Engineering Design",
         location: [28.9, 81.8],
         role: "TAC Hydro Consultancy Pvt. Ltd. was awarded the contract for the Detailed Engineering Design of the project by the promoter, Lohore Khola Hydropower Company Pvt. Ltd. In this capacity, our firm was responsible for finalizing the technical layout of the civil and hydromechanical components, verifying the hydrological data, and providing the necessary engineering blueprints for construction.",
@@ -380,7 +398,8 @@ export const projectData: Project[] = [
     },
     {
         id: "ded-3",
-        title: "Rawa Khola Hydropower Project (6.7 MW)",
+        title: "Rawa Khola Hydropower Project",
+        installedCapacity: "6.7 MW",
         scope: "Detailed Engineering Design",
         location: [27.32, 86.76],
         role: "TAC Hydro Consultancy Pvt. Ltd. provided consulting services for Detailed Engineering Design of the Rawa Khola Hydropower Project (RKHP), developed by Halesi Hydropower Private Limited in Khotang District, eastern Nepal. A contract agreement for the Detailed Engineering Design of the Rawa Khola HPP (6.7 MW), including Hydromechanical and Transmission Line works, was signed on 10th December 2025, which is ongoing.",
@@ -404,7 +423,8 @@ export const projectData: Project[] = [
     },
     {
         id: "ded-4",
-        title: "Upper Piluwa Khola-3 Hydroelectric Project (4.95 MW)",
+        title: "Upper Piluwa Khola-3 Hydroelectric Project",
+        installedCapacity: "4.95 MW",
         scope: "Detailed Engineering Design",
         location: [27.29, 87.41],
         role: "TAC Hydro Consultancy Pvt. Ltd. was appointed by the EPC contractor, Growth/PES JV Pvt. Ltd., to provide critical Design Review and Engineering Support during the construction of both civil and hydromechanical works. Our involvement, which began on March 30, 2021, ensures that the construction adheres to technical specifications and structural integrity standards.",
@@ -425,7 +445,8 @@ export const projectData: Project[] = [
     },
     {
         id: "ded-5",
-        title: "Liping Khola Hydropower Project (16.26 MW)",
+        title: "Liping Khola Hydropower Project",
+        installedCapacity: "16.26 MW",
         scope: "Detailed Engineering Design",
         location: [27.97, 85.95],
         role: "TAC Hydro Consultancy Pvt. Ltd. has been awarded the Detail Engineering Design for the project, supporting the Client in maintaining quality, safety, and compliance throughout the construction phase. The services commenced after contract agreement signed with Him River Power Limited on 10th Baisakh 2078 B.S.",
@@ -446,7 +467,8 @@ export const projectData: Project[] = [
     },
     {
         id: "ded-6",
-        title: "Jagdulla Hydroelectric Project (106.00 MW)",
+        title: "Jagdulla Hydroelectric Project",
+        installedCapacity: "106 MW",
         scope: "Detailed Engineering Design",
         location: [29.09, 82.59],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned to carry out the Detailed Engineering Design (DED) for the project. In this role, our firm is responsible for the complete technical design of the civil and hydromechanical components, translating the feasibility framework into actionable construction blueprints.",
@@ -468,6 +490,7 @@ export const projectData: Project[] = [
     {
         id: "ded-7",
         title: "Super Mai Hydropower Project",
+        installedCapacity: "7.8 MW",
         scope: "Detailed Engineering Design",
         location: [26.9, 87.9],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned to carry out the Detailed Engineering Design (DED) of civil, hydromechanical, electromechanical and transmission line components for the project which includes the hydraulic design, structural design and general arrangement drawing with detail layout of all components along with preparation of employer's requirement, technical specifications and all documentation required for contract agreement.",
@@ -489,6 +512,7 @@ export const projectData: Project[] = [
     {
         id: "ded-8",
         title: "Sano Milti Khola Small Hydropower",
+        installedCapacity: "3.00 MW",
         scope: "Detailed Engineering Design",
         location: [27.6, 86.2], // Approx
         role: "Project Role Not Specified",
@@ -510,6 +534,7 @@ export const projectData: Project[] = [
     {
         id: "ded-9",
         title: "Dwari Khola Hydropower Project",
+        installedCapacity: "3.75 MW",
         scope: "Detailed Engineering Design",
         location: [28.9, 81.7], // Approx Dailekh/Dwari area
         role: "TAC Hydro Consultancy Pvt. Ltd. was awarded the Review of feasibility study with further hydrological analysis and optimization of project capacity, detail topographical survey, survey data analysis and selection of most suitable waterway alignment, location of the diversion weir and other headworks components, location of powerhouse and transmission line alignment along with hydraulic design, structural design and general arrangement drawing with detail layout of all civil, hydromechanical (HM), electromechanical (EM) and transmission line (TL) components and detail estimate of the project cost and also in Preparation of employer's requirement, technical specifications and all documentation required for contract agreement for civil, HM, EM and TL works",
@@ -530,7 +555,8 @@ export const projectData: Project[] = [
     },
     {
         id: "ded-10",
-        title: "Kasuwa Khola Hydropower Project (92 MW)",
+        title: "Kasuwa Khola Hydropower Project",
+        installedCapacity: "92 MW",
         scope: "Detailed Engineering Design",
         location: [27.6, 87.3],
         role: "TAC Hydro Consultancy Pvt. Ltd. provided consulting services for the Detailed Engineering Design of the Kasuwa Khola Hydropower Project (KKHP) 45MW, developed by Kasuwa Khola Hydropower Limited in Sankhawasabha District, Eastern Nepal, on 13th Baisakh 2078 B.S. The project study is revised to accommodate the study for 92MW under the Additional Study Agreement.",
@@ -556,7 +582,8 @@ export const projectData: Project[] = [
     },
     {
         id: "ded-11",
-        title: "Khani Khola-1 Hydropower Project (40 MW)",
+        title: "Khani Khola-1 Hydropower Project",
+        installedCapacity: "40 MW",
         scope: "Detailed Engineering Design",
         location: [27.81, 86.34],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned by Greenlife Hydropower Ltd. to conduct the Detailed Engineering Design for the 40 MW project. In this capacity, our firm is responsible for preparing Detailed Engineering Design, construction level drawings, reinforcement details including bar bending Schedule that will be good for construction and can be issued to the contractor.",
@@ -577,7 +604,8 @@ export const projectData: Project[] = [
     },
     {
         id: "ded-12",
-        title: "Mathillo Inkhu Hydropower Project (24.22 MW)",
+        title: "Mathillo Inkhu Hydropower Project",
+        installedCapacity: "24.22 MW",
         scope: "Detailed Engineering Design",
         location: [27.57, 86.77],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned by the developer Universal Power Company for the works of feasibility study, hydrological analysis, optimization of project capacity, detail topographical survey, location of different component, hydraulic design and detail design of civil, hydromechanical, electromechanical and transmission line components.",
@@ -598,7 +626,8 @@ export const projectData: Project[] = [
     },
     {
         id: "ded-13",
-        title: "Tamor-Mewa Hydroelectric Project (128 MW)",
+        title: "Tamor-Mewa Hydroelectric Project",
+        installedCapacity: "128 MW",
         scope: "Detailed Engineering Design",
         location: [27.36, 87.64],
         role: "The Sanima Hydro and Engineering Pvt. Ltd (SHEPL)-TAC Hydro Consultancy Pvt. Ltd. J.V. was commissioned by SFHECL on October 8th 2024 to conduct the Updated Feasibility Study for the 128 MW project. In this capacity, our firm focused on re-evaluating the hydrological parameters, optimizing the project layout, and verifying the technical and economic viability of the scheme.",
@@ -620,7 +649,8 @@ export const projectData: Project[] = [
     },
     {
         id: "ded-14",
-        title: "Middle Chameliya Hydropower Project (28.304 MW)",
+        title: "Middle Chameliya Hydropower Project",
+        installedCapacity: "28.304 MW",
         scope: "Detailed Engineering Design",
         location: [29.73, 80.75],
         role: "TAC Hydro Consultancy Pvt. Ltd. provided consulting services for the preparation of the Detailed Engineering Design of the project. Our firm was responsible for translating the feasibility framework into construction-ready engineering solutions. Our scope included the detailed structural design of the headworks, the hydraulic optimization of the 7,200 m water conveyance system, and the preparation of precise specifications for the hydromechanical and electromechanical components.",
@@ -643,7 +673,8 @@ export const projectData: Project[] = [
     // --- CONSTRUCTION SUPERVISION (4 Projects) ---
     {
         id: "cs-1",
-        title: "Upper Piluwa Khola-3 Hydroelectric Project (4.95 MW)",
+        title: "Upper Piluwa Khola-3 Hydroelectric Project",
+        installedCapacity: "4.95 MW",
         scope: "Construction Supervision",
         location: [27.29, 87.41],
         role: "TAC Hydro Consultancy Pvt. Ltd. was appointed by the EPC contractor, Growth/PES JV Pvt. Ltd., to provide critical Design Review and Engineering Support during the construction of both civil and hydromechanical works. Our involvement, which began on March 30, 2021, ensures that the construction adheres to technical specifications and structural integrity standards. We provide real-time engineering solutions for complex project components, including the dual diversion weirs, the 1,360 m headrace pipe, and the Lakhuwa Khola penstock crossing, ensuring the project transitions smoothly from design to operational status.",
@@ -664,7 +695,8 @@ export const projectData: Project[] = [
     },
     {
         id: "cs-2",
-        title: "Liping Khola Hydropower Project (16.26 MW)",
+        title: "Liping Khola Hydropower Project",
+        installedCapacity: "16.26 MW",
         scope: "Construction Supervision",
         location: [27.97, 85.95],
         role: "As per the scope of consulting services, TAC carries out inspection, measurement, and quality control of all civil construction works to ensure compliance with the approved drawings and specifications. In addition, daily discussions and meetings are held to review progress, set daily targets, and address site constraints. Based on site observations and progress review, TAC provides practical suggestions and recommendations to improve the speed and efficiency of construction works, with the objective of achieving the project milestones within the scheduled time.",
@@ -685,7 +717,8 @@ export const projectData: Project[] = [
     },
     {
         id: "cs-3",
-        title: "Ghatte Khola Small Hydropower Project (5.00 MW)",
+        title: "Ghatte Khola Small Hydropower Project",
+        installedCapacity: "5.00 MW",
         scope: "Construction Supervision",
         location: [27.78, 86.30],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned by Manakamana Engineering Hydropower Pvt. Ltd. to provide Construction Supervision and Quality Control for the project. In this role, our firm was responsible to provide on-site consulting services to supervise construction activities and managed technical coordination from our Kathmandu office to ensure the project met its commercial and engineering requirements.",
@@ -707,6 +740,7 @@ export const projectData: Project[] = [
     {
         id: "cs-4",
         title: "Middle Modi Hydropower Project",
+        installedCapacity: "15.10 MW",
         scope: "Construction Supervision",
         location: [28.3, 83.8],
         role: "TAC Hydro Consultancy Pvt. Ltd. is providing Construction Supervision services for the project, supporting the Client in maintaining quality, safety, and compliance throughout the construction phase.",
@@ -730,6 +764,7 @@ export const projectData: Project[] = [
     {
         id: "dd-1",
         title: "Likhu-1 Hydropower Project",
+        installedCapacity: "77.00 MW",
         scope: "Due Diligence Appraisal",
         location: [27.4, 86.3], // Dummy
         role: "Due Diligence",
@@ -750,7 +785,8 @@ export const projectData: Project[] = [
     },
     {
         id: "dd-2",
-        title: "Nupche Likhu Hydropower Project (57.50 MW)",
+        title: "Nupche Likhu Hydropower Project",
+        installedCapacity: "57.50 MW",
         scope: "Due Diligence Appraisal",
         location: [27.69, 86.46],
         role: "TAC Hydro Consultancy Pvt. Ltd. is responsible for conducting due diligence Study on behalf of Equity Investor Avasar Equity Diversified fund which includes evaluating, verifying, and de-risking hydroelectric projects for investors as well as review technical, financial, environmental, and legal aspects to ensure the project's feasibility, safety, and profitability.",
@@ -772,7 +808,8 @@ export const projectData: Project[] = [
     },
     {
         id: "dd-3",
-        title: "Lower Erkhuwa Hydropower Project (14.15 MW)",
+        title: "Lower Erkhuwa Hydropower Project",
+        installedCapacity: "14.15 MW",
         scope: "Due Diligence Appraisal",
         location: [27.42, 87.11],
         role: "TAC Hydro Consultancy Pvt. Ltd. is responsible for conducting due diligence Study on behalf of lenders consortium (lead bank: Machhapuchchhre Bank Ltd) which includes evaluating, verifying, and de-risking hydroelectric projects for lenders as well as review technical, financial, environmental, and legal aspects to ensure the project's feasibility, safety, and profitability.",
@@ -793,7 +830,8 @@ export const projectData: Project[] = [
     },
     {
         id: "dd-4",
-        title: "Midim-1 Hydropower Project (13.424 MW)",
+        title: "Midim-1 Hydropower Project",
+        installedCapacity: "13.424 MW",
         scope: "Due Diligence Appraisal",
         location: [28.25, 84.27],
         role: "TAC Hydro Consultancy Pvt. Ltd. had signed an agreement with the client Mount Rasuwa Hydropower Pvt. Ltd (MRHPL) for the Due Diligence study of this project with the client on 27th June, 2025. The firm is responsible for evaluating, verifying, and de-risking hydroelectric projects for investors, lenders, and developers as well as review technical, financial, environmental, and legal aspects to ensure the project's feasibility, safety, and profitability.",
@@ -813,7 +851,8 @@ export const projectData: Project[] = [
     },
     {
         id: "dd-5",
-        title: "Upper Tadi Khola Hydropower Project (11.00 MW)",
+        title: "Upper Tadi Khola Hydropower Project",
+        installedCapacity: "11.00 MW",
         scope: "Due Diligence Appraisal",
         location: [27.98, 85.42],
         role: "TAC Hydro Consultancy Pvt. Ltd. is responsible for conducting due diligence Study on behalf of lenders consortium (lead bank: Kumari Bank Ltd) which includes evaluating, verifying, and de-risking hydroelectric projects for lenders as well as review technical, financial, environmental, and legal aspects to ensure the project's feasibility, safety, and profitability.",
@@ -832,7 +871,8 @@ export const projectData: Project[] = [
     },
     {
         id: "dd-6",
-        title: "Madhya Super Daraudi Hydropower Project (10.00 MW)",
+        title: "Madhya Super Daraudi Hydropower Project",
+        installedCapacity: "10.00 MW",
         scope: "Due Diligence Appraisal",
         location: [28.22, 84.73],
         role: "TAC Hydro Consultancy Pvt. Ltd. is responsible for conducting due diligence Study on behalf of lenders consortium (lead bank: Prime Commercial Bank Ltd) which includes evaluating, verifying, and de-risking hydroelectric projects for lenders as well as review technical, financial, environmental, and legal aspects to ensure the project's feasibility, safety, and profitability.",
@@ -853,7 +893,8 @@ export const projectData: Project[] = [
     },
     {
         id: "dd-7",
-        title: "Tadi Ghyangphedi Hydropower Project (8.00 MW)",
+        title: "Tadi Ghyangphedi Hydropower Project",
+        installedCapacity: "8.00 MW",
         scope: "Due Diligence Appraisal",
         location: [27.99, 85.45],
         role: "The Due Diligence Study was signed on 2025/03/28 as a tripartite agreement between Tadi Ghyangphedi Hydropower Project, Siddhartha Bank Limited, and TAC Hydro Consultancy Pvt. Ltd. as the Technical Consultant. Our role included the verification of technical feasibility, financial viability, and socio-environmental acceptability of the project facilitating Siddhartha Bank Limited to decide the technical and financial criteria, and whether the project is worth the investment.",
@@ -874,7 +915,8 @@ export const projectData: Project[] = [
     },
     {
         id: "dd-8",
-        title: "Jurimba khola Small Hydropower Project (7.63 MW)",
+        title: "Jurimba khola Small Hydropower Project",
+        installedCapacity: "7.63 MW",
         scope: "Due Diligence Appraisal",
         location: [27.91, 85.9],
         role: "TAC Hydro Consultancy Pvt. Ltd. had signed an agreement with Jurimba Hydropower Company Pvt. Ltd. for the Due Diligence study of this project with the client on 27th October, 2024.",
@@ -896,6 +938,7 @@ export const projectData: Project[] = [
     {
         id: "dd-9",
         title: "Upper Piluwa Hills Small Hydropower",
+        installedCapacity: "4.99 MW",
         scope: "Due Diligence Appraisal",
         location: [27.35, 87.35],
         role: "TAC Hydro Consultancy Pvt. Ltd. was engaged by the client, Milke Jaljale Hydropower Pvt. Ltd to conduct a comprehensive Due Diligence Study of the project. Our role involved a rigorous technical and financial audit of the existing Detailed Project Report (DPR). We performed field data verification, reviewed the civil and hydromechanical designs, and conducted an independent financial analysis to ensure the project’s viability and readiness for implementation. Our Due Diligence Report provides the essential third-party validation required for stakeholders and potential investors.",
@@ -917,6 +960,7 @@ export const projectData: Project[] = [
     {
         id: "dd-10",
         title: "Upper Gaddigad Hydropower Project",
+        installedCapacity: "1.55 MW",
         scope: "Due Diligence Appraisal",
         location: [29.28, 81.07],
         role: "TAC Hydro Consultancy Pvt. Ltd. is responsible for conducting due diligence Study on behalf of lenders consortium (lead bank: Machhapuchchhre Bank Ltd) which includes evaluating, verifying, and de-risking hydroelectric projects for lenders as well as review technical, financial, environmental, and legal aspects to ensure the project's feasibility, safety, and profitability.",
@@ -937,7 +981,8 @@ export const projectData: Project[] = [
     },
     {
         id: "dd-11",
-        title: "Thuligad Khola Hydroelectric Project (17.00 MW)",
+        title: "Thuligad Khola Hydroelectric Project",
+        installedCapacity: "17.00 MW",
         scope: "Due Diligence Appraisal",
         location: [28.95, 80.82],
         role: "TAC Hydro Consultancy Pvt. Ltd. was commissioned to carry out the Due Diligence Study (DDS) for the project. In this role, our firm is responsible for the supervision of the technical and financial feasibility of the project as a technical consultant.",
@@ -959,7 +1004,8 @@ export const projectData: Project[] = [
     // --- PROGRESS MONITORING AND BILL VETTING (11 Projects) ---
     {
         id: "pm-1",
-        title: "Bhotekoshi-1 Hydropower Project (44.00 MW)",
+        title: "Bhotekoshi-1 Hydropower Project",
+        installedCapacity: "44.00 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [27.89, 85.91],
         role: "TAC Hydro Consultancy Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite contract among Electro Power Company Ltd. and Nepal Infrastructure Bank Ltd. (Lead Bank) to provide technical consulting services, progress monitoring, and bill verification for the successful completion of the project.",
@@ -980,7 +1026,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-2",
-        title: "Dordi-1 HYDROELECTRIC PROJECT (12 MW)",
+        title: "Dordi-1 HYDROELECTRIC PROJECT",
+        installedCapacity: "12 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [28.24, 84.45],
         role: "TAC Hydro Engineers Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite agreement among Dordi Khola Jal Bidyut Co. Ltd. and Sanima bank limited. (Lead Bank) to provide technical consulting services, progress monitoring, and bill certification for the successful completion of the project.",
@@ -1001,7 +1048,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-3",
-        title: "Karuwa Seti Hydropower Project (32.00 MW)",
+        title: "Karuwa Seti Hydropower Project",
+        installedCapacity: "32.00 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [28.38, 83.97],
         role: "TAC Hydro Engineers Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite contract among Jhyamolongma Hydropower Company Ltd., Nepal Infrastructure Bank Ltd. (Lead Bank), and TAC to provide technical consulting services, progress monitoring, and bill verification for the project.",
@@ -1022,7 +1070,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-4",
-        title: "Super Lower Bagmati Hydropower Project (41.314 MW)",
+        title: "Super Lower Bagmati Hydropower Project",
+        installedCapacity: "41.314 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [27.37, 85.42],
         role: "TAC Hydro Consultancy Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite contract between Super Bagmati Hydropower Limited, Laxmi Sunrise Bank Limited (Lead Bank) to provide technical consulting services, progress monitoring and bill verification for the successful completion of the project.",
@@ -1043,7 +1092,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-5",
-        title: "TALLO KHARE KHOLA HYDROPOWER PROJECT (11 MW)",
+        title: "TALLO KHARE KHOLA HYDROPOWER PROJECT",
+        installedCapacity: "11 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [27.75, 86.21],
         role: "TAC Hydro Engineers Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite contract among Universal Power Company Limited. and Bank of Kathmandu Lumbini Limited. (Lead Bank) to provide technical consulting services, progress monitoring, and bill verification for the successful completion of the project.",
@@ -1064,7 +1114,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-6",
-        title: "Upper Chameliya Hydropower Project (40MW)",
+        title: "Upper Chameliya Hydropower Project",
+        installedCapacity: "40 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [29.74, 80.78],
         role: "TAC Hydro Consultancy Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite contract among Api Power Company Ltd. and Himalayan Bank Limited. (Lead Bank) to provide technical consulting services, progress monitoring, and bill verification for the successful completion of the project.",
@@ -1085,7 +1136,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-7",
-        title: "UPPER MARDI KHOLA HYDROPOWER PROJECT (7 MW)",
+        title: "UPPER MARDI KHOLA HYDROPOWER PROJECT",
+        installedCapacity: "7 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [28.39, 83.90],
         role: "TAC Hydro Engineers Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite agreement among United Idi Mardi & RB Hydropower Pvt. Ltd. and Prime Commercial Bank Ltd. (Lead Bank) to provide technical consulting services, progress monitoring, and bill verification for the successful completion of the project.",
@@ -1105,7 +1157,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-8",
-        title: "Upper Seti Hydropower Project (20.00 MW)",
+        title: "Upper Seti Hydropower Project",
+        installedCapacity: "20.00 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [28.41, 83.99],
         role: "TAC Hydro Consultancy Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite contract among Upper Seti Hydropower Pvt. Ltd., Laxmi Sunrise Bank Ltd. (Lead Bank), to provide technical consulting services, progress monitoring, and bill verification for the successful completion of the project.",
@@ -1127,7 +1180,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-9",
-        title: "Lower Erkhuwa Hydropower Project (14.15 MW)",
+        title: "Lower Erkhuwa Hydropower Project",
+        installedCapacity: "14.15 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [27.41, 87.11],
         role: "TAC Hydro Consultancy Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite contract among Lower Erkhuwa Hydropower Company Pvt. Ltd. and Machhapuchre Bank Ltd. (Lead Bank) to provide technical consulting services, progress monitoring, and bill verification for the successful completion of the project.",
@@ -1148,7 +1202,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-10",
-        title: "Nupche Likhu Hydropower Project (57.50 MW)",
+        title: "Nupche Likhu Hydropower Project",
+        installedCapacity: "57.50 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [27.7, 86.47],
         role: "TAC Hydro Consultancy Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite contract among Vision Energy & Power Ltd. and Machhapuchhre Bank Ltd. (Lead Bank) to provide technical consulting services, progress monitoring, and bill verification for the successful completion of the project",
@@ -1170,7 +1225,8 @@ export const projectData: Project[] = [
     },
     {
         id: "pm-11",
-        title: "Upper Balephi Hydropower Project (46.00 MW)",
+        title: "Upper Balephi Hydropower Project",
+        installedCapacity: "46.00 MW",
         scope: "Progress Monitoring and Bill Vetting",
         location: [28.00, 85.79],
         role: "TAC Hydro Consultancy Pvt. Ltd., as the Technical Consultant, has been engaged under a tripartite contract among Upper Balephi Hydropower Ltd., Laxmi Sunrise Bank Ltd. (Lead Bank) to provide technical consulting services, progress monitoring, and bill verification for the successful completion of the project.",

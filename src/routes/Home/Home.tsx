@@ -1,4 +1,4 @@
-import { NumbersAndFiguresSection } from "./sections/NumbersAndFiguresSection";
+import { StatsAndProfessionalFrameworkSection } from "./sections/StatsAndProfessionalFrameworkSection";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "./sections/BannerSection";
 import { ExpertiseAndServicesSection } from "../../components/sections/ExpertiseAndServicesSection";
@@ -9,11 +9,11 @@ import { VideoSection } from "./sections/VideoSection";
 import { NewsAndArticlesSection } from "./sections/NewsAndArticlesSection";
 import { MoveDownSection } from "../../components/sections/MoveDownSection";
 import { FooterSection } from "../../components/sections/FooterSection";
-
-
+import { SDGSection } from "../../components/sections/SDGSection";
 
 const HOME_SECTIONS = [
-  "numbers-and-figures",
+  "stats-and-professional-framework",
+  "sdg-section",
   "expertise-and-services",
   "sectors-of-services",
   "video-section",
@@ -24,10 +24,14 @@ const HOME_SECTIONS = [
 
 export const Home = () => {
   return (
-    <div className="overflow-hidden border border-solid border-black w-full relative" data-model-id="2:330">
+    <div
+      className="overflow-hidden border border-solid border-black w-full relative"
+      data-model-id="2:330"
+    >
       <HeaderSection />
       <BannerSection />
-      <NumbersAndFiguresSection />
+      <StatsAndProfessionalFrameworkSection />
+      <SDGSection />
       <ExpertiseAndServicesSection />
       <SectorsOfServicesSection />
       <VideoSection />

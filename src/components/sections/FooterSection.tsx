@@ -38,7 +38,7 @@ export const FooterSection = () => {
               className="w-[220px] h-auto sm:w-[260px] lg:w-[305px] mb-6"
               alt="TAC Hydro Consultancy logo"
               src={LOGO_FOOTER}
-            />
+             loading="lazy" decoding="async"/>
 
             <div className="font-semibold text-white text-base sm:text-lg leading-7 mb-4">
               Empowering Sustainable Resources Through Engineering Excellence

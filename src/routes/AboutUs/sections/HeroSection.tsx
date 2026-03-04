@@ -42,19 +42,19 @@ export const HeroSection = () => {
                     className="w-full h-full object-cover"
                     alt={`Project ${project.id}`}
                     src={project.image}
-                  />
+                   loading="lazy" decoding="async"/>
 
                   {project.showHeart && (
                     <img
                       className="absolute w-[12.09%] h-[9.57%] top-[5.98%] right-[5.48%]"
                       alt="Favorite"
                       src={project.heartIcon}
-                    />
+                     loading="lazy" decoding="async"/>
                   )}
 
                   {project.label && (
                     <div className="absolute bottom-0 left-0 right-0 p-5">
-                      <img className="w-[46.17%] mb-4" alt="Project label" src={project.label} />
+                      <img className="w-[46.17%] mb-4" alt="Project label" src={project.label}  loading="lazy" decoding="async"/>
                       {project.description && (
                         <p className="font-normal text-white text-[13px] leading-normal">
                           {project.description}

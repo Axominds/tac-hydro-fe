@@ -11,7 +11,7 @@ export const BannerSection = () => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleGetStarted = () => {
-        const target = document.getElementById("numbers-and-figures");
+        const target = document.getElementById("stats-and-professional-framework");
         if (!target) return;
 
         const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
@@ -83,7 +83,7 @@ export const BannerSection = () => {
                 style={{ animation: 'slowZoom 20s ease-in-out infinite alternate' }}
                 alt="Hero Background"
                 src={HERO_BG_ALT}
-            />
+             loading="lazy" decoding="async"/>
             <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent pointer-events-none" />
 
 

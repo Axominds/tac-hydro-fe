@@ -151,7 +151,7 @@ export const SectorsOfServicesSection = () => {
                                             className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}
                                             alt={sector.title}
                                             src={sector.image}
-                                        />
+                                         loading="lazy" decoding="async"/>
                                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex flex-col justify-end p-10">
                                             <div className={`transform transition-all duration-500 ${isActive ? 'translate-y-0' : 'translate-y-4 group-hover:translate-y-0'}`}>
                                                 <h3 className="text-2xl font-bold text-white mb-2">
