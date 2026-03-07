@@ -1,0 +1,30 @@
+import { HeaderSection } from "../../components/sections/HeaderSection";
+import { BannerSection } from "../../components/sections/BannerSection";
+import { TeamSection } from "./sections/TeamSection";
+import { MoveDownSection } from "../../components/sections/MoveDownSection";
+import { FooterSection } from "../../components/sections/FooterSection";
+
+
+
+const TEAM_SECTIONS = [
+    "team-section",
+];
+
+export const OurTeam = () => {
+    return (
+        <div
+            className="overflow-hidden border border-solid border-black w-full relative"
+        >
+            <HeaderSection />
+            <BannerSection
+                title="Meet Our Team"
+                description="The Minds Behind Our Innovation"
+            />
+
+            <TeamSection />
+
+            <MoveDownSection sections={TEAM_SECTIONS} />
+            <FooterSection />
+        </div>
+    );
+};

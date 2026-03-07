@@ -13,11 +13,11 @@ import { SDGSection } from "../../components/sections/SDGSection";
 
 const HOME_SECTIONS = [
   "stats-and-professional-framework",
-  "sdg-section",
   "expertise-and-services",
   "sectors-of-services",
   "video-section",
   "map-section",
+  "sdg-section",
   "valued-partners",
   "news-and-articles",
 ];
@@ -31,11 +31,11 @@ export const Home = () => {
       <HeaderSection />
       <BannerSection />
       <StatsAndProfessionalFrameworkSection />
-      <SDGSection />
       <ExpertiseAndServicesSection />
       <SectorsOfServicesSection />
       <VideoSection />
       <MapSection />
+      <SDGSection />
       <ValuedPartnersSection />
       <NewsAndArticlesSection />
       <MoveDownSection sections={HOME_SECTIONS} />

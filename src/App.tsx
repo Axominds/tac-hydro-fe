@@ -2,13 +2,15 @@ import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Home } from "./routes/Home/Home";
 import { AboutUs } from "./routes/AboutUs/AboutUs";
-import { OrganizationChart } from "./routes/AboutUs/screens/OrganizationChart";
-import { ProfessionalFramework } from "./routes/AboutUs/screens/ProfessionalFramework";
-import { OurTeam } from "./routes/AboutUs/screens/OurTeam";
+import { OrganizationChart } from "./routes/AboutUs/OrganizationChart";
+import { ProfessionalFramework } from "./routes/AboutUs/ProfessionalFramework";
+import { OurTeam } from "./routes/AboutUs/OurTeam";
 import { Galleries } from "./routes/Galleries/Galleries";
 import { Projects } from "./routes/Projects/Projects";
 import { Services } from "./routes/Services/Services";
-import { ContactUs, Collaboration, Career } from "./routes/ContactUs/ContactUs";
+import { ContactUs } from "./routes/ContactUs/ContactUs";
+import { Collaboration } from "./routes/ContactUs/Collaboration";
+import { Career } from "./routes/ContactUs/Career";
 
 
 const ScrollManager = (): null => {
