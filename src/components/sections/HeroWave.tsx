@@ -13,7 +13,12 @@ export const HeroWave = ({ className, backgroundColor = "#f8f9fa" }: HeroWavePro
         className,
       )}
     >
-      <svg className="w-full h-[140px]" viewBox="0 0 1440 140" preserveAspectRatio="none" aria-hidden="true">
+      <svg
+        className="w-full h-[140px]"
+        viewBox="0 0 1440 140"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
         <defs>
           <linearGradient id="hero-wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#f8f9fa" />

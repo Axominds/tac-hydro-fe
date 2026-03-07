@@ -1,11 +1,4 @@
-import {
-  FacebookIcon,
-  LinkedinIcon,
-  MailIcon,
-  MapPinIcon,
-  PhoneIcon,
-  ArrowUp,
-} from "lucide-react";
+import { FacebookIcon, LinkedinIcon, MailIcon, MapPinIcon, PhoneIcon, ArrowUp } from "lucide-react";
 
 import { LOGO_FOOTER } from "../../assets";
 import { Separator } from "../ui/separator";
@@ -16,7 +9,7 @@ const projectScopes: ProjectScope[] = [
   "Detailed Engineering Design",
   "Construction Supervision",
   "Due Diligence Appraisal",
-  "Progress Monitoring and Bill Vetting"
+  "Progress Monitoring and Bill Vetting",
 ];
 
 export const FooterSection = () => {
@@ -30,7 +23,10 @@ export const FooterSection = () => {
   };
 
   return (
-    <footer id="footer-section" className="w-full bg-[#1a365d] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20">
+    <footer
+      id="footer-section"
+      className="w-full bg-[#1a365d] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20"
+    >
       <div className="max-w-[1449px] mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           <div className="flex flex-col">
@@ -38,7 +34,9 @@ export const FooterSection = () => {
               className="w-[220px] h-auto sm:w-[260px] lg:w-[305px] mb-6"
               alt="TAC Hydro Consultancy logo"
               src={LOGO_FOOTER}
-             loading="lazy" decoding="async"/>
+              loading="lazy"
+              decoding="async"
+            />
 
             <div className="font-semibold text-white text-base sm:text-lg leading-7 mb-4">
               Empowering Sustainable Resources Through Engineering Excellence

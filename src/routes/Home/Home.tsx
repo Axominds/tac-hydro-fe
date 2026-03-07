@@ -25,7 +25,7 @@ const HOME_SECTIONS = [
 export const Home = () => {
   return (
     <div
-      className="overflow-hidden border border-solid border-black w-full relative"
+      className="overflow-x-clip border border-solid border-black w-full relative"
       data-model-id="2:330"
     >
       <HeaderSection />

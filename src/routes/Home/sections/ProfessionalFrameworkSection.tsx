@@ -2,12 +2,15 @@ import { frameworkItems } from "../../../data/frameworkItems";
 
 export const ProfessionalFrameworkSection = () => {
   return (
-    <section id="professional-framework" className="flex-1 bg-white flex items-center justify-center">
+    <section
+      id="professional-framework"
+      className="flex-1 bg-white flex items-center justify-center"
+    >
       <div className="w-full max-w-[1400px] px-6 sm:px-10 lg:px-20 py-8">
         <div className="mb-20 text-center max-w-3xl mx-auto">
-          <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight mb-6">
+          <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-slate-900 mb-6">
             Our Professional Framework
-          </h2>
+          </h1>
         </div>
         <div className="flex gap-4 py-2 justify-between flex-nowrap">
           {frameworkItems.map((item, idx) => (

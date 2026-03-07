@@ -1,4 +1,4 @@
-import { Card, CardContent } from "../../../../components/ui/card";
+import { Card, CardContent } from "../../../components/ui/card";
 
 const projectsData = [
   {
@@ -25,9 +25,9 @@ export const HeroSection = () => {
   return (
     <section className="relative w-full py-20 bg-[url(/downloads/mjlodvw6RB1obD/img/vector-3.svg)] bg-cover bg-center">
       <div className="container mx-auto px-8">
-        <h2 className="font-bold text-[#111111] text-[44px] text-center leading-normal mb-16">
+        <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-[#111111] mb-16">
           Our Projects
-        </h2>
+        </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {projectsData.map((project, index) => (
@@ -42,19 +42,29 @@ export const HeroSection = () => {
                     className="w-full h-full object-cover"
                     alt={`Project ${project.id}`}
                     src={project.image}
-                   loading="lazy" decoding="async"/>
+                    loading="lazy"
+                    decoding="async"
+                  />
 
                   {project.showHeart && (
                     <img
                       className="absolute w-[12.09%] h-[9.57%] top-[5.98%] right-[5.48%]"
                       alt="Favorite"
                       src={project.heartIcon}
-                     loading="lazy" decoding="async"/>
+                      loading="lazy"
+                      decoding="async"
+                    />
                   )}
 
                   {project.label && (
                     <div className="absolute bottom-0 left-0 right-0 p-5">
-                      <img className="w-[46.17%] mb-4" alt="Project label" src={project.label}  loading="lazy" decoding="async"/>
+                      <img
+                        className="w-[46.17%] mb-4"
+                        alt="Project label"
+                        src={project.label}
+                        loading="lazy"
+                        decoding="async"
+                      />
                       {project.description && (
                         <p className="font-normal text-white text-[13px] leading-normal">
                           {project.description}

@@ -8,28 +8,26 @@ import { MoveDownSection } from "../../components/sections/MoveDownSection";
 import { FooterSection } from "../../components/sections/FooterSection";
 
 const COLLABORATION_SECTIONS = [
-    "collaborative-advantage",
-    "partnership-roadmap",
-    "collaborative-ecosystem",
-    "initiate-synergy",
+  "collaborative-advantage",
+  "partnership-roadmap",
+  "collaborative-ecosystem",
+  "initiate-synergy",
 ];
 
 export const Collaboration = () => {
-    return (
-        <div
-            className="overflow-hidden border border-solid border-black w-full relative"
-        >
-            <HeaderSection />
-            <BannerSection
-                title="Collaboration"
-                description="Partnering With Us For Sustainable Development."
-            />
-            <CollaborativeAdvantageSection />
-            <PartnershipRoadMapSection />
-            <OurCollaborativeEcosystemSection />
-            <InnitiateSynergySection />
-            <MoveDownSection sections={COLLABORATION_SECTIONS} />
-            <FooterSection />
-        </div>
-    );
+  return (
+    <div className="overflow-x-clip border border-solid border-black w-full relative">
+      <HeaderSection />
+      <BannerSection
+        title="Collaboration"
+        description="Partnering With Us For Sustainable Development."
+      />
+      <CollaborativeAdvantageSection />
+      <PartnershipRoadMapSection />
+      <OurCollaborativeEcosystemSection />
+      <InnitiateSynergySection />
+      <MoveDownSection sections={COLLABORATION_SECTIONS} />
+      <FooterSection />
+    </div>
+  );
 };

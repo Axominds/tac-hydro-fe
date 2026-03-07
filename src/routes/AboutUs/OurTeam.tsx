@@ -4,27 +4,18 @@ import { TeamSection } from "./sections/TeamSection";
 import { MoveDownSection } from "../../components/sections/MoveDownSection";
 import { FooterSection } from "../../components/sections/FooterSection";
 
-
-
-const TEAM_SECTIONS = [
-    "team-section",
-];
+const TEAM_SECTIONS = ["team-section"];
 
 export const OurTeam = () => {
-    return (
-        <div
-            className="overflow-hidden border border-solid border-black w-full relative"
-        >
-            <HeaderSection />
-            <BannerSection
-                title="Meet Our Team"
-                description="The Minds Behind Our Innovation"
-            />
+  return (
+    <div className="overflow-x-clip border border-solid border-black w-full relative">
+      <HeaderSection />
+      <BannerSection title="Meet Our Team" description="The Minds Behind Our Innovation" />
 
-            <TeamSection />
+      <TeamSection />
 
-            <MoveDownSection sections={TEAM_SECTIONS} />
-            <FooterSection />
-        </div>
-    );
+      <MoveDownSection sections={TEAM_SECTIONS} />
+      <FooterSection />
+    </div>
+  );
 };

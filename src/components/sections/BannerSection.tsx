@@ -16,7 +16,7 @@ export const BannerSection = ({
 
       {/* Hero Content */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">
-        <h1 className="font-semibold text-white text-3xl sm:text-4xl lg:text-[60px] leading-[1.05] mb-6">
+        <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight font-semibold text-white mb-6">
           {title}
         </h1>
         <p className="font-normal text-white/75 text-sm sm:text-base lg:text-[17px] leading-[normal] max-w-[560px] px-4">
@@ -27,5 +27,3 @@ export const BannerSection = ({
     </section>
   );
 };
-
-

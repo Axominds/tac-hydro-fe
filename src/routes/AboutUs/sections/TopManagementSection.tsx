@@ -8,9 +8,9 @@ export const TopManagementSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Text Column */}
           <div className="flex flex-col gap-6 order-2">
-            <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-[#2c3e50] leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-[#2c3e50]">
               Top Management's Commitment
-            </h2>
+            </h1>
             <div className="flex flex-col gap-4 text-[#555555] text-lg leading-relaxed">
               <p>Dear Clients and Partners,</p>
               <p>
@@ -44,7 +44,9 @@ export const TopManagementSection = () => {
               src="/commitment.jpg"
               alt="Managing Director"
               className="absolute inset-0 w-full h-full object-cover object-top"
-             loading="lazy" decoding="async"/>
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         </div>
       </div>

@@ -12,7 +12,6 @@ import { ContactUs } from "./routes/ContactUs/ContactUs";
 import { Collaboration } from "./routes/ContactUs/Collaboration";
 import { Career } from "./routes/ContactUs/Career";
 
-
 const ScrollManager = (): null => {
   const location = useLocation();
 

@@ -33,7 +33,7 @@ const NAV_ITEMS: NavigationItem[] = [
       { label: "Our Organizational Chart", href: "/about-us/our-organization-chart" },
       { label: "Our Team", href: "/about-us/our-team" },
       { label: "Our Professional Framework", href: "/about-us/our-professional-framework" },
-    ]
+    ],
   },
   {
     label: "Contact Us",
@@ -61,17 +61,15 @@ export const HeaderSection = ({
   const location = useLocation();
 
   // Dynamic navigation items with active state
-  const navigationItems = NAV_ITEMS.map(item => {
-    const isCurrent = item.href === "/"
-      ? location.pathname === "/"
-      : location.pathname.startsWith(item.href);
+  const navigationItems = NAV_ITEMS.map((item) => {
+    const isCurrent =
+      item.href === "/" ? location.pathname === "/" : location.pathname.startsWith(item.href);
 
     return {
       ...item,
-      isActive: isCurrent
+      isActive: isCurrent,
     };
   });
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -103,7 +101,9 @@ export const HeaderSection = ({
     <header
       className={cn(
         "fixed top-0 left-0 w-full z-50 px-4 py-3 sm:px-8 lg:px-20 transition-all duration-300 pointer-events-auto",
-        isScrolled ? "py-3 bg-[#0b1522]/40 backdrop-blur-xl border-b border-white/5" : "py-6 sm:py-[30px]",
+        isScrolled
+          ? "py-3 bg-[#0b1522]/40 backdrop-blur-xl border-b border-white/5"
+          : "py-6 sm:py-[30px]",
         isVisible ? "translate-y-0" : "-translate-y-full",
         headerClassName,
       )}
@@ -177,4 +177,3 @@ export const HeaderSection = ({
     </header>
   );
 };
-
