@@ -1,4 +1,4 @@
-import { Button } from "../../../../components/ui/button";
+import { Button } from "../../../components/ui/button";
 
 export const ServicesSection = () => {
   return (
@@ -12,7 +12,9 @@ export const ServicesSection = () => {
             className="w-[566px] h-[315.33px]"
             alt="Vector"
             src="/downloads/mjlodvw6RB1obD/img/vector.png"
-           loading="lazy" decoding="async"/>
+            loading="lazy"
+            decoding="async"
+          />
         </div>
 
         <div className="flex flex-col gap-6 flex-1">
@@ -21,12 +23,12 @@ export const ServicesSection = () => {
           </div>
 
           <div className="flex flex-col gap-2">
-            <h2 className="font-bold text-[#1f3d2b] text-4xl leading-[normal]">
+            <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-[#1f3d2b]">
               Start Your Journey To
-            </h2>
-            <h2 className="font-bold text-[#1f3d2b] text-4xl leading-[normal]">
+            </h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-[#1f3d2b]">
               Talent Excellence
-            </h2>
+            </h1>
           </div>
 
           <div className="flex flex-col gap-1">

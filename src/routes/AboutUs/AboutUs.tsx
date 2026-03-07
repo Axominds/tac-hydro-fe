@@ -18,7 +18,7 @@ const ABOUT_SECTIONS = [
 
 export const AboutUs = () => {
   return (
-    <div className="w-full relative bg-white">
+    <div className="overflow-x-clip border border-solid border-black w-full relative">
       <HeaderSection />
       <BannerSection
         title="About TAC HYDRO"

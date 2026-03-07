@@ -1,5 +1,3 @@
-
-
 export const ResourcesSection = () => {
   const dots = [0, 1, 2, 3, 4];
   const activeDot = 2;
@@ -11,7 +9,9 @@ export const ResourcesSection = () => {
         alt=""
         aria-hidden="true"
         src="/downloads/mjlodvw6RB1obD/img/vector-1.png"
-       loading="lazy" decoding="async"/>
+        loading="lazy"
+        decoding="async"
+      />
 
       <div className="relative w-full pt-[23.67%] pb-[7.42%]">
         <div className="relative w-full h-full">
@@ -20,19 +20,23 @@ export const ResourcesSection = () => {
             alt=""
             aria-hidden="true"
             src="/downloads/mjlodvw6RB1obD/img/vector-4.svg"
-           loading="lazy" decoding="async"/>
+            loading="lazy"
+            decoding="async"
+          />
 
           <img
             className="absolute w-[95.05%] h-full top-0 left-0 object-cover"
             alt="Project development background"
             src="/downloads/mjlodvw6RB1obD/img/rectangle-213.png"
-           loading="lazy" decoding="async"/>
+            loading="lazy"
+            decoding="async"
+          />
 
           <div className="relative w-full px-[4.17%] pt-[21.93%] pb-[53.08%]">
             <div className="max-w-[42.63%]">
-              <h2 className="font-bold text-white text-[44px] leading-[normal] mb-4">
+              <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-white mb-4">
                 Project Development
-              </h2>
+              </h1>
 
               <p className="max-w-[89.96%] font-normal text-[#ededed] text-base leading-[normal]">
                 TAC Hydro Consultancy Pvt. Ltd. is a leading engineering consultancy based in Nepal,
@@ -48,8 +52,9 @@ export const ResourcesSection = () => {
             {dots.map((_, index) => (
               <div
                 key={`dot-${index}`}
-                className={`w-2 h-2 rounded-full transition-colors ${index === activeDot ? "bg-white" : "bg-white/40"
-                  }`}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  index === activeDot ? "bg-white" : "bg-white/40"
+                }`}
               />
             ))}
           </div>

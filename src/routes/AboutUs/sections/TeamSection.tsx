@@ -123,9 +123,9 @@ export const TeamSection: FC = () => {
                 />
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 relative z-10 leading-tight mb-2">
+              <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-slate-900 relative z-10 mb-2">
                 {selectedMember.name}
-              </h2>
+              </h1>
               <p className="text-blue-600 font-bold uppercase tracking-wide text-sm md:text-base relative z-10">
                 {selectedMember.position}
               </p>
@@ -191,7 +191,9 @@ export const TeamSection: FC = () => {
                   src="/tac-logo-with-tagline-2.svg"
                   alt="TAC Hydro"
                   className="h-4 md:h-5 grayscale opacity-70"
-                 loading="lazy" decoding="async"/>
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
             </div>
           </div>

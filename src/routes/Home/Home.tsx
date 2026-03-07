@@ -13,11 +13,11 @@ import { SDGSection } from "../../components/sections/SDGSection";
 
 const HOME_SECTIONS = [
   "stats-and-professional-framework",
-  "sdg-section",
   "expertise-and-services",
   "sectors-of-services",
   "video-section",
   "map-section",
+  "sdg-section",
   "valued-partners",
   "news-and-articles",
 ];
@@ -25,17 +25,17 @@ const HOME_SECTIONS = [
 export const Home = () => {
   return (
     <div
-      className="overflow-hidden border border-solid border-black w-full relative"
+      className="overflow-x-clip border border-solid border-black w-full relative"
       data-model-id="2:330"
     >
       <HeaderSection />
       <BannerSection />
       <StatsAndProfessionalFrameworkSection />
-      <SDGSection />
       <ExpertiseAndServicesSection />
       <SectorsOfServicesSection />
       <VideoSection />
       <MapSection />
+      <SDGSection />
       <ValuedPartnersSection />
       <NewsAndArticlesSection />
       <MoveDownSection sections={HOME_SECTIONS} />
