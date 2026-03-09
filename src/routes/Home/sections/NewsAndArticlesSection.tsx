@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { newsItems } from "../../../data/newsData";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const newsFilters = ["ALL", "CONTRACT SIGNING", "NEWS", "IN-HOUSE ARTICLES"];
+const newsFilters = ["ALL", "CONTRACT SIGNING", "NEWS"];
 
 export const NewsAndArticlesSection = () => {
   const [activeFilter, setActiveFilter] = useState("ALL");

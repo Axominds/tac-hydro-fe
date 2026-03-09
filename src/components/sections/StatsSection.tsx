@@ -9,7 +9,7 @@ const stats = [
   {
     number: "20",
     label: "Years",
-    description: "Decades of institutional expertise and stability.",
+    description: "Decades of expertise and experience.",
   },
   {
     number: "120",

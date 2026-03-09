@@ -12,7 +12,7 @@ export const BannerSection = ({
   return (
     <section className="relative w-full min-h-[360px] sm:min-h-[460px] lg:h-[560px]">
       {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0b1522] via-[#15233e] to-[#0b1522]" />
+      <div className="absolute inset-0 bg-[#254a85]" />
 
       {/* Hero Content */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center">

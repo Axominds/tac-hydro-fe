@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import { Home } from "./routes/Home/Home";
 import { AboutUs } from "./routes/AboutUs/AboutUs";
 import { OrganizationChart } from "./routes/AboutUs/OrganizationChart";
-import { ProfessionalFramework } from "./routes/AboutUs/ProfessionalFramework";
+import { CorePrinciples } from "./routes/AboutUs/CorePrinciples";
 import { OurTeam } from "./routes/AboutUs/OurTeam";
 import { Galleries } from "./routes/Galleries/Galleries";
 import { Projects } from "./routes/Projects/Projects";
@@ -50,7 +50,7 @@ export const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/about-us/our-organization-chart" element={<OrganizationChart />} />
-        <Route path="/about-us/our-professional-framework" element={<ProfessionalFramework />} />
+        <Route path="/about-us/our-core-principles" element={<CorePrinciples />} />
         <Route path="/about-us/our-team" element={<OurTeam />} />
         <Route path="/galleries" element={<Galleries />} />
         <Route path="/projects" element={<Projects />} />

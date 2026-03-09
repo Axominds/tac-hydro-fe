@@ -9,12 +9,16 @@ const DESIGN_LEADS = TEAM_MEMBERS.filter((m) => m.category === "Design Leads");
 const ENGINEER_PROFESSIONALS = TEAM_MEMBERS.filter(
   (m) => m.category === "Engineering Professionals",
 );
+const INDEPENDENT_CONSULTANTS = TEAM_MEMBERS.filter(
+  (m) => m.category === "Independent Consultants",
+);
 
 const SECTIONS = [
   { title: "BOARD OF DIRECTORS", items: BOARD_OF_DIRECTORS },
   { title: "DEPARTMENT LEADS", items: DEPARTMENT_LEADS },
   { title: "DESIGN LEADS", items: DESIGN_LEADS },
   { title: "OUR PROFESSIONALS", items: ENGINEER_PROFESSIONALS },
+  { title: "INDEPENDENT CONSULTANTS", items: INDEPENDENT_CONSULTANTS },
 ];
 
 export const TeamSection: FC = () => {
@@ -56,36 +60,41 @@ export const TeamSection: FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {section.items.map((member) => (
-                <div
-                  key={member.id}
-                  onClick={() => handleMemberClick(member)}
-                  className="group bg-white rounded-2xl p-6 cursor-pointer transition-all duration-300 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 relative overflow-hidden flex flex-col items-center text-center"
-                >
-                  <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-slate-100 relative border-4 border-white shadow-md group-hover:border-blue-50 transition-colors">
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
-                  <h4 className="font-bold text-[#0b1522] text-lg leading-tight mb-1 group-hover:text-blue-700 transition-colors">
-                    {member.name}
-                  </h4>
-                  <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                    {member.position}
-                  </p>
+              {section.items.map((member: TeamMember) => {
+                return (
+                  <div
+                    key={member.id}
+                    onClick={() => handleMemberClick(member)}
+                    className="group bg-white rounded-2xl p-6 transition-all duration-300 border border-slate-100 shadow-sm relative overflow-hidden flex flex-col items-center text-center cursor-pointer hover:shadow-xl hover:-translate-y-2"
+                  >
+                    {member.category !== "Independent Consultants" && (
+                      <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-slate-100 relative border-4 border-white shadow-md group-hover:border-blue-50 transition-colors">
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
+                    )}
+                    <h4 className="font-bold text-[#0b1522] text-lg leading-tight mb-1 group-hover:text-blue-700 transition-colors">
+                      {member.name}
+                    </h4>
 
-                  {/* Sub-label for specific category if needed */}
-                  {section.title === "BOARD OF DIRECTORS" && (
-                    <span className="mt-3 px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full">
-                      Board Member
-                    </span>
-                  )}
-                </div>
-              ))}
+                    <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                      {member.position}
+                    </p>
+
+                    {/* Sub-label for specific category if needed */}
+                    {section.title === "BOARD OF DIRECTORS" && (
+                      <span className="mt-3 px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full">
+                        Board Member
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}
@@ -113,15 +122,17 @@ export const TeamSection: FC = () => {
               <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100/50 rounded-bl-[100px] -z-0"></div>
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-100/50 rounded-tr-[80px] -z-0"></div>
 
-              <div className="w-56 h-56 rounded-full shadow-2xl overflow-hidden border-[6px] border-white relative z-10 mb-6 group shrink-0">
-                <img
-                  src={selectedMember.image}
-                  alt={selectedMember.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-              </div>
+              {selectedMember.category !== "Independent Consultants" && (
+                <div className="w-56 h-56 rounded-full shadow-2xl overflow-hidden border-[6px] border-white relative z-10 mb-6 group shrink-0">
+                  <img
+                    src={selectedMember.image}
+                    alt={selectedMember.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+              )}
 
               <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-slate-900 relative z-10 mb-2">
                 {selectedMember.name}
@@ -162,7 +173,7 @@ export const TeamSection: FC = () => {
                   )}
 
                   {/* Bio Section */}
-                  {selectedMember.bio && (
+                  {selectedMember.bio && selectedMember.category !== "Independent Consultants" && (
                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-500 delay-200">
                       <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-3">
                         <span className="w-6 h-[2px] bg-blue-500"></span>

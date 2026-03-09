@@ -1,10 +1,10 @@
-import { StatsAndProfessionalFrameworkSection } from "./sections/StatsAndProfessionalFrameworkSection";
+import { StatsAndCorePrinciplesSection } from "./sections/StatsAndCorePrinciplesSection";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "./sections/BannerSection";
 import { ExpertiseAndServicesSection } from "../../components/sections/ExpertiseAndServicesSection";
 import { MapSection } from "./sections/MapSection";
 import { ValuedPartnersSection } from "./sections/ValuedPartnersSection";
-import { SectorsOfServicesSection } from "./sections/SectorsOfServicesSection";
+import { SectorsOfServicesSection } from "../../components/sections/SectorsOfServicesSection";
 import { VideoSection } from "./sections/VideoSection";
 import { NewsAndArticlesSection } from "./sections/NewsAndArticlesSection";
 import { MoveDownSection } from "../../components/sections/MoveDownSection";
@@ -12,7 +12,7 @@ import { FooterSection } from "../../components/sections/FooterSection";
 import { SDGSection } from "../../components/sections/SDGSection";
 
 const HOME_SECTIONS = [
-  "stats-and-professional-framework",
+  "stats-and-core-principles",
   "expertise-and-services",
   "sectors-of-services",
   "video-section",
@@ -30,7 +30,7 @@ export const Home = () => {
     >
       <HeaderSection />
       <BannerSection />
-      <StatsAndProfessionalFrameworkSection />
+      <StatsAndCorePrinciplesSection />
       <ExpertiseAndServicesSection />
       <SectorsOfServicesSection />
       <VideoSection />

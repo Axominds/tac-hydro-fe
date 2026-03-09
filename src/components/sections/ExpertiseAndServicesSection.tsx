@@ -95,23 +95,48 @@ export const ExpertiseAndServicesSection = () => {
                 {/* Details Section */}
                 <div className="w-full">
                   <ul className="space-y-3 pb-2 flex flex-col items-start px-4">
-                    {category.items.map((item, itemIdx) => (
-                      <li key={itemIdx} className="group/item flex items-start gap-3">
-                        <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center transition-all duration-300 group-hover:bg-white/20 group-hover:scale-110 group-hover/item:scale-110 group-hover/item:rotate-[10deg] group-hover/item:translate-x-1">
-                          <svg
-                            viewBox="0 0 24 24"
-                            className="w-3 h-3 text-blue-600 transition-all duration-300 group-hover:text-white group-hover:scale-110 group-hover/item:scale-110 group-hover/item:rotate-[360deg]"
-                            fill="currentColor"
-                            aria-hidden="true"
-                          >
-                            <path d="M9.55 17.2 4.8 12.45l1.4-1.4 3.35 3.35 8.25-8.25 1.4 1.4z" />
-                          </svg>
-                        </div>
-                        <span className="text-sm font-medium text-slate-600 group-hover:text-white/90 leading-snug transition-all text-left group-hover/item:translate-x-1">
-                          {item}
-                        </span>
-                      </li>
-                    ))}
+                    {category.items.map((item, itemIdx) => {
+                      const matchingScope = [
+                        "Detailed Feasibility Study",
+                        "Detailed Engineering Design",
+                        "Construction Supervision",
+                        "Due Diligence Appraisal",
+                        "Progress Monitoring and Bill Vetting",
+                      ].find((scope) => scope === item || (item === "Construction Supervision and Quality Control" && scope === "Construction Supervision"));
+
+                      const content = (
+                        <>
+                          <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center transition-all duration-300 group-hover:bg-white/20 group-hover:scale-110 group-hover/item:scale-110 group-hover/item:rotate-[10deg] group-hover/item:translate-x-1">
+                            <svg
+                              viewBox="0 0 24 24"
+                              className="w-3 h-3 text-blue-600 transition-all duration-300 group-hover:text-white group-hover:scale-110 group-hover/item:scale-110 group-hover/item:rotate-[360deg]"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path d="M9.55 17.2 4.8 12.45l1.4-1.4 3.35 3.35 8.25-8.25 1.4 1.4z" />
+                            </svg>
+                          </div>
+                          <span className="text-sm font-medium text-slate-600 group-hover:text-white/90 leading-snug transition-all text-left group-hover/item:translate-x-1">
+                            {item}
+                          </span>
+                        </>
+                      );
+
+                      return (
+                        <li key={itemIdx} className="group/item flex items-start gap-3">
+                          {matchingScope ? (
+                            <a
+                              href={`/projects?scope=${encodeURIComponent(matchingScope)}`}
+                              className="flex items-start gap-3 w-full hover:opacity-80 transition-opacity"
+                            >
+                              {content}
+                            </a>
+                          ) : (
+                            content
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               </div>
