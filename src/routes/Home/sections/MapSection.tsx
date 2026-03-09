@@ -50,7 +50,7 @@ const mapLocations: MapLocation[] = projectData.map((project) => ({
   coords: project.location,
   title: project.title,
   scope: project.scope,
-  capacity: project.technicalHighlights["Capacity"],
+  capacity: project.installedCapacity,
 }));
 
 const createCustomIcon = (color: string) => {
@@ -114,7 +114,9 @@ export const MapSection = () => {
                   >
                     <Popup className="custom-popup">
                       <div className="p-1">
-                        <h4 className="font-bold text-slate-900 mb-1">{location.title}</h4>
+                        <h4 className="font-bold text-slate-900 mb-1">
+                          {location.title} {location.capacity && `(${location.capacity})`}
+                        </h4>
                         <span
                           className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
                           style={{ color: colors.pin, backgroundColor: `${colors.pin}15` }}

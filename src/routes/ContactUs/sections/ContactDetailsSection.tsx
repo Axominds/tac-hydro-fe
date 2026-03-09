@@ -41,10 +41,10 @@ export const ContactDetailsSection = () => {
                       Email Us
                     </p>
                     <a
-                      href="mailto:service@tachydro.com.np"
+                      href="mailto:info@tachydro.com.np"
                       className="text-lg font-semibold hover:text-blue-400 transition-colors break-all"
                     >
-                      service@tachydro.com.np
+                      info@tachydro.com.np
                     </a>
                   </div>
                 </div>
@@ -57,9 +57,12 @@ export const ContactDetailsSection = () => {
                     <p className="text-[11px] text-blue-400 uppercase tracking-[0.2em] font-bold mb-1">
                       Visit Us
                     </p>
-                    <p className="text-lg font-semibold leading-snug">
+                    <a
+                      href="/contact-us#location-map"
+                      className="text-lg font-semibold leading-snug hover:text-blue-400 transition-colors"
+                    >
                       Sanepa - 02, Lalitpur 44600, Nepal
-                    </p>
+                    </a>
                   </div>
                 </div>
               </div>

@@ -23,18 +23,18 @@ type HeaderSectionProps = {
 
 const NAV_ITEMS: NavigationItem[] = [
   { label: "Home", href: "/" },
-  { label: "Projects", href: "/projects" },
-  { label: "Services", href: "/services" },
-  { label: "Galleries", href: "/galleries" },
   {
     label: "About Us",
     href: "/about-us",
     dropdown: [
       { label: "Our Organizational Chart", href: "/about-us/our-organization-chart" },
       { label: "Our Team", href: "/about-us/our-team" },
-      { label: "Our Professional Framework", href: "/about-us/our-professional-framework" },
+      { label: "Our Core Principles", href: "/about-us/our-core-principles" },
     ],
   },
+  { label: "Services", href: "/services" },
+  { label: "Projects", href: "/projects" },
+  { label: "Galleries", href: "/galleries" },
   {
     label: "Contact Us",
     href: "/contact-us",

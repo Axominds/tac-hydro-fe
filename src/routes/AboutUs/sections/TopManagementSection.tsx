@@ -5,11 +5,11 @@ export const TopManagementSection = () => {
       className="w-full relative flex items-center py-10 sm:py-16 bg-[#f8f9fa]"
     >
       <div className="max-w-[1240px] mx-auto px-6 sm:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           {/* Text Column */}
           <div className="flex flex-col gap-6 order-2">
             <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-[#2c3e50]">
-              Top Management's Commitment
+              Top Management&apos;s Commitment
             </h1>
             <div className="flex flex-col gap-4 text-[#555555] text-lg leading-relaxed">
               <p>Dear Clients and Partners,</p>
@@ -39,7 +39,7 @@ export const TopManagementSection = () => {
           </div>
 
           {/* Image Column */}
-          <div className="relative w-full aspect-[4/3] lg:aspect-auto lg:h-full min-h-[400px] rounded-3xl overflow-hidden shadow-2xl order-1">
+          <div className="relative w-full h-[80vh] min-h-[400px] max-h-[80vh] rounded-3xl overflow-hidden shadow-2xl lg:sticky lg:top-24 self-start order-1">
             <img
               src="/commitment.jpg"
               alt="Managing Director"

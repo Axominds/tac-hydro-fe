@@ -10,48 +10,38 @@ import {
   UploadIcon,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { CAREER_DATA, JobCategory, JobRole } from "../data/careerData";
+import { CAREER_DATA, JobType, JobRole } from "../data/careerData";
 import { Button } from "../../../components/ui/button";
 
-const CATEGORY_CONFIG: Record<
-  JobCategory,
+const TYPE_CONFIG: Record<
+  JobType,
   { label: string; color: string; bgColor: string; accentColor: string }
 > = {
-  "Civil/Design Engineering": {
-    label: "CIVIL/DESIGN",
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-50",
-    accentColor: "bg-emerald-500",
-  },
-  "Mechanical Engineering": {
-    label: "MECHANICAL",
+  "Full Time": {
+    label: "FULL TIME",
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     accentColor: "bg-blue-500",
   },
-  "Electrical Engineering": {
-    label: "ELECTRICAL",
+  "Internship": {
+    label: "INTERNSHIP",
+    color: "text-emerald-600",
+    bgColor: "bg-emerald-50",
+    accentColor: "bg-emerald-500",
+  },
+  "Independent Consultant": {
+    label: "INDEPENDENT CONSULTANT",
     color: "text-purple-600",
     bgColor: "bg-purple-50",
     accentColor: "bg-purple-500",
   },
-  "Engineering Geology": {
-    label: "GEOLOGY",
-    color: "text-orange-600",
-    bgColor: "bg-orange-50",
-    accentColor: "bg-orange-500",
-  },
 };
 
 export const CurrentVacancySection = () => {
-  const [selectedCategory, setSelectedCategory] = useState<JobCategory | null>(
-    "Civil/Design Engineering",
-  );
+  const [selectedType, setSelectedType] = useState<JobType | null>("Full Time");
   const [viewingRole, setViewingRole] = useState<JobRole | null>(null);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
-
-  const totalOpenings = CAREER_DATA.length;
 
   const handleApplyClick = (role: JobRole, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -77,8 +67,8 @@ export const CurrentVacancySection = () => {
     }
   };
 
-  const filteredRoles = selectedCategory
-    ? CAREER_DATA.filter((role) => role.category === selectedCategory)
+  const filteredRoles = selectedType
+    ? CAREER_DATA.filter((role) => role.type === selectedType)
     : [];
 
   useEffect(() => {
@@ -95,111 +85,102 @@ export const CurrentVacancySection = () => {
   return (
     <section id="active-opportunities" className="w-full py-20 bg-white px-4 sm:px-8 lg:px-20">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
-          <div className="flex items-center gap-4">
-            <MegaphoneIcon className="w-8 h-8 text-blue-600" />
-            <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-[#0b1522]">
-              Active Opportunities
-            </h1>
-          </div>
-          <div className="inline-flex items-center px-6 py-2 rounded-full bg-blue-50 text-blue-700 font-bold text-lg shadow-sm whitespace-nowrap">
-            {totalOpenings} {totalOpenings === 1 ? "Position" : "Positions"} Available
-          </div>
-        </div>
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Sidebar Filtering */}
+          <aside className="lg:w-80 flex-shrink-0">
+            <div className="sticky top-32 space-y-8 animate-in fade-in slide-in-from-left duration-700">
+              <div>
+                <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight uppercase text-slate-400 mb-6 font-black">
+                  Job Types
+                </h1>
+                <nav className="space-y-2">
+                  {(Object.keys(TYPE_CONFIG) as JobType[]).map((type) => {
+                    const count = CAREER_DATA.filter((v) => v.type === type).length;
+                    const isActive = selectedType === type;
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {(Object.keys(CATEGORY_CONFIG) as JobCategory[]).map((category) => {
-            const count = CAREER_DATA.filter((v) => v.category === category).length;
-            const config = CATEGORY_CONFIG[category];
-            const isActive = selectedCategory === category;
-
-            return (
-              <div
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={cn(
-                  "group cursor-pointer rounded-2xl p-8 transition-all duration-300 relative overflow-hidden",
-                  isActive
-                    ? "bg-white border-2 border-blue-600 shadow-xl -translate-y-1"
-                    : "bg-white border border-gray-100 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-lg hover:-translate-y-1",
-                )}
-              >
-                <div className="flex justify-between items-start mb-6">
-                  <span className={cn("text-xs font-black tracking-widest", config.color)}>
-                    {config.label}
-                  </span>
-                  {count > 0 && (
-                    <span className="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wider">
-                      Apply Now
-                    </span>
-                  )}
-                </div>
-
-                <h3
-                  className={cn(
-                    "text-xl font-bold mb-2 transition-colors",
-                    isActive ? "text-blue-600" : "text-gray-900 group-hover:text-blue-600",
-                  )}
-                >
-                  {category === "Civil/Design Engineering" ? "Civil/Design engineering" : category}
-                </h3>
-
-                <p className="text-gray-400 text-sm font-medium">
-                  {count} {count === 1 ? "Opening" : "Openings"}
-                </p>
-
-                <div
-                  className={cn(
-                    "absolute bottom-0 left-0 w-full h-1 transition-opacity",
-                    isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100",
-                    config.accentColor,
-                  )}
-                />
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => setSelectedType(type)}
+                        className={cn(
+                          "w-full flex items-center justify-between px-5 py-4 rounded-2xl text-left transition-all duration-300 group",
+                          isActive
+                            ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                            : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-100"
+                        )}
+                      >
+                        <span className={cn(
+                          "text-sm font-bold transition-colors uppercase tracking-widest",
+                          isActive ? "text-white" : "text-slate-700 group-hover:text-blue-600"
+                        )}>
+                          {type}
+                        </span>
+                        <span className={cn(
+                          "px-2 py-0.5 rounded-full text-[10px] font-bold transition-all",
+                          isActive
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600"
+                        )}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </nav>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          </aside>
 
-        {/* Filtered Roles List */}
-        <div className="animate-fade-in min-h-[400px]">
-          {selectedCategory && (
-            <div className="space-y-6">
-              <h4 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
-                <span
-                  className={cn(
-                    "w-2 h-8 rounded-full",
-                    CATEGORY_CONFIG[selectedCategory].accentColor,
-                  )}
-                />
-                Available Roles in {selectedCategory}
-              </h4>
+          {/* Main Content Area */}
+          <div className="flex-1 animate-in fade-in slide-in-from-bottom duration-700 delay-200">
+            <div className="relative h-full">
+              {selectedType && (
+                <div className="sticky top-0 z-[30] -mx-4 px-4 bg-white pt-6 mb-10 border-b border-gray-100">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 gap-6">
+                    <div>
+                      <h4 className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-gray-900 flex items-center gap-3 font-black">
+                        <span className={cn("w-2 h-8 rounded-full", TYPE_CONFIG[selectedType].accentColor)} />
+                        {selectedType}
+                      </h4>
+                      <p className="text-gray-500 mt-1 font-medium italic">
+                        Viewing {filteredRoles.length} active opportunities
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {filteredRoles.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6 min-h-[500px]">
                   {filteredRoles.map((role) => (
                     <div
                       key={role.id}
                       className="group bg-[#f8f9fa] border border-gray-100 rounded-2xl p-6 hover:bg-white hover:shadow-xl hover:border-blue-100 transition-all duration-300 flex flex-col h-full"
                     >
                       <div className="mb-4">
-                        <span
-                          className={cn(
-                            "inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-4",
-                            role.type === "Full Time"
-                              ? "bg-blue-100 text-blue-800"
-                              : role.type === "Internship"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-purple-100 text-purple-800",
-                          )}
-                        >
-                          {role.type}
-                        </span>
+                        <div className="flex items-center justify-between mb-4">
+                          <span
+                            className={cn(
+                              "inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                              role.type === "Full Time"
+                                ? "bg-blue-100 text-blue-800"
+                                : role.type === "Internship"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-purple-100 text-purple-800",
+                            )}
+                          >
+                            {role.type}
+                          </span>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+                            {role.category}
+                          </span>
+                        </div>
                         <h5 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                           {role.title}
                         </h5>
-                        <p className="text-gray-500 text-sm leading-relaxed">{role.description}</p>
+                        <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
+                          {role.description}
+                        </p>
                       </div>
                       <div className="mt-auto pt-6 border-t border-gray-100">
                         <Button
@@ -222,12 +203,12 @@ export const CurrentVacancySection = () => {
               ) : (
                 <div className="p-12 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                   <p className="text-gray-500 font-medium">
-                    No roles currently listed for this category.
+                    No roles currently listed for this type.
                   </p>
                 </div>
               )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
@@ -248,10 +229,10 @@ export const CurrentVacancySection = () => {
                 <span
                   className={cn(
                     "text-[10px] font-black tracking-[0.2em] uppercase mb-1 block",
-                    CATEGORY_CONFIG[viewingRole.category].color,
+                    TYPE_CONFIG[viewingRole.type].color,
                   )}
                 >
-                  {viewingRole.category} • {viewingRole.type}
+                  {viewingRole.type} • {viewingRole.category}
                 </span>
                 <h3 className="text-2xl font-bold text-[#0b1522]">{viewingRole.title}</h3>
               </div>

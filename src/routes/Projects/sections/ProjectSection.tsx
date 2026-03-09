@@ -57,9 +57,7 @@ export const ProjectSection = () => {
 
   const filteredProjects = projectData.filter(
     (p) =>
-      p.scope === activeScope &&
-      (p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())),
+      p.scope === activeScope && p.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -95,11 +93,10 @@ export const ProjectSection = () => {
                             }
                           }, 50);
                         }}
-                        className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-left transition-all duration-300 group ${
-                          isActive
-                            ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                            : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-100"
-                        }`}
+                        className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-left transition-all duration-300 group ${isActive
+                          ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                          : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-100"
+                          }`}
                       >
                         <span
                           className={`text-sm font-bold ${isActive ? "text-white" : "text-slate-700"}`}
@@ -107,11 +104,10 @@ export const ProjectSection = () => {
                           {scope}
                         </span>
                         <span
-                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                            isActive
-                              ? "bg-white/20 text-white"
-                              : "bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600"
-                          }`}
+                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${isActive
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600"
+                            }`}
                         >
                           {count}
                         </span>
@@ -120,62 +116,60 @@ export const ProjectSection = () => {
                   })}
                 </nav>
               </div>
-
-              {/* Search moved to Sidebar for context */}
-              <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4">
-                  Search
-                </h3>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Quick search..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400"
-                  />
-                </div>
-              </div>
             </div>
           </aside>
 
           {/* Main Content Area */}
-          <div className="flex-1 min-h-[600px] animate-in fade-in slide-in-from-bottom duration-700 delay-200">
-            <div className="flex items-center justify-between mb-10 pb-6 border-b border-slate-200/60">
-              <div>
-                <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight font-black text-slate-900">
-                  {activeScope}
-                </h1>
-                <p className="text-slate-500 mt-1 font-medium italic">
-                  Showing {filteredProjects.length} projects in this category
-                </p>
-              </div>
-            </div>
+          <div className="flex-1 animate-in fade-in slide-in-from-bottom duration-700 delay-200">
+            <div className="relative h-full">
+              <div className="sticky top-0 z-[30] -mx-4 px-4 bg-[#f8f9fa] pt-6 mb-10 border-b border-slate-200/60">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 gap-6">
+                  <div>
+                    <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight font-black text-slate-900">
+                      {activeScope}
+                    </h1>
+                    <p className="text-slate-500 mt-1 font-medium italic">
+                      Showing {filteredProjects.length} projects in this category
+                    </p>
+                  </div>
 
-            {filteredProjects.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-                {filteredProjects.map((project) => (
-                  <ProjectCard key={project.id} project={project} onClick={handleProjectClick} />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border-2 border-dashed border-slate-100">
-                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-                  <Search className="w-8 h-8 text-slate-300" />
+                  <div className="relative w-full sm:w-72 lg:w-80">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="Search projects..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 transition-all placeholder:text-slate-400 shadow-sm"
+                    />
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">No projects found</h3>
-                <p className="text-slate-500 max-w-xs">
-                  We couldn't find any projects matching "{searchQuery}" in this category.
-                </p>
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="mt-6 text-blue-600 font-bold hover:underline"
-                >
-                  Clear search
-                </button>
               </div>
-            )}
+
+              {filteredProjects.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 min-h-[500px]">
+                  {filteredProjects.map((project) => (
+                    <ProjectCard key={project.id} project={project} onClick={handleProjectClick} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border-2 border-dashed border-slate-100">
+                  <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+                    <Search className="w-8 h-8 text-slate-300" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">No projects found</h3>
+                  <p className="text-slate-500 max-w-xs">
+                    We couldn't find any projects matching "{searchQuery}" in this category.
+                  </p>
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="mt-6 text-blue-600 font-bold hover:underline"
+                  >
+                    Clear search
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

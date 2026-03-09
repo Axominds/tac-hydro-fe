@@ -2,6 +2,7 @@ import { FooterSection } from "../../components/sections/FooterSection";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "../../components/sections/BannerSection";
 import { ExpertiseAndServicesSection } from "../../components/sections/ExpertiseAndServicesSection";
+import { SectorsOfServicesSection } from "../../components/sections/SectorsOfServicesSection";
 
 export const Services = () => {
   return (
@@ -12,6 +13,7 @@ export const Services = () => {
         description="Expertise From Feasibility To Delivery Across Every Project Phase."
       />
       <ExpertiseAndServicesSection />
+      <SectorsOfServicesSection />
       <FooterSection />
     </div>
   );

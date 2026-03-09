@@ -1,7 +1,7 @@
 
 export interface TeamMember {
     id: string;
-    category: "BOD" | "Department Leads" | "Design Leads" | "Engineering Professionals";
+    category: "BOD" | "Department Leads" | "Design Leads" | "Engineering Professionals" | "Independent Consultants";
     name: string;
     position: string;
     education: string;
@@ -42,13 +42,22 @@ export const TEAM_MEMBERS: TeamMember[] = [
         id: "saurav-dulal",
         category: "BOD",
         name: "Saurav Dulal",
-        position: "Director (Head of Dept. of Civil Engineering)",
+        position: "Director",
         education: "Masters in Hydropower Engineering, IOE, Pulchowk",
         bio: "Mr. Dulal has been working as Hydropower Engineer for 5 years. He was involved in the hydraulic and structural design of hydropower components. He was involved in the design of Ghatte(5MW) Super Mai(7.8),Mai Beni(11.2MW), Lower Chameliya(20MW), Lower Dudhkunda (9.6 MW) and Rawa Khola (5.3 MW). He is proposed to team member for the hydraulic design of waterway alignment for the Feasibility Study and Detailed Engineering Design of Sailun Khola HPP.",
         image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1000&auto=format&fit=crop"
     },
 
     // Department Leads
+    {
+        id: "saurav-dulal-lead",
+        category: "Department Leads",
+        name: "Saurav Dulal",
+        position: "Head of Dept. of Civil Engineering",
+        education: "Masters in Hydropower Engineering, IOE, Pulchowk",
+        bio: "Mr. Dulal has been working as Hydropower Engineer for 5 years. He was involved in the hydraulic and structural design of hydropower components. He was involved in the design of Ghatte(5MW) Super Mai(7.8),Mai Beni(11.2MW), Lower Chameliya(20MW), Lower Dudhkunda (9.6 MW) and Rawa Khola (5.3 MW). He is proposed to team member for the hydraulic design of waterway alignment for the Feasibility Study and Detailed Engineering Design of Sailun Khola HPP.",
+        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1000&auto=format&fit=crop"
+    },
     {
         id: "prayash-rijal",
         category: "Department Leads",
@@ -322,5 +331,14 @@ export const TEAM_MEMBERS: TeamMember[] = [
         education: "Bachelor’s in Business Administration",
         bio: "Mr. Singh provides vital administrative support to the TAC Hydro team, ensuring the smooth day-to-day operations of the office. He assists in project documentation, record-keeping, and the coordination of logistics for site visits and multidisciplinary team meetings. His organizational support allows the engineering and management teams to maintain a high level of productivity and focus on the delivery of technical solutions for the firm’s clients.",
         image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop"
+    },
+    {
+        id: "shradha-kisi-consultant",
+        category: "Independent Consultants",
+        name: "Shradha Kisi",
+        position: "Independent Consultant",
+        education: "MBA in Project Management, Islington College, London Metropoliton University | Bachelor’s in Civil Engineering, Khwopa Engineering College, Purbanchal University",
+        bio: "",
+        image: "https://images.unsplash.com/photo-1589156280159-27698a70f29e?q=80&w=1000&auto=format&fit=crop"
     },
 ];

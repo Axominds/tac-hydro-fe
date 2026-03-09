@@ -25,7 +25,7 @@ export const FooterSection = () => {
   return (
     <footer
       id="footer-section"
-      className="w-full bg-[#1a365d] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20"
+      className="w-full bg-[#254a85] py-12 sm:py-[60px] px-6 sm:px-10 lg:px-20"
     >
       <div className="max-w-[1449px] mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
@@ -97,26 +97,29 @@ export const FooterSection = () => {
             </div>
 
             <div className="flex flex-col gap-5">
-              <div className="flex gap-3 items-start">
-                <MapPinIcon className="w-4 h-5 text-white flex-shrink-0 mt-1" />
-                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7">
+              <a
+                href="/contact-us#location-map"
+                className="flex gap-3 items-start hover:text-blue-400 transition-colors group"
+              >
+                <MapPinIcon className="w-4 h-5 text-white flex-shrink-0 mt-1 group-hover:text-blue-400 transition-colors" />
+                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 group-hover:text-blue-400 transition-colors">
                   Sanepa - 02, Lalitpur 44600 , Nepal
                 </span>
-              </div>
+              </a>
 
-              <div className="flex gap-3 items-center">
-                <PhoneIcon className="w-[21px] h-[21px] text-white flex-shrink-0" />
-                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap">
+              <a href="tel:+977015439239" className="flex gap-3 items-center hover:text-blue-400 transition-colors group">
+                <PhoneIcon className="w-[21px] h-[21px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
+                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap group-hover:text-blue-400 transition-colors">
                   +977 01-5439239
                 </span>
-              </div>
+              </a>
 
-              <div className="flex gap-3 items-center">
-                <MailIcon className="w-[23px] h-[17px] text-white flex-shrink-0" />
-                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap">
-                  service@tachydro.com.np
+              <a href="mailto:info@tachydro.com.np" className="flex gap-3 items-center hover:text-blue-400 transition-colors group">
+                <MailIcon className="w-[23px] h-[17px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
+                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap group-hover:text-blue-400 transition-colors">
+                  info@tachydro.com.np
                 </span>
-              </div>
+              </a>
             </div>
           </div>
         </div>

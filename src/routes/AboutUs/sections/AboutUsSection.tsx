@@ -5,9 +5,9 @@ export const AboutUsSection = () => {
       className="w-full relative min-h-screen flex items-center py-16 sm:py-24 bg-[#f8f9fa]"
     >
       <div className="max-w-[1240px] mx-auto px-6 sm:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           {/* Image Column */}
-          <div className="relative w-full aspect-[4/3] lg:aspect-auto lg:h-full min-h-[400px] rounded-3xl overflow-hidden shadow-2xl">
+          <div className="relative w-full h-[80vh] min-h-[400px] max-h-[80vh] rounded-3xl overflow-hidden shadow-2xl lg:sticky lg:top-24 self-start">
             <img
               src="/downloads/mjlodvw6RB1obD/img/image-3-1.png"
               alt="About TAC Hydro"
