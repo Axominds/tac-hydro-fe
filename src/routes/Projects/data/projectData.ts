@@ -39,7 +39,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8 mm to 20 mm",
             "Unit Capacity": "2.5 MW per unit (2 units of Pelton Turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Ghatte Khola Small/1.JPG", "/images/Ghatte Khola Small/5.jpg", "/images/Ghatte Khola Small/3.jpg", "/images/Ghatte Khola Small/4.jpg"],
         description: "The Ghatte Khola Small Hydropower Project is a 5 MW run-of-the-river facility located on the Ghatte Khola, a tributary of the Khare/Khani Khola, in Gaurishankar Gaupalika, Dolakha District. Positioned in the steep terrain of Bagmati Province, the project harnesses a high head system to contribute renewable energy to the national grid via the Singati Substation."
     },
     {
@@ -83,7 +83,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "N/A",
             "Unit Capacity": "4 units of vertical axis Francis turbine"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png"],
+        images: ["/images/Tamor Mewa HEP/1.jpg", "/images/Tamor Mewa HEP/2.JPG", "/images/Tamor Mewa HEP/3.JPG", "/images/Tamor Mewa HEP/4.JPG"],
         description: "The Tamor-Mewa Hydroelectric Project (TMHEP) is a major 128 MW run-of-the-river hydropower project located in the Taplejung District of Koshi Province, eastern Nepal. The project is being developed by Spark Hydroelectric Company Limited (SHECL) and utilizes the substantial flow of the Tamor River for power generation. The project area extends across Phungling Municipality (Wards 1, 2, 3, and 9), Meringden Rural Municipality (Wards 2 and 3), Mikwakhola Rural Municipality (Wards 1 and 2), and Athrai Tribeni Rural Municipality (Wards 2, 3, and 5)."
     },
     {
@@ -106,7 +106,7 @@ export const projectData: Project[] = [
             "Penstock Pipe Length/Diameter": "473.70 m / 1.8 m, 1.275 m",
             "Unit Capacity": "3.454 MW per unit (2 units of Francis turbine)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Rawa Khola HPP/1.jpg", "/images/Rawa Khola HPP/2.jpg", "/images/Rawa Khola HPP/3.jpg", "/images/Rawa Khola HPP/4.jpg"],
         description: "The Rawa Khola Hydropower Project is a 6.7 MW run-of-the-river (RoR) scheme located in the Khotang District of Koshi Province. The available gross head is about 113.5 m, and the design discharge is 7.55 m3/s. The major objective of the study is to upgrade the project capacity from 5.4 MW to 6.7 MW."
     },
     {
@@ -128,7 +128,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "12 mm to 36 mm",
             "Unit Capacity": "2 units of horizontal-axis Pelton turbines"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png"],
+        images: ["/images/Super Seti HPP/1.jpeg", "/images/Super Seti HPP/2.jpeg", "/images/Super Seti HPP/3.jpeg", "/images/Super Seti HPP/4.jpeg"],
         description: "S. N. Energy Ltd. (SNEL) is developing the Super Seti Hydropower Project (SSHP) in Machhapuchhre Gaupalika, Kaski district. To increase dry season energy, the flow from Batase Khola will be tapped and mixed with the flow of Seti River."
     },
     {
@@ -150,7 +150,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "At headrace 16 mm, at penstock 12 to 16 mm",
             "Unit Capacity": "2 units; 10 MW each"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Lower Chameliya HPP/2.png", "/images/Lower Chameliya HPP/4.png", "/images/Lower Chameliya HPP/5.png"],
         description: "The Lower Chamelia Hydropower Project (LCHP) is a 20 MW Cascade Peaking Run-of-River (PRoR) development situated along the Chamelia River. LCHP is strategically designed to utilize the tailrace water from CHEP, ensuring optimal water resource management."
     },
     {
@@ -193,7 +193,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "6 mm to 14 mm",
             "Unit Capacity": "3.229 MW per unit featuring Horizontal Axis Pelton Turbines (Total 2 units)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Lower Khani B HPP/1.JPG", "/images/Lower Khani B HPP/2.JPG", "/images/Lower Khani B HPP/3.jpeg", "images/Lower Khani B HPP/4.jpeg"],
         description: "The Lower Khani B Hydropower Project (LKBHP) is a Run-of-River (RoR) hydropower scheme with an installed capacity of 6.2 MW. It utilizes a design discharge of 5.1 m³/s which corresponds to Q43.2 and a gross head of 152.68 m."
     },
     {
@@ -215,7 +215,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "12 mm to 40 mm",
             "Unit Capacity": "12.11 MW per unit (2 units of Vertical Axis Pelton Turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png"],
+        images: ["/images/Mathillo Inkhu HPP/1.jpg", "/images/Mathillo Inkhu HPP/2.JPG", "/images/Mathillo Inkhu HPP/3.JPG", "/images/Mathillo Inkhu HPP/4.jpg"],
         description: "The Mathilo Inkhu Hydropower Project (often referred to as Upper Inkhu Khola HEP) is a 24.22 MW run-of-river (RoR) project located in the Solukhumbu district of Koshi Province, Nepal. The project is designed to generate significant annual energy, with development led by Universal Power Company Limited."
     },
     {
@@ -237,7 +237,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "14 to 16 mm",
             "Unit Capacity": "2 Horizontal Francis turbine with 14.59 MW (each) units"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png"],
+        images: ["/images/Middle Chameliya HPP/1.jpg", "/images/Middle Chameliya HPP/2.jpg"],
         description: "Madhya Chameliya Hydropower Project (MCHPP) is a Run-of-the-River (ROR) project proposed with an installed capacity of 28.304 MW. The design discharge will be conveyed to powerhouse through water conveyance system consisting of headrace pipe, surge pipe and penstock."
     },
     {
@@ -281,7 +281,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "11 mm - 26 mm",
             "Unit Capacity": "2 units, Pelton Turbine (Horizontal), 12.205 MW"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Super Inkhu HPP/1.jpg", "/images/Super Inkhu HPP/2.jpg", "/images/Super Inkhu HPP/3.jpg", "/images/Super Inkhu HPP/4.jpg"],
         description: "The Super Inkhu Hydropower Project (often referred to as Upper Inkhu Khola HEP) is a 24.41 MW run-of-river (RoR) project located in the Solukhumbu district. The project is designed to generate significant annual energy."
     },
     {
@@ -325,7 +325,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "N/A",
             "Unit Capacity": "N/A"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png"],
+        images: ["/images/Super Seti HPP/1.jpeg", "/images/Super Seti HPP/2.jpeg", "/images/Super Seti HPP/3.jpeg", "/images/Super Seti HPP/4.jpeg"],
         description: "Super Seti Hydropower Project (30MW) is a run-of-river scheme located in Kaski District, separate from the 24MW project."
     },
     {
@@ -347,7 +347,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "6 mm, 8 mm to 15 mm",
             "Unit Capacity": "2 unit of horizontal axis pelton turbine"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Super Molung Khola HPP/1.jpeg", "/images/Super Molung Khola HPP/2.jpeg", "/images/Super Molung Khola HPP/3.jpeg", "/images/Super Molung Khola HPP/5.jpeg"],
         description: "Super Molung Hydropower Project (SMHP) developed by Noble Hydropower Pvt. Ltd. is a Run-of-River scheme on Malun Khola in Okhaldhunga District. The project features diversion weirs with side intakes, settling basins, and a headrace tunnel."
     },
 
@@ -399,13 +399,13 @@ export const projectData: Project[] = [
     {
         id: "ded-3",
         title: "Rawa Khola Hydropower Project",
-        installedCapacity: "6.7 MW",
+        installedCapacity: "5.4 MW",
         scope: "Detailed Engineering Design",
         location: [27.32, 86.76],
         role: "TAC Hydro Consultancy Pvt. Ltd. provided consulting services for Detailed Engineering Design of the Rawa Khola Hydropower Project (RKHP), developed by Halesi Hydropower Private Limited in Khotang District, eastern Nepal. A contract agreement for the Detailed Engineering Design of the Rawa Khola HPP (6.7 MW), including Hydromechanical and Transmission Line works, was signed on 10th December 2025, which is ongoing.",
         technicalHighlights: {
             "Project Location": "Kepilasgadhi and Aiselukharka Rural Municipalities, Khotang District, Koshi Province",
-            "Installed Capacity": "6.7 MW",
+            "Installed Capacity": "5.4 MW",
             "Design Discharge (Q40)": "7.55 m³/s",
             "Gross Head": "113.5 m",
             "Design Flood": "374.3 m³/s",
@@ -418,7 +418,7 @@ export const projectData: Project[] = [
             "Thickness of Penstock Pipe": "10-12mm",
             "Unit Capacity": "3.454 MW per unit (2 units of Francis turbine)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png"],
+        images: ["/images/Rawa Khola HPP/1.jpg", "/images/Rawa Khola HPP/2.jpg", "/images/Rawa Khola HPP/3.jpg", "/images/Rawa Khola HPP/4.jpg"],
         description: "The Rawa Khola Hydropower Project is a 6.7 MW run-of-the-river (RoR) scheme located in the Khotang District of Koshi Province. The headworks of Rawa Khola are located approximately 150m downstream of the confluence of Lidim Khola and Rawa Khola. The available gross head is about 113.5 m, and the design discharge is 7.55 m3/s, resulting in the installed capacity of 6.7 MW."
     },
     {
@@ -644,7 +644,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "22 to 40 mm",
             "Unit Capacity": "4 units of vertical axis Francis turbine"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png"],
+        images: ["/images/Tamor Mewa HEP/1.jpeg", "/images/Tamor Mewa HEP/2.JPG", "/images/Tamor Mewa HEP/3.JPG", "/images/Tamor Mewa HEP/4.JPG"],
         description: "The Tamor-Mewa Hydroelectric Project (TMHEP) is a major 128 MW run-of-the-river hydropower project located in the Taplejung District of Koshi Province, eastern Nepal. The project is being developed by Spark Hydroelectric Company Limited (SHECL) and utilizes the substantial flow of the Tamor River for power generation."
     },
     {
