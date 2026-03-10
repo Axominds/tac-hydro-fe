@@ -371,7 +371,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8 mm to 20 mm",
             "Unit Capacity": "2.5 MW per unit (2 units of Pelton Turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png"],
+        images: ["/images/Ghatte Khola Small/1.JPG", "/images/Ghatte Khola Small/5.jpg", "/images/Ghatte Khola Small/3.jpg", "/images/Ghatte Khola Small/4.jpg"],
         description: "The Ghatte Khola Small Hydropower Project is a 5 MW run-of-the-river facility located on the Ghatte Khola, a tributary of the Khare/Khani Khola, in Gaurishankar Gaupalika, Dolakha District. Positioned in the steep terrain of Bagmati Province, the project harnesses a high head system to contribute renewable energy to the national grid via the Singati Substation."
     },
     {
@@ -440,7 +440,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8 – 16 mm",
             "Unit Capacity": "2 unit of Horizontal axis Francis turbine"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png"],
+        images: ["/images/Upper Piluwa Khola-3 HPP/1.JPG", "/images/Upper Piluwa Khola-3 HPP/4.jpg", "/images/Upper Piluwa Khola-3 HPP/3.jpg", "/images/Upper Piluwa Khola-3 HPP/6.jpg"],
         description: "The Upper Piluwa Khola-3 Hydroelectric Project is a 4.95 MW run-of-the-river facility located in the Madi and Chainpur Municipalities of Sankhuwasabha District, Koshi Province. Developed by Mabilung Energy Private Limited (MEPL), the project features a unique dual-river intake system, utilizing water from both the Piluwa and Sikhuwa Khola."
     },
     {
@@ -462,7 +462,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8 mm to 24 mm",
             "Unit Capacity": "8.13 MW per unit (2 units of Pelton Turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Liping Khola HPP/1.jpeg", "/images/Liping Khola HPP/2.jpeg", "images/Liping Khola HPP/3.jpeg", "/images/Liping Khola HPP/4.jpeg"],
         description: "Liping Khola Hydropower Project is a Run-of-River (RoR) scheme developed by Him River Power Limited, located in Sindhupalchowk District, Bagmati Province, Nepal. The project site is accessible via the Araniko National Highway and lies approximately 115 km from Kathmandu. All major components, including the headworks, water conveyance system, and underground powerhouse, are situated on the left bank of Liping Khola."
     },
     {
@@ -484,7 +484,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "10-48 mm",
             "Unit Capacity": "36 MW"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png"],
+        images: ["/images/Jagdulla HEP/1.jpg", "/images/Jagdulla HEP/2.jpg", "/images/Jagdulla HEP/3.jpg", "/images/Jagdulla HEP/4.jpg"],
         description: "The Jagdulla PRoR Hydroelectric Project (JHEP) is one of the peaking run-of-river schemes in Nepal, designed to provide a six-hour peaking capability during the dry season. It is located in Wards 1, 2, and 3 of Jagdulla Rural Municipality and Ward 4 of Mudkechula Rural Municipality in Dolpa District of Karnali Province."
     },
     {
@@ -577,7 +577,7 @@ export const projectData: Project[] = [
             "Inclined Penstock Tunnel Length/Pipe Diameter": "Steel pipe, Inverted D-type; 994.8m;1.95m",
             "Unit Capacity": "31.665 per unit (No. of Units =3; Vertical axis Pelton Turbine)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Kasuwa Khola HPP/1.jpg", "/images/Kasuwa Khola HPP/2.jpg", "/images/Kasuwa Khola HPP/3.jpg", "/images/Kasuwa Khola HPP/4.jpg"],
         description: "Kasuwa Khola Hydropower Project is a Peaking Run-of-River (PRoR) type project with a peaking capacity of 1 hour, developed by Kasuwa Khola Hydropower Limited. The project has an installed capacity of 92 MW. The right bank of the Kasuwa Khola comprises nearly all of the headworks’ components, water conveyance system, and the powerhouse of the project."
     },
     {
@@ -599,7 +599,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "12 mm to 26 mm",
             "Unit Capacity": "13.75 MW per unit featuring Horizontal Axis Pelton Turbines (Total 3 units)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png"],
+        images: ["/images/Khani Khola 1 HPP/1.JPG", "/images/Khani Khola 1 HPP/2.png", "/images/Khani Khola 1 HPP/3.jpeg", "images/Khani Khola 1 HPP/4.jpeg"],
         description: "Khani Khola-1 Hydropower Project is a Run-of-River (RoR) type project with a developed by Greenlife Hydropower Limited. The project has an installed capacity of 40MW. All the structures for 25 MW have been constructed and is in testing phase."
     },
     {
@@ -621,7 +621,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "6 mm - 24 mm",
             "Unit Capacity": "Pelton Turbine (Horizontal), 2 units, 12.395 MW"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png"],
+        images: ["/images/Mathillo Inkhu HPP/1.jpg", "/images/Mathillo Inkhu HPP/2.JPG", "/images/Mathillo Inkhu HPP/3.JPG", "/images/Mathillo Inkhu HPP/4.jpg"],
         description: "The Mathilo Inkhu Hydropower Project (often referred to as Upper Inkhu Khola HEP) is a 24.79 MW run-of-river (RoR) project located in the Solukhumbu district of Koshi Province, Nepal. The project is designed to generate significant annual energy, with development led by Universal Power Company Limited."
     },
     {
@@ -644,7 +644,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "22 to 40 mm",
             "Unit Capacity": "4 units of vertical axis Francis turbine"
         },
-        images: ["/images/Tamor Mewa HEP/1.jpeg", "/images/Tamor Mewa HEP/2.JPG", "/images/Tamor Mewa HEP/3.JPG", "/images/Tamor Mewa HEP/4.JPG"],
+        images: ["/images/Tamor Mewa HEP/1.jpg", "/images/Tamor Mewa HEP/2.JPG", "/images/Tamor Mewa HEP/3.JPG", "/images/Tamor Mewa HEP/4.JPG"],
         description: "The Tamor-Mewa Hydroelectric Project (TMHEP) is a major 128 MW run-of-the-river hydropower project located in the Taplejung District of Koshi Province, eastern Nepal. The project is being developed by Spark Hydroelectric Company Limited (SHECL) and utilizes the substantial flow of the Tamor River for power generation."
     },
     {
@@ -666,7 +666,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "14 to 16 mm",
             "Unit Capacity": "2 Horizontal Francis turbine with 14.59 MW (each) units."
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Middle Chameliya HPP/1.jpg", "/images/Middle Chameliya HPP/2.jpg"],
         description: "Madhya Chameliya Hydropower Project (MCHPP) is a Run-of-the-River (ROR) project proposed with an installed capacity of 28.304 MW. MCHPP is located in the Darchula District, Sudurpaschim Province of Nepal. Water from Chameliya River is diverted to intake by sloping glacis weir and conveyed to gravel trap and then to the settling basin through approach pipe."
     },
 
@@ -690,7 +690,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8 – 16 mm",
             "Unit Capacity": "2 unit of Horizontal axis Fransis turbine"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png"],
+        images: ["/images/Upper Piluwa Khola-3 HPP/1.JPG", "/images/Upper Piluwa Khola-3 HPP/4.jpg", "/images/Upper Piluwa Khola-3 HPP/3.jpg", "/images/Upper Piluwa Khola-3 HPP/6.jpg"],
         description: "The Upper Piluwa Khola-3 Hydroelectric Project is a 4.95 MW run-of-the-river facility located in the Madi and Chainpur Municipalities of Sankhuwasabha District, Koshi Province. Developed by Mabilung Energy Private Limited (MEPL), the project features a unique dual-river intake system, utilizing water from both the Piluwa and Sikhuwa Khola."
     },
     {
@@ -712,7 +712,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8 mm to 24 mm",
             "Unit Capacity": "8.13 MW per unit (2 units of Pelton Turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Liping Khola HPP/1.jpeg", "/images/Liping Khola HPP/2.jpeg", "images/Liping Khola HPP/3.jpeg", "/images/Liping Khola HPP/4.jpeg"],
         description: "Liping Khola Hydropower Project is a Run-of-River (RoR) scheme developed by Him River Power Limited, located in Sindhupalchowk District, Bagmati Province, Nepal. All major components, including the headworks, water conveyance system, and underground powerhouse, are situated on the left bank of Liping Khola."
     },
     {
@@ -734,7 +734,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8 mm to 20 mm",
             "Unit Capacity": "2.5 MW per unit (2 units of Pelton Turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png"],
+        images: ["/images/Ghatte Khola Small/1.JPG", "/images/Ghatte Khola Small/5.jpg", "/images/Ghatte Khola Small/3.jpg", "/images/Ghatte Khola Small/4.jpg"],
         description: "The Ghatte Khola Small Hydropower Project is a 5 MW run-of-the-river facility located on the Ghatte Khola, a tributary of the Khare/Khani Khola, in Gaurishankar Gaupalika, Dolakha District. Positioned in the steep terrain of Bagmati Province, the project harrnesses a high head system to contribute renewable energy to the national grid via the Singati Substation."
     },
     {
@@ -803,7 +803,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8mm to 56mm, 10mm",
             "Unit Capacity": "3 units of horizontal axis Pelton turbines"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png"],
+        images: ["/images/Nupche Likhu HPP/1.jpg", "/images/Nupche Likhu HPP/2.jpg", "/images/Nupche Likhu HPP/3.jpg", "/images/Nupche Likhu HPP/4.jpg"],
         description: "Nupche Likhu Hydropower Project (NLHPP), developed by Vision Energy & Power Ltd., is a run-of-river hydropower project located in Ramechhap District, Bagmati Province (Province No. 3), Nepal. The project is situated within Umakunda Rural Municipality, where both the intake and powerhouse sites are located. The project is designed with multiple headworks to capture flows from both the Nupche and Likhu rivers. The source of water for the Nupche Likhu Hydropower Project originates from snow-fed rivers in the high mountain and hilly regions. The project is one of the highest head hydropower projects currently under construction in Nepal."
     },
     {
@@ -825,7 +825,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "10 mm to 16 mm",
             "Unit Capacity": "7.294 MW per Unit (2 units of Horizontal-axis Francis turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png"],
+        images: ["/images/Lower Erkhuwa HPP/1.jpg", "/images/Lower Erkhuwa HPP/2.jpg", "/images/Lower Erkhuwa HPP/3.jpg", "/images/Lower Erkhuwa HPP/4.jpg"],
         description: "Lower Erkhuwa Hydropower Project (LEHPP) developed by Lower Erkhuwa Hydropower Company Pvt. Ltd. is a run-of-the-river (RoR) hydropower scheme with an installed capacity of 14.15 MW and an average annual energy generation of 79.79 GWh, comprising 12.68 GWh dry season energy and 67.11 GWh wet season energy in Khadananda Municipality and Shalpa Silicho Rural Municipality, Bhojpur District, Koshi Province, Nepal, utilizing the Erkhuwa Khola. The intake located in Khadananda Municipality and Shalpa Silicho, and the powerhouse in Khadananda Municipality."
     },
     {
@@ -846,7 +846,7 @@ export const projectData: Project[] = [
             "Penstock Pipe Length/Diameter": "920 m + 28 m (bifurcation), 1.4 m (internal diameter)",
             "Unit Capacity": "6.92 MW per unit (2 units of Vertical-axis Pelton turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png"],
+        images: ["/images/Midim-1 HPP/1.jpg", "/images/Midim-1 HPP/2.jpg", "/images/Midim-1 HPP/3.jpg", "/images/Midim-1 HPP/4.jpg"],
         description: "The Midim-1 Hydropower Project of installed capacity 13,424 kW, is being constructed by Mount Rasuwa Hydropower Pvt. Ltd. as a run-of-river scheme in Lamjung District in Gandaki province. The project utilizes the stream of Midim Khola which is a tributary of Marsyangdi River. The headworks of Midim 1 hydropower project is located at 50 m U/S from the confluence of Midim Khola and Tiju Khola. There is side intake with orifice and trashrack to control entry of debris, followed by gravel trap and desander at the left bank of Midim Khola."
     },
     {
@@ -866,7 +866,7 @@ export const projectData: Project[] = [
             "Penstock Pipe Length/Diameter": "2459.46 m, 1.8, 1.70, 1.60 and 1.14 m",
             "Unit Capacity": "2 units of Vertical shaft Pelton turbines"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png"],
+        images: ["/images/Upper Tadi Khola HEP/1.jpg", "/images/Upper Tadi Khola HEP/2.jpg", "/images/Upper Tadi Khola HEP/3.jpg", "/images/Upper Tadi Khola HEP/4.jpg"],
         description: "The Upper Tadi Khola Hydroelectric Project of installed capacity 11 MW, is being constructed by Suryakunda Hydro Electric Limited. The Project location is in Nuwakot District of Bagmati province. The project utilizes the stream of Tadi khola, which is a tributary of Trishuli River. A 25 m long boulder riprap weir having one bay of under sluice is provided to divert the flow. The Intake, gravel trap, settling basin, and forebay are proposed along the right bank of the river."
     },
     {
@@ -910,7 +910,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8 mm to 14 mm at headrace and 14 mm to 20 mm at penstock",
             "Unit Capacity": "2 units of 4 MW each"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png"],
+        images: ["/images/Tadi Ghyangphedi HPP/1.jpg", "/images/Tadi Ghyangphedi HPP/2.jpg", "/images/Tadi Ghyangphedi HPP/3.png", "/images/Tadi Ghyangphedi HPP/4.jpg"],
         description: "The Tadi Ghyangphedi Hydropower Project is an 8 MW run-of-the-river (RoR) development located in the Nuwakot District of Bagmati Province. Developed by ABP Energy Pvt. Ltd., the project utilizes a high-head layout to capture the flow of the Tadi River at an elevation of 1,990 masl. With a substantial gross head of 446 m and a design discharge of 2.21 m3/s, the project is set to generate 48.746 GWh of energy annually."
     },
     {
@@ -932,7 +932,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8 mm to 30 mm",
             "Unit Capacity": "2 unit of horizontal axis Pelton turbine"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Jurimba Khola Small HPP/1.jpg", "/images/Jurimba Khola Small HPP/2.jpg"],
         description: "Jurimba Khola Small Hydropower Project developed by Jurimba Hydropower Company Pvt. Ltd. (JHCPL) is a Peaking Run-of-River (PROR) type project in Sindhupalchowk district, Bagmati Province, Nepal. The powerhouse is in the right bank of Bhotekoshi River and just upstream from confluence of Bhotekhosi River and Jurimba Khola."
     },
     {
@@ -954,7 +954,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "N/A",
             "Unit Capacity": "N/A"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png"],
+        images: ["/images/Upper Piluwa Khola-3 HPP/1.JPG", "/images/Upper Piluwa Khola-3 HPP/4.jpg", "/images/Upper Piluwa Khola-3 HPP/3.jpg", "/images/Upper Piluwa Khola-3 HPP/6.jpg"],
         description: "Upper Piluwa Hills Small Hydropower Project is a 4.99 MW run-of-the-river facility developed by Milke Jaljale Hydropower Pvt. Ltd. in the Sankhuwasabha District. This project features a unique dual-source water supply, supplementing the primary Piluwa River intake with additional flow from the Tapuwa Khola during the dry season. Its infrastructure includes a 2.1 km headrace pipe and a penstock that crosses the Tapuwa Khola to deliver water to the powerhouse, generating 29.085 GWh of renewable energy annually."
     },
     {
@@ -1021,7 +1021,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "12 mm to 28 mm",
             "Unit Capacity": "22.68 MW per Unit (2 units of vertical axis Francis turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Bhotekoshi-1 HPP/1.jpg", "/images/Bhotekoshi-1 HPP/2.jpg", "/images/Bhotekoshi-1 HPP/3.jpg", "/images/Bhotekoshi-1 HPP/4.jpg"],
         description: "Electro Power Company Ltd. is developing the Bhotekoshi-1 Hydropower Project (BK1HPP), a run-of-river hydropower project located in Chaku and Hindi Bazaar of Bhotekoshi Rural Municipality, Sindhupalchowk District, Bagmati Province, Nepal, utilizing the flow of the Bhotekoshi River. The facility utilizes a medium-head configuration to drive two vertical-axis Francis turbines units."
     },
     {
@@ -1043,7 +1043,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "6 mm to 16 mm",
             "Unit Capacity": "6.8 MW per Unit (2 Units of Horizontal axis Francis turbine)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png"],
+        images: ["/images/Dordi-1 HEP/1.JPG", "/images/Dordi-1 HEP/2.JPG", "/images/Dordi-1 HEP/3.JPG", "/images/Dordi-1 HEP/4.JPG"],
         description: "Dordi-1 Hydroelectric Project of installed capacity 12,000 kW, is being constructed by Dordi Khola Jal Bidyut Co. Ltd. a subsidiary company of CEDB Hydro Fund Ltd. Site of this project lies in Lamjung District. This is a run-off-river scheme with conventional side intake on the left bank of Dordi Rural Municipality."
     },
     {
@@ -1087,7 +1087,7 @@ export const projectData: Project[] = [
             "Penstock Pipe Length/Diameter": "1005 m / 2.8 m",
             "Unit Capacity": "14.35 MW per Unit (3 units of vertical-axis Francis turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Super Lower Bagmati HPP/1.jpg", "/images/Super Lower Bagmati HPP/2.jpg", "/images/Super Lower Bagmati HPP/3.jpg", "/images/Super Lower Bagmati HPP/4.jpg"],
         description: "Super Bagmati Hydropower Limited is developing the Super Lower Bagmati Hydropower Project (SLBHPP), a run-of-river hydropower project located in Makwanpur, Lalitpur, Kavre, and Sindhuli districts. The facility utilizes a high-head configuration to drive three vertical-axis Francis turbines units."
     },
     {
@@ -1109,7 +1109,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8mm to 25 mm",
             "Unit Capacity": "5.8 MW per Unit (2 Units of Horizontal axis Francis turbine)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png"],
+        images: ["/images/Tallo Khare Khola HPP/1.jpg", "/images/Tallo Khare Khola HPP/2.jpg", "/images/Tallo Khare Khola HPP/3.jpg", "/images/Tallo Khare Khola HPP/4.jpg"],
         description: "Tallo Khare Khola Hydropower Project is being constructed by Universal Power Company Limited. Site of this project lies in Dolakha District. The project utilizes the stream of Khare Khola which is a tributary of Tamakoshi River."
     },
     {
@@ -1131,7 +1131,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "25 mm to 32 mm",
             "Unit Capacity": "3 Units of Horizontal Axis Francis turbine"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Upper Chameliya HPP/1.jpeg", "/images/Upper Chameliya HPP/2.jpeg", "/images/Upper Chameliya HPP/3.jpeg", "/images/Upper Chameliya HPP/4.jpeg"],
         description: "Upper Chameliya Hydropower Project (40MW) is being constructed by API Power Company Ltd. in Darchula district of Sudur Paschim Province, Nepal. The project site is located on Chameliya River which is a tributary of Mahakali River."
     },
     {
@@ -1152,7 +1152,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "6mm to 22mm",
             "Unit Capacity": "3.7 MW per Unit (2 Units of Pelton turbine)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png"],
+        images: ["/images/Upper Mardi Khola HPP/1.jpeg", "/images/Upper Mardi Khola HPP/2.jpeg", "/images/Upper Mardi Khola HPP/3.jpeg", "/images/Upper Mardi Khola HPP/4.jpeg"],
         description: "Upper Mardi Khola Hydropower Project is constructed by United Idi Mardi & RB Hydropower Pvt. Ltd. at the upstream of existing Mardi Khola HPP in Kaski District. The project utilizes the stream of Mardi Khola which is a tributary of Seti River."
     },
     {
@@ -1175,7 +1175,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8mm to 28 mm",
             "Unit Capacity": "3 units of Horizontal-axis Francis turbines"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png"],
+        images: ["/images/Upper Seti HPP/1.jpg", "/images/Upper Seti HPP/2.jpg", "/images/Upper Seti HPP/3.jpg", "/images/Upper Seti HPP/4.jpg"],
         description: "Upper Seti Hydropower Pvt. Ltd. is developing the Upper Seti Hydropower Project (USHPP), a run-of-river hydropower project located in Kaski District, utilizing the flow of the Seti River along with the water from the sadhu khola."
     },
     {
@@ -1197,7 +1197,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "10 mm to 16 mm",
             "Unit Capacity": "7.294 MW per Unit (2 units of Horizontal-axis Francis turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png"],
+        images: ["/images/Lower Erkhuwa HPP/1.jpg", "/images/Lower Erkhuwa HPP/2.jpg", "/images/Lower Erkhuwa HPP/3.jpg", "/images/Lower Erkhuwa HPP/4.jpg"],
         description: "Lower Erkhuwa Hydropower Project (LEHPP) is a run-of-the-river hydropower scheme with an installed capacity of 14.15 MW in Bhojpur District, Koshi Province, Nepal, utilizing the Erkhuwa Khola."
     },
     {
@@ -1220,7 +1220,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "8mm to 56mm",
             "Unit Capacity": "3 units of horizontal axis Pelton turbines"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png", "/downloads/mjlodvw6RB1obD/img/mask-group-3.png", "/downloads/mjlodvw6RB1obD/img/mask-group-4.png"],
+        images: ["/images/Nupche Likhu HPP/1.jpg", "/images/Nupche Likhu HPP/2.jpg", "/images/Nupche Likhu HPP/3.jpg", "/images/Nupche Likhu HPP/4.jpg"],
         description: "Nupche Likhu Hydropower Project (NLHPP) is a run-of-river hydropower project located in Ramechhap District. The project is designed with multiple headworks to capture flows from both the Nupche and Likhu rivers."
     },
     {
@@ -1242,7 +1242,7 @@ export const projectData: Project[] = [
             "Thickness of Pipe": "10 mm to 40 mm",
             "Unit Capacity": "15.807 MW per Unit (3 units of Horizontal-axis Pelton turbines)"
         },
-        images: ["/downloads/mjlodvw6RB1obD/img/mask-group-4.png", "/downloads/mjlodvw6RB1obD/img/mask-group-2.png", "/downloads/mjlodvw6RB1obD/img/mask-group.png", "/downloads/mjlodvw6RB1obD/img/mask-group-1.png"],
+        images: ["/images/Upper Balephi HPP/1.jpg", "/images/Upper Balephi HPP/2.jpg", "images/Upper Balephi HPP/3.jpg"],
         description: "Upper Balephi Hydropower Ltd. is developing the Upper Balephi Hydropower Project (UBHP) in Sindhupalchowk District, utilizing the flow of the Balephi Khola. The facility utilizes a very high-head configuration to drive three Horizontal-axis Pelton turbines units."
     }
 ];
