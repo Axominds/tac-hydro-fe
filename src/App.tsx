@@ -4,13 +4,11 @@ import { Home } from "./routes/Home/Home";
 import { AboutUs } from "./routes/AboutUs/AboutUs";
 import { OrganizationChart } from "./routes/AboutUs/OrganizationChart";
 import { CorePrinciples } from "./routes/AboutUs/CorePrinciples";
-import { OurTeam } from "./routes/AboutUs/OurTeam";
 import { Galleries } from "./routes/Galleries/Galleries";
 import { Projects } from "./routes/Projects/Projects";
 import { Services } from "./routes/Services/Services";
 import { ContactUs } from "./routes/ContactUs/ContactUs";
 import { Collaboration } from "./routes/ContactUs/Collaboration";
-import { Career } from "./routes/ContactUs/Career";
 import { NewsDetail } from "./routes/News/NewsDetail";
 
 const ScrollManager = (): null => {
@@ -51,14 +49,12 @@ export const App = () => {
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/about-us/our-organization-chart" element={<OrganizationChart />} />
         <Route path="/about-us/our-core-principles" element={<CorePrinciples />} />
-        <Route path="/about-us/our-team" element={<OurTeam />} />
         <Route path="/galleries" element={<Galleries />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/services" element={<Services />} />
 
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/contact-us/collaboration" element={<Collaboration />} />
-        <Route path="/contact-us/career" element={<Career />} />
         <Route path="/news/:id" element={<NewsDetail />} />
       </Routes>
     </Router>

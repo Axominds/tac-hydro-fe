@@ -50,22 +50,34 @@ export const MobileMenu = ({
           if (hasDropdown) {
             return (
               <div key={`${item.label}-${index}`} className="flex flex-col">
-                <button
-                  onClick={() => setExpandedItem(expandedItem === item.label ? null : item.label)}
-                  className={cn(
-                    baseNavItem,
-                    "flex items-center justify-center gap-1",
-                    linkClassName,
-                  )}
-                >
-                  {item.label}
-                  <ChevronDown
-                    className={cn(
-                      "w-4 h-4 transition-transform duration-200",
-                      expandedItem === item.label ? "rotate-180" : "",
-                    )}
-                  />
-                </button>
+                <div className="flex items-center justify-center">
+                  <NavLink
+                    to={item.href}
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      cn(
+                        baseNavItem,
+                        "flex-1 text-center",
+                        isActive || item.isActive ? activeGlass : "hover:text-white",
+                        linkClassName,
+                      )
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                  <button
+                    onClick={() => setExpandedItem(expandedItem === item.label ? null : item.label)}
+                    className="text-white/80 hover:text-white transition p-2"
+                    aria-label={`Toggle ${item.label} submenu`}
+                  >
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 transition-transform duration-200",
+                        expandedItem === item.label ? "rotate-180" : "",
+                      )}
+                    />
+                  </button>
+                </div>
 
                 {expandedItem === item.label && (
                   <div className="flex flex-col gap-2 mt-2 ml-4 pl-4 border-l-2 border-white/20">

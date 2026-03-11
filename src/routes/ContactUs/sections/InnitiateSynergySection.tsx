@@ -1,21 +1,6 @@
-import { Upload, Mail, Phone, ArrowRight, FileText } from "lucide-react";
-import { useRef, useState } from "react";
+import { Mail, Phone } from "lucide-react";
 
 export const InnitiateSynergySection = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setFileName(file.name);
-    }
-  };
-
   return (
     <section
       id="initiate-synergy"
@@ -77,6 +62,7 @@ export const InnitiateSynergySection = () => {
 
           {/* Right Form Area */}
           <div className="flex-1 p-6 sm:p-10 bg-white text-left">
+            {/*
             <form className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
@@ -230,6 +216,29 @@ export const InnitiateSynergySection = () => {
                 </button>
               </div>
             </form>
+            */}
+            <div className="h-full flex flex-col justify-center">
+              <div className="max-w-xl">
+                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+                  Email your proposal to start the conversation
+                </h3>
+                <p className="text-slate-600 text-base leading-relaxed mb-6">
+                  Please send your collaboration proposal or project brief by email and our
+                  strategic lead will respond within 48 hours.
+                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <a
+                    href="mailto:collaboration@tachydro.com.np"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[#0070c0] text-white font-semibold shadow-[0_12px_24px_rgba(0,112,192,0.25)] hover:bg-[#005a9e] hover:shadow-[0_18px_32px_rgba(0,112,192,0.3)] transition-all"
+                  >
+                    Email collaboration@tachydro.com.np
+                  </a>
+                  <p className="text-sm text-slate-500">
+                    Attach PDFs or a brief overview in the message.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

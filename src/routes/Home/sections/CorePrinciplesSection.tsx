@@ -7,16 +7,16 @@ export const CorePrinciplesSection = () => {
             className="flex-1 bg-white flex items-center justify-center"
         >
             <div className="w-full max-w-[1400px] px-6 sm:px-10 lg:px-20 py-8">
-                <div className="mb-20 text-center max-w-3xl mx-auto">
+                <div className="mb-8 sm:mb-20 text-center max-w-3xl mx-auto">
                     <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-slate-900 mb-6">
                         Our Core Principles
                     </h1>
                 </div>
-                <div className="flex gap-4 py-2 justify-between flex-nowrap">
+                <div className="flex gap-6 py-2 justify-between flex-wrap sm:flex-nowrap">
                     {corePrinciples.map((item, idx) => (
                         <div
                             key={idx}
-                            className="group flex flex-1 basis-0 flex-col items-center text-center text-slate-900 transition-all duration-300 hover:-translate-y-1"
+                            className="group flex flex-col items-center text-center text-slate-900 transition-all duration-300 hover:-translate-y-1 basis-[45%] sm:flex-1 sm:basis-0"
                         >
                             <div className="relative mb-3 flex items-center justify-center">
                                 <div className="absolute inset-0 scale-125 rounded-full border border-slate-100 group-hover:border-blue-100 transition-colors duration-300" />
