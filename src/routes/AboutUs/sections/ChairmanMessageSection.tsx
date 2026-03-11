@@ -8,44 +8,35 @@ export const ChairmanMessageSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           <div className="flex flex-col gap-6">
             <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-[#2c3e50]">
-              Chairman&apos;s Message
+              CHAIRMAN&apos;S MESSAGE
             </h1>
             <div className="flex flex-col gap-4 text-[#555555] text-lg leading-relaxed">
+              <p>Dear Clients, Partners, and Colleagues,</p>
               <p>
-                It is a privilege to share the vision that guides our company and defines our
-                journey. From our inception, we have been committed to delivering engineering
-                excellence in hydropower design, study, and construction supervision. As we expand
-                our services into solar energy, tunneling, and irrigation, our purpose remains
-                consistent: to contribute meaningfully to sustainable national development.
+                It is a privilege to share the vision that guides our journey. Since our inception,
+                we have remained committed to Empowering Sustainable Resources Through Engineering
+                Excellence. While our foundation lies in hydropower, we are steadily expanding into
+                solar energy, tunneling, and irrigation, guided by the same enduring purpose:
+                contributing meaningfully to sustainable national development.
               </p>
               <p>
-                We believe that sustainability is not achieved solely through infrastructure, but
-                through the strength of the people and institutions that create it. True and lasting
-                progress must grow organically from within society. It must be indigenous—shaped by
-                local knowledge, strengthened by local talent, and sustained by local ownership.
-                This conviction shapes every aspect of our work. Our foremost investment is in
-                people. We are dedicated to developing strong in-house engineering capabilities
-                through rigorous on-the-job learning, continuous professional training, and academic
-                engagement. By fostering technical depth, critical thinking, and ethical
-                responsibility, we aim to cultivate engineers who can confidently address complex
-                challenges and deliver solutions suited to our country’s unique context.
+                The infrastructure we design today will endure for generations well into the next
+                century. This reality reminds us of our profound responsibility toward both ecology
+                and society, and we approach that responsibility with deep awareness and care. We
+                believe that lasting progress must be indigenous - shaped by local knowledge,
+                strengthened by local talent, and sustained through local ownership.
               </p>
               <p>
-                As an engineering consultancy of national level, we aspire to reduce dependence on
-                external expertise by strengthening domestic capacity. Our goal is not isolation,
-                but self-reliance - ensuring that future hydropower plants, solar installations,
-                tunnels, and irrigation systems can be planned, designed, supervised, commissioned,
-                operated, maintained and rehabilitated predominantly by capable professionals from
-                within our own borders. We recognize that engineering is more than calculation and
-                construction; it is a long-term responsibility toward society and the environment.
-                Every project we undertake is approached with a commitment to technical integrity,
-                safety, environmental stewardship, and community well-being.
+                By blending indigenous understanding with modern engineering innovation, we strive
+                to develop professionals capable of delivering sophisticated, future-ready solutions
+                suited to our unique context. As a national consultancy, our aspiration is to
+                strengthen domestic capability and gradually reduce reliance on external expertise.
               </p>
               <p>
-                Looking ahead, we remain dedicated to advancing sustainable infrastructure while
-                nurturing the next generation of indigenous engineering leadership. Together with
-                our clients, partners, and team members, we are proud to contribute to a future
-                built on competence, resilience, and national confidence.
+                Engineering, to us, is more than calculation - it is a long-term commitment to
+                technical integrity, ecological balance, and community well-being. We remain
+                dedicated to nurturing the next generation of engineering leaders and to building a
+                future defined by competence, resilience, and national confidence.
               </p>
               <p>Thank you for your trust and partnership in this shared endeavor.</p>
             </div>

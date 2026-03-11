@@ -9,31 +9,37 @@ export const TopManagementSection = () => {
           {/* Text Column */}
           <div className="flex flex-col gap-6 order-2">
             <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-[#2c3e50]">
-              Top Management&apos;s Commitment
+              MANAGEMENT&apos;S COMMITMENT
             </h1>
             <div className="flex flex-col gap-4 text-[#555555] text-lg leading-relaxed">
-              <p>Dear Clients and Partners,</p>
               <p>
-                At TAC Hydro Consultancy, our mission is to provide the technical certainty required
-                to transform hydropower potential into high-performing reality. As the global
-                transition to clean energy accelerates, we provide the specialized expertise
-                necessary to navigate the complexities of sustainable power development.
+                We are committed to advancing our mission through a culture defined by technical
+                integrity, professional excellence, and responsible innovation. As an engineering
+                consultancy entrusted with designing vital infrastructure, we recognize that every
+                decision carries long-term consequences for communities, the environment, and
+                national development. Our commitment therefore begins with an unwavering dedication
+                to sound engineering principles, transparency, and ethical practice.
               </p>
               <p>
-                Our firm serves as a bridge between vision and execution. We provide a comprehensive
-                suite of services, including project identification, feasibility studies, and
-                detailed engineering design, construction supervision and commissioning of
-                hydropower and solar power projects.
+                We place our clients at the center of our work. By listening carefully,
+                understanding project objectives, and maintaining open communication throughout
+                every stage of engagement, we strive to deliver solutions that meet the highest
+                standards of quality, reliability, and value. Customer satisfaction is not merely an
+                objective for us; it is a reflection of our accountability and professionalism.
               </p>
               <p>
-                We recognize that hydropower projects represent significant capital investments and
-                long-term commitments. To address this, our team of seasoned professionals delivers
-                innovative, cost-effective solutions designed to optimize performance and extend the
-                lifespan of energy assets through strategic rehabilitation.
+                People are the core of our strength in achieving our mission. Through rigorous
+                on-the-job learning, professional training, and academic engagement, we cultivate
+                technical excellence alongside ethical responsibility. While our roots remain local,
+                our outlook is global. We continuously strive to master and apply frontier
+                technologies so that our domestic engineering capability reaches world-class
+                standards.
               </p>
               <p>
-                We look forward to a successful partnership and to bringing your next hydropower
-                venture to fruition.
+                We are equally committed to precision and excellence in every aspect of our work.
+                Through disciplined design processes, thorough rigorous reviews, and a culture of
+                continuous improvement, we deliver engineering solutions that are reliable,
+                innovative, sustainable yet highly economic.
               </p>
             </div>
           </div>
