@@ -35,6 +35,17 @@ export const ProjectSection = () => {
   const [activeScope, setActiveScope] = useState<ProjectScope>("Detailed Feasibility Study");
   const [viewerImageIndex, setViewerImageIndex] = useState<number | null>(null);
 
+  const parseCapacity = (installedCapacity: string) => {
+    const matches = installedCapacity.match(/\d+(?:\.\d+)?/g);
+    if (!matches || matches.length === 0) {
+      return 0;
+    }
+
+    const isUpgraded = /upgraded/i.test(installedCapacity);
+    const value = isUpgraded ? matches[matches.length - 1] : matches[0];
+    return Number.parseFloat(value);
+  };
+
   // Handle URL query parameters for filtering
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -56,8 +67,7 @@ export const ProjectSection = () => {
   };
 
   const filteredProjects = projectData.filter(
-    (p) =>
-      p.scope === activeScope && p.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    (p) => p.scope === activeScope && p.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -77,6 +87,9 @@ export const ProjectSection = () => {
                 <nav className="space-y-2">
                   {scopes.map((scope) => {
                     const count = projectData.filter((p) => p.scope === scope).length;
+                    const totalCapacity = projectData
+                      .filter((p) => p.scope === scope)
+                      .reduce((sum, project) => sum + parseCapacity(project.installedCapacity), 0);
                     const isActive = activeScope === scope;
 
                     return (
@@ -93,21 +106,28 @@ export const ProjectSection = () => {
                             }
                           }, 50);
                         }}
-                        className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-left transition-all duration-300 group ${isActive
-                          ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                          : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-100"
-                          }`}
+                        className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-left transition-all duration-300 group ${
+                          isActive
+                            ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                            : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-100"
+                        }`}
                       >
                         <span
                           className={`text-sm font-bold ${isActive ? "text-white" : "text-slate-700"}`}
                         >
                           {scope}
+                          <span
+                            className={`block text-xs font-semibold ${isActive ? "text-white/80" : "text-slate-400"}`}
+                          >
+                            ({totalCapacity.toFixed(2)} MW)
+                          </span>
                         </span>
                         <span
-                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${isActive
-                            ? "bg-white/20 text-white"
-                            : "bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600"
-                            }`}
+                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                            isActive
+                              ? "bg-white/20 text-white"
+                              : "bg-slate-100 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600"
+                          }`}
                         >
                           {count}
                         </span>
@@ -147,7 +167,7 @@ export const ProjectSection = () => {
               </div>
 
               {filteredProjects.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 min-h-[500px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 min-h-[500px] content-start">
                   {filteredProjects.map((project) => (
                     <ProjectCard key={project.id} project={project} onClick={handleProjectClick} />
                   ))}
