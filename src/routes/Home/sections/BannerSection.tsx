@@ -125,11 +125,13 @@ export const BannerSection = () => {
           </div>
         </div>
       </div>
+      {/*
       <img
         src="/iso.png"
         alt="ISO Certification"
         className="absolute bottom-0 right-0 sm:bottom-0 sm:right-0 lg:bottom-0 lg:right-0 w-24 sm:w-48 lg:w-48 z-20 pointer-events-none animate-fade-in"
       />
+      */}
     </section>
   );
 };

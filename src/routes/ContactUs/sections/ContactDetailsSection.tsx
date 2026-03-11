@@ -1,5 +1,4 @@
-import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
-import { Button } from "../../../components/ui/button";
+import { Mail, Phone, MapPin, Clock } from "lucide-react";
 
 export const ContactDetailsSection = () => {
   return (
@@ -92,6 +91,7 @@ export const ContactDetailsSection = () => {
 
           {/* Right Form Area */}
           <div className="flex-1 p-8 sm:p-12 bg-white">
+            {/*
             <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex flex-col gap-2.5">
@@ -161,6 +161,29 @@ export const ContactDetailsSection = () => {
                 </Button>
               </div>
             </form>
+            */}
+            <div className="h-full flex flex-col justify-center">
+              <div className="max-w-xl">
+                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+                  Please email us directly
+                </h3>
+                <p className="text-slate-600 text-base leading-relaxed mb-6">
+                  Please send your inquiry to our team by email and we will respond within one
+                  business day.
+                </p>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <a
+                    href="mailto:info@tachydro.com.np"
+                    className="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold shadow-[0_12px_24px_rgba(37,99,235,0.25)] hover:bg-blue-700 hover:shadow-[0_18px_32px_rgba(37,99,235,0.3)] transition-all"
+                  >
+                    Email info@tachydro.com.np
+                  </a>
+                  <p className="text-sm text-slate-500">
+                    Prefer a call? Use the direct line on the left.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

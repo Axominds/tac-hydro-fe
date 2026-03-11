@@ -28,7 +28,6 @@ const NAV_ITEMS: NavigationItem[] = [
     href: "/about-us",
     dropdown: [
       { label: "Our Organizational Chart", href: "/about-us/our-organization-chart" },
-      { label: "Our Team", href: "/about-us/our-team" },
       { label: "Our Core Principles", href: "/about-us/our-core-principles" },
     ],
   },
@@ -40,7 +39,6 @@ const NAV_ITEMS: NavigationItem[] = [
     href: "/contact-us",
     dropdown: [
       { label: "Collaboration", href: "/contact-us/collaboration" },
-      { label: "Career", href: "/contact-us/career" },
     ],
   },
 ];
