@@ -74,15 +74,7 @@ export const ContactDetailsSection = () => {
               </h4>
               <div className="space-y-4">
                 <div className="flex justify-between items-center bg-white/5 p-4 rounded-[20px] hover:bg-white/10 transition-colors">
-                  <span className="text-slate-300 text-sm font-medium">Mon - Fri</span>
-                  <span className="font-bold text-white text-sm">9:00 AM - 8:00 PM</span>
-                </div>
-                <div className="flex justify-between items-center bg-white/5 p-4 rounded-[20px] hover:bg-white/10 transition-colors">
-                  <span className="text-slate-300 text-sm font-medium">Saturday</span>
-                  <span className="font-bold text-white text-sm">9:00 AM - 6:00 PM</span>
-                </div>
-                <div className="flex justify-between items-center bg-white/5 p-4 rounded-[20px] hover:bg-white/10 transition-colors">
-                  <span className="text-slate-300 text-sm font-medium">Sunday</span>
+                  <span className="text-slate-300 text-sm font-medium">Sun - Fri</span>
                   <span className="font-bold text-white text-sm">9:00 AM - 5:00 PM</span>
                 </div>
               </div>
