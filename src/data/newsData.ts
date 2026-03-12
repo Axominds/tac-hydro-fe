@@ -13,101 +13,161 @@ export const newsItems: NewsItem[] = [
     id: "super-molung-contract",
     title: "Contract Signed for the Super Molung Hydropower Project (9.79 MW)",
     category: "CONTRACT SIGNING",
-    image: "/our_projects/WhatsApp Image 2025-10-19 at 09.53.29 (1).jpeg",
+    image: "/images/news/super molung.jpg",
     date: "MAY 18, 2025",
     description:
-      "Contract signed between TAC Hydro Consultancy Pvt. Ltd. and Noble Energy Pvt. Ltd. for Detailed Feasibility Study & Detailed Engineering Design of the 9.79 MW Super Molung Hydropower Project.",
+      "Contract signed between TAC Hydro Consultancy Pvt. Ltd. and Noble Energy Pvt. Ltd. for Detailed Feasibility Study & Detailed Engineering Design of the 9.79 MW Super",
     content: `
-      <p>We are pleased to announce the official contract signing between <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> and <strong>Noble Energy Pvt. Ltd.</strong> for the <strong>Super Molung Hydropower Project (9.79 MW)</strong>.</p>
-      
-      <p>The scope of this comprehensive agreement covers both the <strong>Updated Detailed Feasibility Study (UDFS)</strong> and the <strong>Detailed Engineering Design (DED)</strong>. Located in Okhaldhunga District, the project represents a significant step in harnessing the hydroelectric potential of the Molung Khola.</p>
-      
-      <p>Our technical team will focus on optimizing the project's layout, ensuring structural integrity through advanced hydraulic design, and preparing a robust framework for upcoming construction phases. This partnership underscores TAC Hydro's commitment to delivering engineering excellence in Nepal's renewable energy sector.</p>
+      <p>Contract signed between <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> and <strong>Noble Energy Pvt. Ltd.</strong> for <strong>Detailed Feasibility Study &amp; Detailed Engineering Design</strong> of the <strong>9.79 MW Super Molung Hydropower Project</strong>.</p>
+    <p>
+      <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> will be responsible to deliver consultancy services for the preparation of the <strong>Detailed Feasibility Study</strong> and <strong>Detailed Engineering Design</strong> for the project. Our scope of work includes hydrological assessments, site investigations, optimization of the project layout, design evaluation, cost estimation, and analysis of technical and financial viability to facilitate informed project implementation.
+    </p>
     `,
   },
   {
     id: "upper-sardi-khola-contract",
-    title: "Contract Signed for Upper Sardi Khola Hydropower Project",
+    title: "Contract Signed for Design Review, Construction Supervision, and Quality Control of Upper Sardi Khola Hydropower Project ",
     category: "CONTRACT SIGNING",
-    image: "/our_projects/WhatsApp Image 2025-10-19 at 18.41.47.jpeg",
+    image: "/images/news/sardi Khola.jpg",
     date: "JUL 26, 2025",
     description:
-      "Contract Signed between TAC Hydro Consultancy Pvt. Ltd. and Adyanta Engineering Pvt. Ltd. JV with Mandakini Hydropower Limited for providing Project Consultancy Services including Design Review and Construction Supervision.",
+      "Contract Signed between TAC Hydro Consultancy Pvt. Ltd. and Adyanta Engineering Pvt. Ltd. JV with Mandakini Hydropower Limited for providing Project Consultancy Services, including Design Review, Construction",
     content: `
-      <p>TAC Hydro Consultancy Pvt. Ltd., in Joint Venture with <strong>Adyanta Engineering Pvt. Ltd.</strong>, has signed a consultant agreement with <strong>Mandakini Hydropower Limited</strong> for the <strong>Upper Sardi Khola Hydropower Project</strong>.</p>
-      
-      <p>Our team will be providing specialized <strong>Project Consultancy Services</strong>, which include:</p>
-      <ul>
-        <li>Detailed Design Review of Civil and Hydromechanical components.</li>
-        <li>Construction Supervision to ensure adherence to technical specifications.</li>
-        <li>On-site Quality Control and safety monitoring.</li>
-      </ul>
-      
-      <p>This mandate highlights our firm's growing reputation as a trusted partner for construction-phase engineering management, ensuring that complex energy infrastructure is built to the highest possible standards.</p>
+      <p>
+  Contract Signed between <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> and <strong>Adyanta Engineering Pvt. Ltd.</strong> JV with <strong>Mandakini Hydropower Limited</strong> for providing <strong>Project Consultancy Services</strong>, including <strong>Design Review</strong>, <strong>Construction Supervision</strong>, and <strong>Quality Control</strong> for the <strong>Upper Sardi Khola Hydropower Project</strong>.
+</p>
+
+<p>
+  As per the scope of consulting services, <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> will carry out <strong>design review</strong>, <strong>inspection</strong>, <strong>measurement</strong>, and <strong>quality control</strong> of all <strong>civil construction works</strong> to ensure compliance with the <strong>approved drawings and specifications</strong>.
+</p>
     `,
   },
   {
     id: "kasuwa-khola-supervision",
-    title: "Construction Supervision of Kasuwa Khola Hydropower Project (45 MW)",
+    title: "Contract Signed for Construction Supervision of Kasuwa Khola Hydropower Project",
     category: "CONTRACT SIGNING",
-    image: "/our_projects/WhatsApp Image 2025-11-27 at 11.32.14_0291da1b.jpg",
+    image: "/images/news/kasuwa khola.jpg",
     date: "AUG 08, 2025",
     description:
-      "TAC Hydro has signed an agreement with Kasuwa Khola Hydropower Ltd. to provide Engineering and Supervision Support During Construction. DED of this project was successfully completed by TAC.",
+      "TAC Hydro Consultancy Pvt. Ltd. has signed an agreement with Kasuwa Khola Hydropower Ltd. to provide Engineering and Supervision Support During Construction for the 45 MW Kasuwa Khola",
     content: `
-      <p>Building on our successful completion of the Detailed Engineering Design (DED), <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> has now been entrusted with the <strong>Construction Supervision</strong> of the <strong>45 MW Kasuwa Khola Hydropower Project</strong>.</p>
-      
-      <p>This agreement with <strong>Kasuwa Khola Hydropower Ltd.</strong> ensures technical continuity as the project moves into its vital construction phase. Our engineers will provide constant on-site oversight, technical troubleshooting, and quality assurance for the civil, hydromechanical, and electromechanical works.</p>
-      
-      <p>The Kasuwa Khola project is a major undertaking in the region, and our continued involvement demonstrates the client's confidence in our technical mastery and project management capabilities.</p>
-    `,
+        <p>
+          <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> has signed an agreement with <strong>Kasuwa Khola Hydropower Ltd.</strong> to provide Engineering and Supervision Support During Construction for the <strong>45 MW Kasuwa Khola Hydropower Project</strong>.
+        </p>
+
+        <p>
+          The Detailed Engineering Design of this project has recently been successfully completed by TAC. In this role, our firm is responsible for the complete technical design of the civil and hydromechanical components, translating the feasibility framework into actionable construction blueprints. In addition to this, TAC will carry out inspection, measurement, and quality control of all civil construction works to ensure compliance with the approved drawings and specifications.
+        </p>
+`,
   },
   {
     id: "tamor-mewa-financial-closure",
     title: "Financial Closure of Tamor Mewa Hydroelectric Project (128 MW)",
-    category: "NEWS",
-    image: "/our_projects/WhatsApp Image 2025-10-19 at 09.47.47.jpeg",
+    category: "CONTRACT SIGNING",
+    image: "/images/news/tamor mewa.jpg",
     date: "OCT 10, 2025",
     description:
-      "Tamor Mewa Hydroelectric Project achieved Financial Closure. As the Consultant for DFS & DED, TAC Hydro, in JV with Sanima Hydro, is honored to contribute to this landmark project.",
+      "Tamor Mewa Hydroelectric Project (128 MW), being developed by Spark Hydroelectric Company Limited, has successfully achieved Financial Closure. As the Consultant for Updated Feasibility Study & Detailed",
     content: `
-      <p>The <strong>128 MW Tamor Mewa Hydroelectric Project</strong>, developed by <strong>Spark Hydroelectric Company Limited</strong>, has successfully achieved its <strong>Financial Closure</strong>. This is a monumental milestone for one of Nepal's most significant upcoming power projects.</p>
-      
-      <p>As the primary consultants responsible for the <strong>Updated Feasibility Study and Detailed Engineering Design</strong> (in Joint Venture with <strong>Sanima Hydro and Engineering Pvt. Ltd.</strong>), TAC Hydro is proud to have played a foundational role in bringing this project to its current state of investment readiness.</p>
-      
-      <p>This achievement paves the way for the commencement of full-scale construction. We remain dedicated to supporting our clients throughout the project lifecycle, contributing our expertise to shape the future of hydroelectric power in Nepal.</p>
-    `,
+          <p>
+            The <strong>Tamor Mewa Hydroelectric Project (128 MW)</strong>, being developed by <strong>Spark Hydroelectric Company Limited</strong>, has successfully achieved Financial Closure.
+          </p>
+
+          <p>
+            As the Consultant for Updated Feasibility Study &amp; Detailed Engineering Design, <strong>TAC Hydro Consultancy Pvt. Ltd.</strong>, in joint venture with <strong>Sanima Hydro and Engineering Pvt. Ltd.</strong>, focused on re-evaluating the hydrological parameters, optimizing the project layout, and verifying the technical and economic viability of the scheme. Our work provided the refined technical framework to assist in moving the project towards Financial Closure.
+          </p>
+ `,
   },
-  {
-    id: "jagdulla-design-contract",
-    title: "Contract for Jagdulla Peaking Run-of-River HE Project (106 MW)",
+    {
+    id: "jagdulla-peaking-hydroelectric",
+    title: "Contract Signed for Detailed Engineering Design and Construction Supervision of Jagdulla Peaking Run-of-River Hydroelectric Project (106 MW)",
     category: "CONTRACT SIGNING",
-    image: "/our_projects/WhatsApp Image 2025-10-19 at 18.38.00.jpeg",
+    image: "/images/news/jagadulla.jpg",
     date: "NOV 15, 2025",
     description:
-      "TAC Hydro is proud to Conduct the Detailed Engineering Design and Technical Support for Construction of Civil and Hydromechanical Works of Jagdulla (106 MW), a 6-hour peaking project.",
+      "TAC Hydro Consultancy Pvt. Ltd. is proud to Conduct the Detailed Engineering Design and Technical Support for Construction of Civil and Hydromechanical Works of Jagdulla Peaking",
     content: `
-      <p>We are honored to be appointed as the design consultants for the <strong>Jagdulla Peaking Run-of-River Hydroelectric Project (106 MW)</strong>. This 6-hour peaking project is a critical component of Nepal's strategy to enhance energy reliability during high-demand periods.</p>
-      
-      <p>TAC Hydro Consultancy Pvt. Ltd. will be conducting the <strong>Detailed Engineering Design (DED)</strong> and providing <strong>Technical Support for Construction</strong> of both Civil and Hydromechanical works. Our work will involve intricate structural analysis of the powerhouse and headworks to accommodate the specific requirements of a high-head peaking facility.</p>
-      
-      <p>This project leverages our extensive experience in deep-mountain engineering and strengthens our standing as leaders in specialized hydroelectric consultancy.</p>
-    `,
+            <p>
+         <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> is proud to conduct the <strong>Detailed Engineering Design and Technical Support for Construction of Civil and Hydromechanical Works</strong> of the <strong>Jagdulla Peaking Run-of-River Hydroelectric Project (106 MW)</strong>.
+          </p>
+
+          <p>
+            JHEP is a 6-hour peaking project, strengthening Nepal’s energy reliability and optimizing hydropower generation. TAC Hydro Consultancy Pvt. Ltd. is commissioned to carry out the Detailed Engineering Design (DED) for the project. In this role, our firm is responsible for the complete technical design of the civil and hydromechanical components, translating the feasibility framework into actionable construction blueprints.
+          </p>
+ `,
   },
-  {
-    id: "rawa-khola-design-contract",
-    title: "Contract Signed for 6.7 MW Rawa Khola Hydropower Project",
+   {
+    id: "rawa-khola-hydroprower",
+    title: "Contract Signed for 6.7 MW Rawa Khola Hydropower Project ",
     category: "CONTRACT SIGNING",
-    image: "/our_projects/WhatsApp Image 2025-10-19 at 09.52.08.jpeg",
+    image: "/images/news/rawa.jpg",
     date: "DEC 10, 2025",
     description:
-      "TAC Hydro has been entrusted by Halesi Hydropower Pvt. Ltd. for the Detailed Engineering Design of the 6.7 MW Rawa Khola Hydropower Project in Khotang District, Koshi Province.",
+      "TAC Hydro Consultancy Pvt. Ltd. has been entrusted by Halesi Hydropower Pvt. Ltd. for the Detailed Engineering Design of the 6.7 MW Rawa Khola Hydropower Project, a Run-of-River scheme in",
     content: `
-      <p><strong>TAC Hydro Consultancy Pvt. Ltd.</strong> has signed a new contract with <strong>Halesi Hydropower Pvt. Ltd.</strong> for the <strong>6.7 MW Rawa Khola Hydropower Project</strong>.</p>
-      
-      <p>Located in the Khotang District of Koshi Province, this Run-of-River scheme requires precise topographical and geological considerations. Our mandate includes the <strong>Detailed Engineering Design (DED)</strong> of the entire water conveyance system, headworks, and the powerhouse.</p>
-      
-      <p>We look forward to collaborating with the Halesi team to deliver a technically sound and sustainable project that will provide reliable energy to the eastern grid of Nepal.</p>
-    `,
+          <p>
+          <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> has been entrusted by <strong>Halesi Hydropower Pvt. Ltd.</strong> for the Detailed Engineering Design of the <strong>6.7 MW Rawa Khola Hydropower Project</strong>, a Run-of-River scheme in Khotang District, Koshi Province.
+        </p>
+
+          <p>
+            In this role, our firm is responsible for the complete technical design of the civil and hydromechanical components, translating the feasibility framework into actionable construction blueprints.
+         </p>
+ `,
+  },
+  {
+    id: "offsite-quality-management",
+    title: "Offsite Quality Management Training conducted by TAC for internal team",
+    category: "NEWS",
+    image: "/images/news/ISO 1.jpg",
+    date: "JUL 11, 2025",
+    description:
+      "One more step forward towards enhancing our work culture through collaboration and system improvement, aligned with our core values. We recently held an offsite training session focused on improving internal processes, encouraging",
+    content: `
+          <p>
+          One more step forward towards enhancing our work culture through collaboration and system improvement, aligned with our core values.
+        </p>
+
+        <p>
+          We recently held an offsite training session in collaboration with <strong>Vibrant Consult Pvt. Ltd.</strong>, focused on improving internal processes, encouraging open discussion, and strengthening team coordination. The session emphasized the execution and compliance of the standards set by <strong>ISO 9001:2015</strong>, facilitating a smooth transition for the team.
+        </p>
+
+        <p>
+          At <strong>TAC Hydro</strong>, we believe quality begins from within. By investing in our people and refining how we work together, we aim to consistently deliver reliable and efficient solutions to our valued clients.
+        </p>
+
+        <p>
+          Grateful to all team members for their active participation and commitment to excellence.
+        </p> 
+        `,
+  },
+  {
+    id: "international-centre",
+    title: "TAC becomes an official member of International Centre for Hydropower (ICH)",
+    category: "NEWS",
+    image: "/images/news/ICH.jpg",
+    date: "JAN 5, 2025",
+    description:
+      "TAC Hydro Consultancy Pvt. Ltd. is proud to announce that it has officially become a member of the International Centre for Hydropower (ICH), a global organization dedicated to promoting knowledge sharing, professional training, and the sustainable development of hydropower",
+    content: `
+        <p>
+        <strong>TAC Hydro Consultancy Pvt. Ltd.</strong> is proud to announce that it has officially become a member of the <strong>International Centre for Hydropower (ICH)</strong>, a global organization dedicated to promoting knowledge sharing, professional training, and the sustainable development of hydropower worldwide.
+      </p>
+
+      <p>
+        The International Centre for Hydropower is an international association of companies and institutions working across the hydropower sector to advance technical competence, share industry knowledge, and promote environmentally responsible hydropower development.
+      </p>
+
+      <p>
+        By joining <strong>ICH</strong>, TAC Hydro strengthens its commitment to maintaining international standards in hydropower engineering and consultancy. Membership will allow the firm to engage with a global network of industry professionals, access specialized training and knowledge platforms, and contribute to the advancement of sustainable hydropower development.
+      </p>
+
+      <p>
+        This milestone marks an important step for TAC Hydro as it continues to expand its presence in the hydropower sector while fostering international collaboration and capacity building. Through this membership, the company aims to enhance its technical expertise and support the development of efficient, reliable, and environmentally responsible hydropower projects.
+      </p>
+
+      <p>
+        TAC Hydro looks forward to actively participating in the initiatives, training programs, and knowledge-sharing platforms organized by the International Centre for Hydropower and contributing to the global hydropower community.
+      </p>
+`,
   },
 ];
