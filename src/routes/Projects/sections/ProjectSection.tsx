@@ -70,6 +70,15 @@ export const ProjectSection = () => {
     (p) => p.scope === activeScope && p.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
+    const capacityDiff = parseCapacity(b.installedCapacity) - parseCapacity(a.installedCapacity);
+    if (capacityDiff !== 0) {
+      return capacityDiff;
+    }
+
+    return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
+  });
+
   return (
     <section
       id="projects-section"
@@ -166,9 +175,9 @@ export const ProjectSection = () => {
                 </div>
               </div>
 
-              {filteredProjects.length > 0 ? (
+              {sortedProjects.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 min-h-[500px] content-start">
-                  {filteredProjects.map((project) => (
+                  {sortedProjects.map((project) => (
                     <ProjectCard key={project.id} project={project} onClick={handleProjectClick} />
                   ))}
                 </div>
