@@ -9,7 +9,11 @@ export const NewsAndArticlesSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
 
-  const filteredItems = newsItems.filter(
+  const sortedItems = [...newsItems].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
+
+  const filteredItems = sortedItems.filter(
     (item) => activeFilter === "ALL" || item.category === activeFilter,
   );
 
@@ -49,10 +53,11 @@ export const NewsAndArticlesSection = () => {
                 key={filter}
                 type="button"
                 onClick={() => setActiveFilter(filter)}
-                className={`px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${activeFilter === filter
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                  : "bg-white text-slate-500 border border-slate-100 hover:border-blue-200"
-                  }`}
+                className={`px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${
+                  activeFilter === filter
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                    : "bg-white text-slate-500 border border-slate-100 hover:border-blue-200"
+                }`}
               >
                 {filter}
               </button>
@@ -122,10 +127,11 @@ export const NewsAndArticlesSection = () => {
                     <button
                       key={page}
                       onClick={() => goToPage(page)}
-                      className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm transition-all ${currentPage === page
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                        : "bg-white border border-slate-100 text-slate-400 hover:border-blue-600 hover:text-blue-600 shadow-sm"
-                        }`}
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm transition-all ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
+                          : "bg-white border border-slate-100 text-slate-400 hover:border-blue-600 hover:text-blue-600 shadow-sm"
+                      }`}
                     >
                       {page}
                     </button>
