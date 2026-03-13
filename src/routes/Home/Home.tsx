@@ -33,7 +33,7 @@ export const Home = () => {
       <StatsAndCorePrinciplesSection />
       <ExpertiseAndServicesSection />
       <SectorsOfServicesSection />
-      <VideoSection />
+      {/* <VideoSection /> */}
       <MapSection />
       <SDGSection />
       <ValuedPartnersSection />
