@@ -1,61 +1,97 @@
+import { useMemo } from "react";
 import { Briefcase, Settings, Users, Lightbulb } from "lucide-react";
+import { useExpertiseCategories } from "../../hooks/useExpertiseCategories";
+import { useExpertiseItems } from "../../hooks/useExpertiseItems";
+import { useProjectScopes } from "../../hooks/useProjectScopes";
+import { useSiteSettings } from "../../hooks/useSiteSettings";
 
-const expertiseData = [
-  {
-    title: "Project Development",
-    icon: Briefcase,
-    color: "from-blue-500/10 to-blue-600/5",
-    iconColor: "text-blue-600",
-    hoverBg: "hover:bg-blue-600",
-    hoverBorder: "hover:border-blue-600",
-    items: [
-      "Project Identification",
-      "Desk Study",
-      "Topographical Study",
-      "Detailed Feasibility Study",
-      "Due Diligence Appraisal",
-      "Engineering Support During Development",
-    ],
-  },
-  {
-    title: "Project Engineering",
-    icon: Settings,
-    color: "from-emerald-500/10 to-emerald-600/5",
-    iconColor: "text-emerald-600",
-    hoverBg: "hover:bg-emerald-600",
-    hoverBorder: "hover:border-emerald-600",
-    items: [
-      "Detailed Engineering Design",
-      "Bidding and Contract Documents Preparation",
-      "Bid Evaluation and Selection",
-    ],
-  },
-  {
-    title: "Project Management",
-    icon: Users,
-    color: "from-amber-500/10 to-amber-600/5",
-    iconColor: "text-amber-600",
-    hoverBg: "hover:bg-amber-600",
-    hoverBorder: "hover:border-amber-600",
-    items: [
-      "Construction Supervision and Quality Control",
-      "Progress Monitoring and Bill Vetting",
-      "Lenders Technical Consultant",
-      "Contract Management and Time Control",
-    ],
-  },
-  {
-    title: "Product Development",
-    icon: Lightbulb,
-    color: "from-purple-500/10 to-purple-600/5",
-    iconColor: "text-purple-600",
-    hoverBg: "hover:bg-purple-600",
-    hoverBorder: "hover:border-purple-600",
-    items: ["Structural Analyses (FEA)", "Hydraulic Analyses (CFD)", "Innovative Design"],
-  },
-];
+const iconMap: Record<string, React.ElementType> = {
+  briefcase: Briefcase,
+  settings: Settings,
+  users: Users,
+  lightbulb: Lightbulb,
+};
+
+const colorMap: Record<string, { bg: string; icon: string; hover: string; border: string }> = {
+  blue: { bg: "from-blue-500/10 to-blue-600/5", icon: "text-blue-600", hover: "hover:bg-blue-600", border: "hover:border-blue-600" },
+  emerald: { bg: "from-emerald-500/10 to-emerald-600/5", icon: "text-emerald-600", hover: "hover:bg-emerald-600", border: "hover:border-emerald-600" },
+  amber: { bg: "from-amber-500/10 to-amber-600/5", icon: "text-amber-600", hover: "hover:bg-amber-600", border: "hover:border-amber-600" },
+  purple: { bg: "from-purple-500/10 to-purple-600/5", icon: "text-purple-600", hover: "hover:bg-purple-600", border: "hover:border-purple-600" },
+};
+
+const defaultColors = { bg: "from-blue-500/10 to-blue-600/5", icon: "text-blue-600", hover: "hover:bg-blue-600", border: "hover:border-blue-600" };
 
 export const ExpertiseAndServicesSection = () => {
+  const { data: categories, isLoading: categoriesLoading } = useExpertiseCategories();
+  const { data: items, isLoading: itemsLoading } = useExpertiseItems();
+  const { data: projectScopes } = useProjectScopes();
+  const { data: siteSettings } = useSiteSettings();
+
+  const scopeMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    projectScopes?.forEach((scope) => {
+      map[scope.id] = scope.name;
+    });
+    return map;
+  }, [projectScopes]);
+
+  if (categoriesLoading || itemsLoading) {
+    return (
+      <section id="expertise-and-services" className="w-full bg-[#f8f9fa] min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-slate-400">Loading expertise...</div>
+      </section>
+    );
+  }
+
+  if (!categories?.length) {
+    return (
+      <section id="expertise-and-services" className="relative w-full bg-[#f8f9fa] min-h-screen flex items-center justify-center py-8 overflow-hidden">
+        <div className="flex flex-col items-center justify-center py-32 px-4 bg-white rounded-[40px] border border-dashed border-slate-200 animate-fade-in max-w-lg mx-4">
+          <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-3xl bg-slate-50 text-blue-600">
+            <svg
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-slate-900 mb-2">No Expertise Found</h3>
+          <p className="text-slate-500 text-center max-w-sm mb-8 leading-relaxed">
+            We're currently preparing our expertise and services content. Check back soon for updates.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  const groupedItems = categories.map((cat) => {
+    const catItems = items?.filter((item) => item.category_id === cat.id) ?? [];
+    const Icon = iconMap[cat.icon_key] || Briefcase;
+    const colors = colorMap[cat.theme_color || ""] || defaultColors;
+
+    return {
+      categoryId: cat.id,
+      title: cat.title,
+      icon: Icon,
+      color: colors.bg,
+      iconColor: colors.icon,
+      hoverBg: colors.hover,
+      hoverBorder: colors.border,
+      items: catItems.map((item) => ({
+        title: item.title,
+        projectScope: item.project_scope_id,
+      })),
+    };
+  });
+
   return (
     <section
       id="expertise-and-services"
@@ -72,14 +108,12 @@ export const ExpertiseAndServicesSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {expertiseData.map((category, idx) => (
+          {groupedItems.map((category) => (
             <div
-              key={idx}
+              key={category.categoryId}
               className={`group relative flex flex-col p-6 rounded-[24px] bg-white border border-slate-200 ${category.hoverBorder} ${category.hoverBg} transition-all duration-500 overflow-hidden cursor-default min-h-[400px] items-start justify-start text-center`}
             >
-              {/* Content Container */}
               <div className="flex flex-col z-10 transition-all duration-500 items-center w-full">
-                {/* Icon & Title */}
                 <div className="flex flex-col items-center">
                   <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-blue-50 group-hover:bg-white/20 mb-4 transition-all duration-500 group-hover:scale-105 group-hover:-translate-y-1">
                     <category.icon
@@ -92,17 +126,10 @@ export const ExpertiseAndServicesSection = () => {
                   </h3>
                 </div>
 
-                {/* Details Section */}
                 <div className="w-full">
                   <ul className="space-y-3 pb-2 flex flex-col items-start px-4">
                     {category.items.map((item, itemIdx) => {
-                      const matchingScope = [
-                        "Detailed Feasibility Study",
-                        "Detailed Engineering Design",
-                        "Construction Supervision",
-                        "Due Diligence Appraisal",
-                        "Progress Monitoring and Bill Vetting",
-                      ].find((scope) => scope === item || (item === "Construction Supervision and Quality Control" && scope === "Construction Supervision"));
+                      const scopeName = item.projectScope ? scopeMap[item.projectScope] : null;
 
                       const content = (
                         <>
@@ -117,16 +144,16 @@ export const ExpertiseAndServicesSection = () => {
                             </svg>
                           </div>
                           <span className="text-sm font-medium text-slate-600 group-hover:text-white/90 leading-snug transition-all text-left group-hover/item:translate-x-1">
-                            {item}
+                            {item.title}
                           </span>
                         </>
                       );
 
                       return (
                         <li key={itemIdx} className="group/item flex items-start gap-3">
-                          {matchingScope ? (
+                          {scopeName ? (
                             <a
-                              href={`/projects?scope=${encodeURIComponent(matchingScope)}`}
+                              href={`/projects?scope=${encodeURIComponent(scopeName)}`}
                               className="flex items-start gap-3 w-full hover:opacity-80 transition-opacity"
                             >
                               {content}
@@ -141,7 +168,6 @@ export const ExpertiseAndServicesSection = () => {
                 </div>
               </div>
 
-              {/* Decorative Corner Element */}
               <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-bl-[60px] group-hover:bg-white/10 transition-colors duration-500" />
             </div>
           ))}

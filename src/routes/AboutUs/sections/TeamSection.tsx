@@ -1,31 +1,29 @@
-import { FC, useState, useEffect } from "react";
-import { TEAM_MEMBERS, TeamMember } from "../data/teamData";
+import { FC, useState, useEffect, useMemo } from "react";
+import { useTeamMembersWithCategories, TeamMemberWithCategories } from "../../../hooks/useTeam";
 import { X } from "lucide-react";
 
-// Categorize members
-const BOARD_OF_DIRECTORS = TEAM_MEMBERS.filter((m) => m.category === "BOD");
-const DEPARTMENT_LEADS = TEAM_MEMBERS.filter((m) => m.category === "Department Leads");
-const DESIGN_LEADS = TEAM_MEMBERS.filter((m) => m.category === "Design Leads");
-const ENGINEER_PROFESSIONALS = TEAM_MEMBERS.filter(
-  (m) => m.category === "Engineering Professionals",
-);
-const INDEPENDENT_CONSULTANTS = TEAM_MEMBERS.filter(
-  (m) => m.category === "Independent Consultants",
-);
-
-const SECTIONS = [
-  { title: "BOARD OF DIRECTORS", items: BOARD_OF_DIRECTORS },
-  { title: "DEPARTMENT LEADS", items: DEPARTMENT_LEADS },
-  { title: "DESIGN LEADS", items: DESIGN_LEADS },
-  { title: "OUR PROFESSIONALS", items: ENGINEER_PROFESSIONALS },
-  { title: "INDEPENDENT CONSULTANTS", items: INDEPENDENT_CONSULTANTS },
-];
+const CATEGORY_TITLE_MAP: Record<string, string> = {
+  "BOD": "BOARD OF DIRECTORS",
+  "Department Leads": "DEPARTMENT LEADS",
+  "Design Leads": "DESIGN LEADS",
+  "Engineering Professionals": "OUR PROFESSIONALS",
+  "Independent Consultants": "INDEPENDENT CONSULTANTS",
+};
 
 export const TeamSection: FC = () => {
-  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [selectedMember, setSelectedMember] = useState<TeamMemberWithCategories | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: membersWithCategories, grouped, isLoading } = useTeamMembersWithCategories();
 
-  // Lock body scroll when modal is open
+  const sections = useMemo(() => {
+    if (!grouped) return [];
+    return Object.entries(grouped).map(([categoryName, members]) => ({
+      title: CATEGORY_TITLE_MAP[categoryName] || categoryName.toUpperCase(),
+      categoryName,
+      items: members,
+    }));
+  }, [grouped]);
+
   useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
@@ -37,20 +35,46 @@ export const TeamSection: FC = () => {
     };
   }, [isModalOpen]);
 
-  const handleMemberClick = (member: TeamMember) => {
+  const handleMemberClick = (member: TeamMemberWithCategories) => {
     setSelectedMember(member);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setTimeout(() => setSelectedMember(null), 300); // Clear after animation
+    setTimeout(() => setSelectedMember(null), 300);
   };
+
+  if (isLoading) {
+    return (
+      <section className="w-full py-16 px-4 md:px-8 bg-slate-50 min-h-screen" id="team-section">
+        <div className="max-w-7xl mx-auto text-center text-slate-500">Loading team members...</div>
+      </section>
+    );
+  }
+
+  if (sections.length === 0) {
+    return (
+      <section className="w-full py-16 px-4 md:px-8 bg-slate-50 min-h-screen" id="team-section">
+        <div className="flex flex-col items-center justify-center py-32 px-4 bg-white rounded-[40px] border border-dashed border-slate-200 animate-fade-in max-w-lg mx-auto">
+          <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-3xl bg-slate-50 text-blue-600">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-slate-900 mb-2">No Team Members Found</h3>
+          <p className="text-slate-500 text-center max-w-sm mb-8 leading-relaxed">
+            We're currently preparing information about our team. Check back soon for updates.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="w-full py-16 px-4 md:px-8 bg-slate-50 min-h-screen" id="team-section">
       <div className="max-w-7xl mx-auto">
-        {SECTIONS.map((section, idx) => (
+        {sections.map((section, idx) => (
           <div key={idx} className="mb-16 last:mb-0">
             <div className="flex items-center gap-4 mb-8">
               <h3 className="text-xl font-bold tracking-widest text-[#0b1522] uppercase border-l-4 border-[#0b1522] pl-4">
@@ -60,22 +84,30 @@ export const TeamSection: FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {section.items.map((member: TeamMember) => {
+              {section.items.map((member: TeamMemberWithCategories) => {
+                const primaryCategory = member.categories[0]?.categoryName;
+                const primaryPosition = member.categories[0]?.position;
+                const isIndependentConsultant = primaryCategory === "Independent Consultants";
+
                 return (
                   <div
                     key={member.id}
                     onClick={() => handleMemberClick(member)}
                     className="group bg-white rounded-2xl p-6 transition-all duration-300 border border-slate-100 shadow-sm relative overflow-hidden flex flex-col items-center text-center cursor-pointer hover:shadow-xl hover:-translate-y-2"
                   >
-                    {member.category !== "Independent Consultants" && (
+                    {!isIndependentConsultant && (
                       <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-slate-100 relative border-4 border-white shadow-md group-hover:border-blue-50 transition-colors">
-                        <img
-                          src={member.image}
-                          alt={member.name}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
+                        {member.photo ? (
+                          <img
+                            src={member.photo}
+                            alt={member.name}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-slate-200" />
+                        )}
                       </div>
                     )}
                     <h4 className="font-bold text-[#0b1522] text-lg leading-tight mb-1 group-hover:text-blue-700 transition-colors">
@@ -83,10 +115,9 @@ export const TeamSection: FC = () => {
                     </h4>
 
                     <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                      {member.position}
+                      {primaryPosition}
                     </p>
 
-                    {/* Sub-label for specific category if needed */}
                     {section.title === "BOARD OF DIRECTORS" && (
                       <span className="mt-3 px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full">
                         Board Member
@@ -122,15 +153,19 @@ export const TeamSection: FC = () => {
               <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100/50 rounded-bl-[100px] -z-0"></div>
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-100/50 rounded-tr-[80px] -z-0"></div>
 
-              {selectedMember.category !== "Independent Consultants" && (
+              {selectedMember.categories[0]?.categoryName !== "Independent Consultants" && (
                 <div className="w-56 h-56 rounded-full shadow-2xl overflow-hidden border-[6px] border-white relative z-10 mb-6 group shrink-0">
-                  <img
-                    src={selectedMember.image}
-                    alt={selectedMember.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+                  {selectedMember.photo ? (
+                    <img
+                      src={selectedMember.photo}
+                      alt={selectedMember.name}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-slate-200" />
+                  )}
                 </div>
               )}
 
@@ -138,13 +173,15 @@ export const TeamSection: FC = () => {
                 {selectedMember.name}
               </h1>
               <p className="text-blue-600 font-bold uppercase tracking-wide text-sm md:text-base relative z-10">
-                {selectedMember.position}
+                {selectedMember.categories[0]?.position}
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2 justify-center relative z-10">
-                <span className="px-3 py-1 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-full shadow-sm">
-                  {selectedMember.category}
-                </span>
+                {selectedMember.categories.map((cat, idx) => (
+                  <span key={idx} className="px-3 py-1 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-full shadow-sm">
+                    {cat.categoryName}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -173,7 +210,7 @@ export const TeamSection: FC = () => {
                   )}
 
                   {/* Bio Section */}
-                  {selectedMember.bio && selectedMember.category !== "Independent Consultants" && (
+                  {selectedMember.bio && selectedMember.categories[0]?.categoryName !== "Independent Consultants" && (
                     <div className="animate-in slide-in-from-bottom-4 fade-in duration-500 delay-200">
                       <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-3">
                         <span className="w-6 h-[2px] bg-blue-500"></span>

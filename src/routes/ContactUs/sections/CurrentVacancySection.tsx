@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
-  MegaphoneIcon,
   XIcon,
   BriefcaseIcon,
   GraduationCapIcon,
@@ -10,8 +9,11 @@ import {
   UploadIcon,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { CAREER_DATA, JobType, JobRole } from "../data/careerData";
+import { useJobPostings, useJobCategories } from "../../../hooks/useCareers";
 import { Button } from "../../../components/ui/button";
+import { JobPosting } from "../../../lib/api";
+
+type JobType = "Full Time" | "Internship" | "Independent Consultant";
 
 const TYPE_CONFIG: Record<
   JobType,
@@ -39,11 +41,26 @@ const TYPE_CONFIG: Record<
 
 export const CurrentVacancySection = () => {
   const [selectedType, setSelectedType] = useState<JobType | null>("Full Time");
-  const [viewingRole, setViewingRole] = useState<JobRole | null>(null);
+  const [viewingRole, setViewingRole] = useState<JobPosting | null>(null);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
 
-  const handleApplyClick = (role: JobRole, e: React.MouseEvent) => {
+  const { data: jobs, isLoading } = useJobPostings();
+  const { data: categories } = useJobCategories();
+
+  const categoryMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    categories?.forEach((cat) => {
+      map[cat.id] = cat.name;
+    });
+    return map;
+  }, [categories]);
+
+  const openJobs = useMemo(() => {
+    return (jobs || []).filter((job) => job.is_open);
+  }, [jobs]);
+
+  const handleApplyClick = (role: JobPosting, e: React.MouseEvent) => {
     e.stopPropagation();
     setViewingRole(role);
   };
@@ -68,7 +85,7 @@ export const CurrentVacancySection = () => {
   };
 
   const filteredRoles = selectedType
-    ? CAREER_DATA.filter((role) => role.type === selectedType)
+    ? openJobs.filter((role) => role.type === selectedType)
     : [];
 
   useEffect(() => {
@@ -81,6 +98,14 @@ export const CurrentVacancySection = () => {
       document.body.style.overflow = "unset";
     };
   }, [viewingRole]);
+
+  if (isLoading) {
+    return (
+      <section id="active-opportunities" className="w-full py-20 bg-white px-4 sm:px-8 lg:px-20">
+        <div className="max-w-7xl mx-auto text-center text-gray-500">Loading opportunities...</div>
+      </section>
+    );
+  }
 
   return (
     <section id="active-opportunities" className="w-full py-20 bg-white px-4 sm:px-8 lg:px-20">
@@ -95,7 +120,7 @@ export const CurrentVacancySection = () => {
                 </h1>
                 <nav className="space-y-2">
                   {(Object.keys(TYPE_CONFIG) as JobType[]).map((type) => {
-                    const count = CAREER_DATA.filter((v) => v.type === type).length;
+                    const count = openJobs.filter((v) => v.type === type).length;
                     const isActive = selectedType === type;
 
                     return (
@@ -172,7 +197,7 @@ export const CurrentVacancySection = () => {
                             {role.type}
                           </span>
                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-                            {role.category}
+                            {categoryMap[role.category] || "General"}
                           </span>
                         </div>
                         <h5 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
@@ -229,10 +254,10 @@ export const CurrentVacancySection = () => {
                 <span
                   className={cn(
                     "text-[10px] font-black tracking-[0.2em] uppercase mb-1 block",
-                    TYPE_CONFIG[viewingRole.type].color,
+                    TYPE_CONFIG[viewingRole.type as JobType]?.color || "text-gray-600",
                   )}
                 >
-                  {viewingRole.type} • {viewingRole.category}
+                  {viewingRole.type} • {categoryMap[viewingRole.category] || "General"}
                 </span>
                 <h3 className="text-2xl font-bold text-[#0b1522]">{viewingRole.title}</h3>
               </div>
@@ -267,7 +292,7 @@ export const CurrentVacancySection = () => {
                       <h4 className="font-bold text-lg leading-none">Key Responsibilities</h4>
                     </div>
                     <ul className="space-y-3">
-                      {viewingRole.responsibilities.map((item, idx) => (
+                      {viewingRole.responsibilities?.map((item, idx) => (
                         <li
                           key={idx}
                           className="flex gap-4 text-gray-600 text-[14px] leading-relaxed"
@@ -286,7 +311,7 @@ export const CurrentVacancySection = () => {
                       <h4 className="font-bold text-lg leading-none">Qualifications</h4>
                     </div>
                     <ul className="space-y-3">
-                      {viewingRole.qualifications.map((item, idx) => (
+                      {viewingRole.qualifications?.map((item, idx) => (
                         <li
                           key={idx}
                           className="flex gap-4 text-gray-600 text-[14px] leading-relaxed"

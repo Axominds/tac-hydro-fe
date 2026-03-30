@@ -15,7 +15,7 @@ const HOME_SECTIONS = [
   "stats-and-core-principles",
   "expertise-and-services",
   "sectors-of-services",
-  // "video-section",
+  "video-section",
   "map-section",
   "sdg-section",
   "valued-partners",
@@ -33,7 +33,7 @@ export const Home = () => {
       <StatsAndCorePrinciplesSection />
       <ExpertiseAndServicesSection />
       <SectorsOfServicesSection />
-      {/* <VideoSection /> */}
+      <VideoSection />
       <MapSection />
       <SDGSection />
       <ValuedPartnersSection />

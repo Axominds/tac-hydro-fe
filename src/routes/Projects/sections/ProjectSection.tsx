@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
-import { Project, projectData, ProjectScope } from "../data/projectData";
 import { ProjectCard } from "./ProjectCard";
 import { ScrollArea } from "../../../components/ui/scroll-area";
 
@@ -18,66 +17,103 @@ import {
   ZoomIn,
 } from "lucide-react";
 import { ImageViewer } from "../../../components/ui/ImageViewer";
+import { useProjectScopes } from "../../../hooks/useProjectScopes";
+import { useProjectsWithScopes, useProjectDetail } from "../../../hooks/useProjects";
 
-const scopes: ProjectScope[] = [
-  "Detailed Feasibility Study",
-  "Detailed Engineering Design",
-  "Construction Supervision",
-  "Due Diligence Appraisal",
-  "Progress Monitoring and Bill Vetting",
-];
+export type ProjectFromAPI = ReturnType<typeof useProjectsWithScopes>["data"] extends (infer T)[] | undefined ? T : never;
 
 export const ProjectSection = () => {
   const location = useLocation();
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectFromAPI | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeScope, setActiveScope] = useState<ProjectScope>("Detailed Feasibility Study");
+  const [activeScope, setActiveScope] = useState<string>("Detailed Feasibility Study");
   const [viewerImageIndex, setViewerImageIndex] = useState<number | null>(null);
 
-  const parseCapacity = (installedCapacity: string) => {
-    const matches = installedCapacity.match(/\d+(?:\.\d+)?/g);
-    if (!matches || matches.length === 0) {
-      return 0;
-    }
+  const { data: scopes, isLoading: scopesLoading } = useProjectScopes();
+  const { data: projects, isLoading: projectsLoading } = useProjectsWithScopes();
+  const { data: projectDetail, isLoading: projectDetailLoading } = useProjectDetail(
+    selectedProject ? selectedProject.id : null
+  );
 
-    const isUpgraded = /upgraded/i.test(installedCapacity);
-    const value = isUpgraded ? matches[matches.length - 1] : matches[0];
-    return Number.parseFloat(value);
-  };
+  const scopeNames = useMemo(() => scopes?.map((s) => s.name) || [], [scopes]);
 
-  // Handle URL query parameters for filtering
-  useEffect(() => {
+  // Merge list data with detail data
+  const modalData = useMemo(() => {
+    if (!selectedProject) return null;
+    return {
+      ...selectedProject,
+      ...projectDetail,
+      role: projectDetail?.description ? selectedProject.role : null,
+    };
+  }, [selectedProject, projectDetail]);
+
+  const urlScope = (() => {
     const params = new URLSearchParams(location.search);
-    const scopeParam = params.get("scope") as ProjectScope;
-    if (scopeParam && scopes.includes(scopeParam)) {
-      setActiveScope(scopeParam);
+    const scopeParam = params.get("scope");
+    return scopeParam && scopeNames.includes(scopeParam) ? scopeParam : null;
+  })();
 
-      // Optional: scroll to the projects section when a scope is selected from URL
+  const effectiveScope = urlScope ?? activeScope;
+
+  // Scroll to projects section when URL has scope param
+  useEffect(() => {
+    if (urlScope) {
       const section = document.getElementById("projects-section");
       if (section) {
         section.scrollIntoView({ behavior: "smooth" });
       }
     }
-  }, [location.search]);
+  }, [urlScope]);
 
-  const handleProjectClick = (project: Project) => {
+  const handleProjectClick = (project: ProjectFromAPI) => {
     setSelectedProject(project);
     setIsModalOpen(true);
   };
 
-  const filteredProjects = projectData.filter(
-    (p) => p.scope === activeScope && p.title.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredProjects = useMemo(() => {
+    if (!projects) return [];
+    return projects
+      .filter((p) => p.scope === effectiveScope && p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+      .sort((a, b) => b.installed_capacity - a.installed_capacity);
+  }, [projects, effectiveScope, searchQuery]);
 
-  const sortedProjects = [...filteredProjects].sort((a, b) => {
-    const capacityDiff = parseCapacity(b.installedCapacity) - parseCapacity(a.installedCapacity);
-    if (capacityDiff !== 0) {
-      return capacityDiff;
-    }
+  if (scopesLoading || projectsLoading) {
+    return (
+      <section id="projects-section" className="relative w-full py-16 lg:py-24 bg-[#f8f9fa] min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-slate-400">Loading projects...</div>
+      </section>
+    );
+  }
 
-    return a.title.localeCompare(b.title, undefined, { sensitivity: "base" });
-  });
+  if (!scopes?.length || !projects?.length) {
+    return (
+      <section id="projects-section" className="relative w-full bg-[#f8f9fa] min-h-screen flex items-center justify-center py-16 lg:py-24">
+        <div className="flex flex-col items-center justify-center py-32 px-4 bg-white rounded-[40px] border border-dashed border-slate-200 animate-fade-in max-w-lg mx-4">
+          <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-3xl bg-slate-50 text-blue-600">
+            <svg
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-slate-900 mb-2">No Projects Found</h3>
+          <p className="text-slate-500 text-center max-w-sm mb-8 leading-relaxed">
+            We're currently preparing our project portfolio. Check back soon for updates on our completed and ongoing projects.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -95,17 +131,16 @@ export const ProjectSection = () => {
                 </h1>
                 <nav className="space-y-2">
                   {scopes.map((scope) => {
-                    const count = projectData.filter((p) => p.scope === scope).length;
-                    const totalCapacity = projectData
-                      .filter((p) => p.scope === scope)
-                      .reduce((sum, project) => sum + parseCapacity(project.installedCapacity), 0);
-                    const isActive = activeScope === scope;
+                    const scopeProjects = projects.filter((p) => p.scope === scope.name);
+                    const count = scopeProjects.length;
+                    const totalCapacity = scopeProjects.reduce((sum, p) => sum + p.installed_capacity, 0);
+                    const isActive = effectiveScope === scope.name;
 
                     return (
                       <button
-                        key={scope}
+                        key={scope.id}
                         onClick={() => {
-                          setActiveScope(scope);
+                          setActiveScope(scope.name);
                           // Wait for React to render the new list before scrolling
                           // This prevents the scroll height from jumping mid-animation
                           setTimeout(() => {
@@ -124,7 +159,7 @@ export const ProjectSection = () => {
                         <span
                           className={`text-sm font-bold ${isActive ? "text-white" : "text-slate-700"}`}
                         >
-                          {scope}
+                          {scope.name}
                           <span
                             className={`block text-xs font-semibold ${isActive ? "text-white/80" : "text-slate-400"}`}
                           >
@@ -155,7 +190,7 @@ export const ProjectSection = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 gap-6">
                   <div>
                     <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight font-black text-slate-900">
-                      {activeScope}
+                      {effectiveScope}
                     </h1>
                     <p className="text-slate-500 mt-1 font-medium italic">
                       Showing {filteredProjects.length} projects in this category
@@ -175,9 +210,9 @@ export const ProjectSection = () => {
                 </div>
               </div>
 
-              {sortedProjects.length > 0 ? (
+              {filteredProjects.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 min-h-[500px] content-start">
-                  {sortedProjects.map((project) => (
+                  {filteredProjects.map((project) => (
                     <ProjectCard key={project.id} project={project} onClick={handleProjectClick} />
                   ))}
                 </div>
@@ -206,17 +241,21 @@ export const ProjectSection = () => {
       {/* Project Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-[95vw] lg:max-w-5xl h-[85vh] p-0 overflow-hidden bg-white gap-0 border-0 flex flex-col">
-          {selectedProject && (
+          {projectDetailLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="animate-pulse text-slate-400">Loading project details...</div>
+            </div>
+          ) : modalData ? (
             <>
               <DialogHeader className="p-6 pb-2 bg-white border-b border-slate-100 flex-shrink-0">
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-3">
                     <span className="inline-flex px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold uppercase tracking-wider">
-                      {selectedProject.scope}
+                      {modalData.scope}
                     </span>
                   </div>
                   <DialogTitle className="text-2xl lg:text-3xl font-bold text-slate-900 leading-tight">
-                    {selectedProject.title} ({selectedProject.installedCapacity})
+                    {modalData.title} ({modalData.installed_capacity} {modalData.installed_capacity_unit})
                   </DialogTitle>
                 </div>
               </DialogHeader>
@@ -224,22 +263,24 @@ export const ProjectSection = () => {
               <ScrollArea className="flex-1 w-full">
                 <div className="p-6 lg:p-8 space-y-8">
                   {/* Our Role Section - Now at the top for better visibility */}
-                  <div className="bg-blue-600 rounded-2xl p-6 lg:p-8 text-white shadow-lg shadow-blue-200">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-                        <ShieldCheck className="w-5 h-5 text-white" />
+                  {modalData.role && (
+                    <div className="bg-blue-600 rounded-2xl p-6 lg:p-8 text-white shadow-lg shadow-blue-200">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                          <ShieldCheck className="w-5 h-5 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold">Our Technical Role</h3>
                       </div>
-                      <h3 className="text-xl font-bold">Our Technical Role</h3>
+                      <p className="text-blue-50 leading-relaxed text-lg font-medium">
+                        {modalData.role}
+                      </p>
                     </div>
-                    <p className="text-blue-50 leading-relaxed text-lg font-medium">
-                      {selectedProject.role}
-                    </p>
-                  </div>
+                  )}
 
                   {/* Images Grid */}
-                  {selectedProject.images && selectedProject.images.length > 0 && (
+                  {modalData.image_urls && modalData.image_urls.length > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {selectedProject.images.slice(0, 4).map((image, idx) => (
+                      {modalData.image_urls.slice(0, 4).map((image, idx) => (
                         <div
                           key={idx}
                           onClick={() => setViewerImageIndex(idx)}
@@ -247,7 +288,7 @@ export const ProjectSection = () => {
                         >
                           <img
                             src={image}
-                            alt={`${selectedProject.title} view ${idx + 1}`}
+                            alt={`${modalData.title} view ${idx + 1}`}
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             loading="lazy"
                             decoding="async"
@@ -271,7 +312,7 @@ export const ProjectSection = () => {
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {Object.entries(selectedProject.technicalHighlights).map(([key, value]) => {
+                        {Object.entries(modalData.technical_highlights || {}).map(([key, value]) => {
                           // Icon Selection Logic based on Standard 10 Points
                           let Icon = Settings;
                           const lowerKey = key.toLowerCase();
@@ -315,7 +356,7 @@ export const ProjectSection = () => {
                       </div>
                       <div className="prose prose-slate max-w-none bg-slate-50 p-6 rounded-2xl border border-slate-100">
                         <p className="text-slate-600 leading-relaxed italic">
-                          "{selectedProject.description}"
+                          "{modalData.description || "No description available."}"
                         </p>
                       </div>
                     </div>
@@ -323,13 +364,13 @@ export const ProjectSection = () => {
                 </div>
               </ScrollArea>
             </>
-          )}
+          ) : null}
         </DialogContent>
       </Dialog>
 
-      {selectedProject && (
+      {selectedProject && modalData.image_urls && modalData.image_urls.length > 0 && (
         <ImageViewer
-          images={selectedProject.images || []}
+          images={modalData.image_urls}
           initialIndex={viewerImageIndex ?? 0}
           isOpen={viewerImageIndex !== null}
           onClose={() => setViewerImageIndex(null)}

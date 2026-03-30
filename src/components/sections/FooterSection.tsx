@@ -2,17 +2,12 @@ import { FacebookIcon, LinkedinIcon, MailIcon, MapPinIcon, PhoneIcon, ArrowUp } 
 
 import { LOGO_FOOTER } from "../../assets";
 import { Separator } from "../ui/separator";
-import { ProjectScope } from "../../routes/Projects/data/projectData";
-
-const projectScopes: ProjectScope[] = [
-  "Detailed Feasibility Study",
-  "Detailed Engineering Design",
-  "Construction Supervision",
-  "Due Diligence Appraisal",
-  "Progress Monitoring and Bill Vetting",
-];
+import { useSiteSettings } from "../../hooks/useSiteSettings";
+import { useProjectScopes } from "../../hooks/useProjectScopes";
 
 export const FooterSection = () => {
+  const { data: settings } = useSiteSettings();
+  const { data: projectScopes } = useProjectScopes();
   const currentYear = new Date().getFullYear();
 
   const handleScrollToTop = () => {
@@ -39,32 +34,35 @@ export const FooterSection = () => {
             />
 
             <div className="font-semibold text-white text-base sm:text-lg leading-7 mb-4">
-              Empowering Sustainable Resources Through Engineering Excellence
+              {settings?.tagline}
             </div>
 
             <div className="flex gap-4 mt-8">
-              <a
-                href="https://www.facebook.com/tachydro"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Visit TAC Hydro on Facebook"
-                className="flex h-auto w-auto items-center justify-center rounded-full border border-white/20 p-2 text-white hover:border-white/60"
-              >
-                <FacebookIcon className="w-[18px] h-[18px] text-white" />
-              </a>
-              <a
-                href="https://www.linkedin.com/company/tachydro/"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Visit TAC Hydro on LinkedIn"
-                className="flex h-auto w-auto items-center justify-center rounded-full border border-white/20 p-2 text-white hover:border-white/60"
-              >
-                <LinkedinIcon className="w-[20px] h-[20px] text-white" />
-              </a>
+              {settings?.facebook_url && (
+                <a
+                  href={settings.facebook_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Visit TAC Hydro on Facebook"
+                  className="flex h-auto w-auto items-center justify-center rounded-full border border-white/20 p-2 text-white hover:border-white/60"
+                >
+                  <FacebookIcon className="w-[18px] h-[18px] text-white" />
+                </a>
+              )}
+              {settings?.linkedin_url && (
+                <a
+                  href={settings.linkedin_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Visit TAC Hydro on LinkedIn"
+                  className="flex h-auto w-auto items-center justify-center rounded-full border border-white/20 p-2 text-white hover:border-white/60"
+                >
+                  <LinkedinIcon className="w-[20px] h-[20px] text-white" />
+                </a>
+              )}
             </div>
           </div>
 
-          {/* Spacer column to push content to the right on desktop */}
           <div className="hidden lg:block"></div>
 
           <div className="flex flex-col">
@@ -76,13 +74,13 @@ export const FooterSection = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              {projectScopes.map((scope, index) => (
+              {projectScopes?.map((scope) => (
                 <a
-                  key={index}
-                  href={`/projects?scope=${encodeURIComponent(scope)}`}
+                  key={scope.id}
+                  href={`/projects?scope=${encodeURIComponent(scope.name)}`}
                   className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-6 hover:text-blue-400 transition-colors whitespace-normal text-left decoration-0"
                 >
-                  {scope}
+                  {scope.name}
                 </a>
               ))}
             </div>
@@ -97,29 +95,41 @@ export const FooterSection = () => {
             </div>
 
             <div className="flex flex-col gap-5">
-              <a
-                href="/contact-us#location-map"
-                className="flex gap-3 items-start hover:text-blue-400 transition-colors group"
-              >
-                <MapPinIcon className="w-4 h-5 text-white flex-shrink-0 mt-1 group-hover:text-blue-400 transition-colors" />
-                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 group-hover:text-blue-400 transition-colors">
-                  Sanepa - 02, Lalitpur 44600 , Nepal
-                </span>
-              </a>
+              {settings?.address && (
+                <a
+                  href="/contact-us#location-map"
+                  className="flex gap-3 items-start hover:text-blue-400 transition-colors group"
+                >
+                  <MapPinIcon className="w-4 h-5 text-white flex-shrink-0 mt-1 group-hover:text-blue-400 transition-colors" />
+                  <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 group-hover:text-blue-400 transition-colors">
+                    {settings.address}
+                  </span>
+                </a>
+              )}
 
-              <a href="tel:+977015439239" className="flex gap-3 items-center hover:text-blue-400 transition-colors group">
-                <PhoneIcon className="w-[21px] h-[21px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
-                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap group-hover:text-blue-400 transition-colors">
-                  +977 01-5439239
-                </span>
-              </a>
+              {settings?.phone && (
+                <a
+                  href={`tel:${settings.phone.replace(/\D/g, "")}`}
+                  className="flex gap-3 items-center hover:text-blue-400 transition-colors group"
+                >
+                  <PhoneIcon className="w-[21px] h-[21px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
+                  <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap group-hover:text-blue-400 transition-colors">
+                    {settings.phone}
+                  </span>
+                </a>
+              )}
 
-              <a href="mailto:info@tachydro.com.np" className="flex gap-3 items-center hover:text-blue-400 transition-colors group">
-                <MailIcon className="w-[23px] h-[17px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
-                <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap group-hover:text-blue-400 transition-colors">
-                  info@tachydro.com.np
-                </span>
-              </a>
+              {settings?.contact_email && (
+                <a
+                  href={`mailto:${settings.contact_email}`}
+                  className="flex gap-3 items-center hover:text-blue-400 transition-colors group"
+                >
+                  <MailIcon className="w-[23px] h-[17px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
+                  <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap group-hover:text-blue-400 transition-colors">
+                    {settings.contact_email}
+                  </span>
+                </a>
+              )}
             </div>
           </div>
         </div>

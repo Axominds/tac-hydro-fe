@@ -1,13 +1,14 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { newsItems } from "../../data/newsData";
+import { useNewsDetail } from "../../hooks/useNews";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { FooterSection } from "../../components/sections/FooterSection";
 import { Calendar, Tag, ChevronLeft, Link2, Check } from "lucide-react";
+import { getImageUrl } from "../../lib/api";
 
 export const NewsDetail = () => {
   const { id } = useParams();
-  const news = newsItems.find((item) => item.id === id);
+  const { data: news, isLoading } = useNewsDetail(id ? Number(id) : null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -24,9 +25,17 @@ export const NewsDetail = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa]">
+        <div className="text-center text-slate-500">Loading...</div>
+      </div>
+    );
+  }
+
   if (!news) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa]">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-slate-900 mb-4">News Not Found</h1>
           <Link to="/" className="text-blue-600 font-bold hover:underline">
@@ -37,28 +46,32 @@ export const NewsDetail = () => {
     );
   }
 
+  const imageUrl = getImageUrl(news.image);
+
   return (
     <div className="w-full relative bg-[#f8f9fa]">
       <HeaderSection />
 
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] lg:h-[70vh] overflow-hidden">
-        <img
-          src={news.image}
-          alt={news.title}
-          className="absolute inset-0 w-full h-full object-cover animate-fade-in"
-        />
+        {imageUrl && (
+          <img
+            src={imageUrl}
+            alt={news.title}
+            className="absolute inset-0 w-full h-full object-cover animate-fade-in"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
 
         <div className="absolute inset-0 flex items-end justify-start pb-20 px-6 sm:px-8 lg:px-20">
           <div className="max-w-4xl mx-auto w-full">
             <div className="flex flex-wrap items-center gap-4 mb-6">
               <span className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-500/30">
-                {news.category}
+                NEWS
               </span>
               <div className="flex items-center gap-2 text-white/80 text-sm">
                 <Calendar className="w-4 h-4" />
-                {news.date}
+                {news.news_date}
               </div>
             </div>
 
@@ -111,10 +124,12 @@ export const NewsDetail = () => {
                 Latest Updates from TAC Hydro
               </div>
 
-              <div
-                className="text-slate-600 leading-relaxed space-y-6 text-lg"
-                dangerouslySetInnerHTML={{ __html: news.content }}
-              />
+              {news.content_html && (
+                <div
+                  className="text-slate-600 leading-relaxed space-y-6 text-lg"
+                  dangerouslySetInnerHTML={{ __html: news.content_html }}
+                />
+              )}
             </div>
 
             <div className="mt-16 pt-12 border-t border-slate-100">

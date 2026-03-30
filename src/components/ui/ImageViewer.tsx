@@ -19,14 +19,13 @@ export const ImageViewer = ({ images, initialIndex, isOpen, onClose }: ImageView
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Sync current index when modal opens with a different image
-  useEffect(() => {
-    if (isOpen) {
+  const handleOpen = (open: boolean) => {
+    if (open) {
       setCurrentIndex(initialIndex);
       setScale(1);
       setPosition({ x: 0, y: 0 });
     }
-  }, [isOpen, initialIndex]);
+  };
 
   const handleNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -93,7 +92,7 @@ export const ImageViewer = ({ images, initialIndex, isOpen, onClose }: ImageView
   }, [isOpen, handleNext, handlePrev, onClose, handleZoomIn, handleZoomOut, handleResetZoom]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (open) handleOpen(true); if (!open) onClose(); }}>
       <DialogContent className="max-w-[98vw] h-[98vh] p-0 border-0 bg-transparent shadow-none flex items-center justify-center focus:outline-none overflow-hidden select-none">
         <DialogTitle className="sr-only">Image Preview</DialogTitle>
 

@@ -1,154 +1,59 @@
-const partnerLogos = [
-  {
-    id: 1,
-    src: "/partners/spark_hydro.jpg",
-    alt: "Spark Hydroelectric Company Limited (SHCL)",
-    name: "Spark Hydroelectric",
-    logo: "/partners/spark_hydro.jpg",
-  },
-  {
-    id: 2,
-    src: "/partners/kasuwa_khola.png",
-    alt: "Kasuwa Khola Hydropower Ltd.",
-    name: "Kasuwa Khola",
-    logo: "/partners/kasuwa_khola.png",
-  },
-  {
-    id: 3,
-    src: "/partners/darchula_power.png",
-    alt: "Darchula Power Pvt. Ltd.",
-    name: "Darchula Power",
-    logo: "/partners/darchula_power.png",
-  },
-  {
-    id: 4,
-    src: "/partners/dordi_khola.png",
-    alt: "Dordi Khola Jal Bidyut Co. Ltd.",
-    name: "Dordi Khola",
-    logo: "/partners/dordi_khola.png",
-  },
-  {
-    id: 5,
-    src: "/partners/universal_power.png",
-    alt: "Universal Power Co. Pvt. Ltd.",
-    name: "Universal Power",
-    logo: "/partners/universal_power.png",
-  },
-  {
-    id: 6,
-    src: "/partners/middle_modi.png",
-    alt: "Middle Modi Hydropower Ltd.",
-    name: "Middle Modi",
-    logo: "/partners/middle_modi.png",
-  },
-  {
-    id: 7,
-    src: "/partners/doed.png",
-    alt: "Department of Electricity Development",
-    name: "DOED",
-    logo: "/partners/doed.png",
-  },
-  {
-    id: 8,
-    src: "/partners/supermaihydro.png",
-    alt: "Super Mai Hydropower Pvt. Ltd.",
-    name: "Super Mai Hydro",
-    logo: "/partners/supermaihydro.png",
-  },
-  {
-    id: 9,
-    src: "/partners/manakamana_engineering.png",
-    alt: "Manakamana Engineering Hydropower Pvt. Ltd.",
-    name: "Manakamana Engineering",
-    logo: "/partners/manakamana_engineering.png",
-  },
-  {
-    id: 10,
-    src: "/partners/mabilung_energy.png",
-    alt: "Mabilung Energy Pvt. Ltd.",
-    name: "Mabilung Energy",
-    logo: "/partners/mabilung_energy.png",
-  },
-  {
-    id: 11,
-    src: "/partners/bhugol_energy.png",
-    alt: "Bhugol Energy Development Company Pvt. Ltd.",
-    name: "Bhugol Energy",
-    logo: "/partners/bhugol_energy.png",
-  },
-  {
-    id: 12,
-    src: "/partners/vision_energy.png",
-    alt: "Vision Energy & Power Ltd.",
-    name: "Vision Energy",
-    logo: "/partners/vision_energy.png",
-  },
-  {
-    id: 13,
-    src: "/partners/electro_power.png",
-    alt: "Electro-Power Company Ltd.",
-    name: "Electro-Power",
-    logo: "/partners/electro_power.png",
-  },
-  {
-    id: 14,
-    src: "/partners/api_power.png",
-    alt: "API Power Company Ltd.",
-    name: "API Power",
-    logo: "/partners/api_power.png",
-  },
-  {
-    id: 15,
-    src: "/partners/jhyamolongma.png",
-    alt: "Jhyamolongma Hydropower Development Company Pvt. Ltd.",
-    name: "Jhyamolongma Hydropower",
-    logo: "/partners/jhyamolongma.png",
-  },
-  {
-    id: 16,
-    src: "/partners/lower_erkhuwa.png",
-    alt: "Lower Erkhuwa Hydropower Company Ltd.",
-    name: "Lower Erkhuwa Hydro",
-    logo: "/partners/lower_erkhuwa.png",
-  },
-  {
-    id: 17,
-    src: "/partners/suryakunda.png",
-    alt: "Suryakunda Hydroelectric Ltd.",
-    name: "Suryakunda Hydro",
-    logo: "/partners/suryakunda.png",
-  },
-  {
-    id: 18,
-    src: "/partners/united_idi_mardi.png",
-    alt: "United Idi Mardi & RB Hydropower Company (P) Ltd.",
-    name: "United Idi Mardi",
-    logo: "/partners/united_idi_mardi.png",
-  },
-  {
-    id: 19,
-    src: "/partners/rapti_hydro.png",
-    alt: "Rapti Hydro and General Construction Ltd.",
-    name: "Rapti Hydro",
-    logo: "/partners/rapti_hydro.png",
-  },
-  {
-    id: 20,
-    src: "/partners/chhyangdi.png",
-    alt: "Chhyangdi Hydropower Ltd.",
-    name: "Chhyangdi Hydropower",
-    logo: "/partners/chhyangdi.png",
-  },
-  {
-    id: 21,
-    src: "/partners/aarati_power.png",
-    alt: "Aarati Power Company Ltd.",
-    name: "Aarati Power",
-    logo: "/partners/aarati_power.png",
-  },
-];
+import { useValuedPartners } from "../../../hooks/useValuedPartners";
 
 export const ValuedPartnersSection = () => {
+  const { data: partners, isLoading } = useValuedPartners();
+
+  if (isLoading || !partners) {
+    return (
+      <section
+        id="valued-partners"
+        className="relative w-full min-h-[50vh] bg-[#f8f9fa] flex items-center justify-center py-10 overflow-hidden"
+      >
+        <div className="mx-auto w-full max-w-[1400px]">
+          <div className="flex flex-col items-center mb-10 text-center px-6">
+            <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-slate-900">
+              Valued Partners
+            </h1>
+          </div>
+          <div className="flex justify-center py-20">
+            <p className="text-slate-500">Loading...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (partners.length === 0) {
+    return (
+      <section id="valued-partners" className="relative w-full bg-[#f8f9fa] min-h-[50vh] flex items-center justify-center py-16 lg:py-24">
+        <div className="flex flex-col items-center justify-center py-32 px-4 bg-white rounded-[40px] border border-dashed border-slate-200 animate-fade-in max-w-lg mx-4">
+          <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-3xl bg-slate-50 text-blue-600">
+            <svg
+              className="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-slate-900 mb-2">No Partners Found</h3>
+          <p className="text-slate-500 text-center max-w-sm mb-8 leading-relaxed">
+            We're currently preparing information about our valued partners. Check back soon for updates.
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  const sortedPartners = [...partners].sort((a, b) => a.order - b.order);
+
   return (
     <section
       id="valued-partners"
@@ -169,18 +74,21 @@ export const ValuedPartnersSection = () => {
 
         <div className="relative w-full overflow-hidden">
           <div className="flex animate-marquee-slower whitespace-nowrap gap-12 group py-8 w-max">
-            {[...partnerLogos, ...partnerLogos].map((partner, index) => (
+            {[...sortedPartners, ...sortedPartners].map((partner, index) => (
               <div
                 key={`${partner.id}-${index}`}
                 className="relative flex-shrink-0 min-w-[200px] h-[180px] flex items-center justify-center p-6 bg-slate-200/50 rounded-[32px] border border-slate-300/40 transition-all duration-500 hover:-translate-y-8 hover:scale-105 active:scale-95 group/card overflow-hidden"
               >
-                <img
-                  className="max-w-full h-16 object-contain filter drop-shadow-[0_0_1px_rgba(0,0,0,0.1)] transition-transform duration-500 group-hover/card:scale-110"
-                  alt={partner.name}
-                  src={partner.logo}
-                  loading="lazy"
-                  decoding="async"
-                />
+                {partner.logo ? (
+                  <img
+                    className="max-w-full h-16 object-contain filter drop-shadow-[0_0_1px_rgba(0,0,0,0.1)] transition-transform duration-500 group-hover/card:scale-110"
+                    alt={partner.name}
+                    src={partner.logo}
+                    decoding="async"
+                  />
+                ) : (
+                  <span className="text-slate-600 font-semibold">{partner.name}</span>
+                )}
                 <div className="absolute inset-x-0 bottom-0 p-6 flex items-end justify-center opacity-0 group-hover/card:opacity-100 transition-all duration-500">
                   <span className="text-slate-900 font-bold text-base text-center whitespace-normal leading-tight">
                     {partner.name}
