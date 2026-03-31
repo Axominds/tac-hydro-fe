@@ -29,6 +29,7 @@ const NAV_ITEMS: NavigationItem[] = [
     dropdown: [
       { label: "Our Organizational Chart", href: "/about-us/our-organization-chart" },
       { label: "Our Core Principles", href: "/about-us/our-core-principles" },
+      { label: "Our Team", href: "/about-us/our-team" },
     ],
   },
   { label: "Services", href: "/services" },

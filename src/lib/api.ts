@@ -188,8 +188,8 @@ export interface TeamMember {
 
 export interface TeamMemberCategory {
   id: number;
-  team_member: number;
-  category: number;
+  team_member_id: number;
+  category_id: number;
   position: string;
   order: number;
 }

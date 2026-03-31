@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Home } from "./routes/Home/Home";
 import { AboutUs } from "./routes/AboutUs/AboutUs";
+import { OurTeam } from "./routes/AboutUs/OurTeam";
 import { OrganizationChart } from "./routes/AboutUs/OrganizationChart";
 import { CorePrinciples } from "./routes/AboutUs/CorePrinciples";
 import { Galleries } from "./routes/Galleries/Galleries";
@@ -47,6 +48,7 @@ export const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/about-us/our-team" element={<OurTeam />} />
         <Route path="/about-us/our-organization-chart" element={<OrganizationChart />} />
         <Route path="/about-us/our-core-principles" element={<CorePrinciples />} />
         <Route path="/galleries" element={<Galleries />} />

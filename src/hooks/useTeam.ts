@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch, TeamMember, TeamMemberCategory, TeamCategory } from "../lib/api";
 
@@ -36,7 +37,7 @@ export function useTeamMembersWithCategories() {
   const { data: memberCategories } = useTeamMemberCategories();
   const { data: categories } = useTeamCategories();
 
-  const membersWithCategories: TeamMemberWithCategories[] = (() => {
+  const membersWithCategories = useMemo(() => {
     if (!members || !memberCategories || !categories) return [];
 
     const categoryMap: Record<number, string> = {};
@@ -46,10 +47,10 @@ export function useTeamMembersWithCategories() {
 
     const memberCategoryMap: Record<number, TeamMemberCategory[]> = {};
     memberCategories.forEach((mc) => {
-      if (!memberCategoryMap[mc.team_member]) {
-        memberCategoryMap[mc.team_member] = [];
+      if (!memberCategoryMap[mc.team_member_id]) {
+        memberCategoryMap[mc.team_member_id] = [];
       }
-      memberCategoryMap[mc.team_member].push(mc);
+      memberCategoryMap[mc.team_member_id].push(mc);
     });
 
     return members
@@ -60,31 +61,35 @@ export function useTeamMembersWithCategories() {
           ...member,
           categories: cats
             .map((mc) => ({
-              categoryId: mc.category,
-              categoryName: categoryMap[mc.category] || "Unknown",
+              categoryId: mc.category_id,
+              categoryName: categoryMap[mc.category_id] || "Unknown",
               position: mc.position,
               order: mc.order,
             }))
             .sort((a, b) => a.order - b.order),
         };
       });
-  })();
+  }, [members, memberCategories, categories]);
 
-  const groupedMembers: Record<string, TeamMemberWithCategories[]> = (() => {
+  const groupedMembers = useMemo(() => {
     if (!membersWithCategories.length) return {};
 
     const grouped: Record<string, TeamMemberWithCategories[]> = {};
     membersWithCategories.forEach((member) => {
       if (member.categories.length > 0) {
-        const primaryCategory = member.categories[0].categoryName;
-        if (!grouped[primaryCategory]) {
-          grouped[primaryCategory] = [];
-        }
-        grouped[primaryCategory].push(member);
+        member.categories.forEach((cat) => {
+          const categoryName = cat.categoryName;
+          if (!grouped[categoryName]) {
+            grouped[categoryName] = [];
+          }
+          if (!grouped[categoryName].find((m) => m.id === member.id)) {
+            grouped[categoryName].push(member);
+          }
+        });
       }
     });
     return grouped;
-  })();
+  }, [membersWithCategories]);
 
   return {
     data: membersWithCategories,

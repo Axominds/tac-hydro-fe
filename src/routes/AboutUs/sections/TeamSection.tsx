@@ -85,13 +85,13 @@ export const TeamSection: FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {section.items.map((member: TeamMemberWithCategories) => {
-                const primaryCategory = member.categories[0]?.categoryName;
-                const primaryPosition = member.categories[0]?.position;
-                const isIndependentConsultant = primaryCategory === "Independent Consultants";
+                const category = member.categories.find((c) => c.categoryName === section.categoryName);
+                const position = category?.position || member.categories[0]?.position || "";
+                const isIndependentConsultant = section.categoryName === "Independent Consultants";
 
                 return (
                   <div
-                    key={member.id}
+                    key={`${member.id}-${section.categoryName}`}
                     onClick={() => handleMemberClick(member)}
                     className="group bg-white rounded-2xl p-6 transition-all duration-300 border border-slate-100 shadow-sm relative overflow-hidden flex flex-col items-center text-center cursor-pointer hover:shadow-xl hover:-translate-y-2"
                   >
@@ -115,7 +115,7 @@ export const TeamSection: FC = () => {
                     </h4>
 
                     <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                      {primaryPosition}
+                      {position}
                     </p>
 
                     {section.title === "BOARD OF DIRECTORS" && (
@@ -172,9 +172,11 @@ export const TeamSection: FC = () => {
               <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-slate-900 relative z-10 mb-2">
                 {selectedMember.name}
               </h1>
-              <p className="text-blue-600 font-bold uppercase tracking-wide text-sm md:text-base relative z-10">
-                {selectedMember.categories[0]?.position}
-              </p>
+              <div className="text-blue-600 font-bold uppercase tracking-wide text-sm md:text-base relative z-10 space-y-1">
+                {selectedMember.categories.map((cat, idx) => (
+                  <p key={idx}>{cat.position}</p>
+                ))}
+              </div>
 
               <div className="mt-6 flex flex-wrap gap-2 justify-center relative z-10">
                 {selectedMember.categories.map((cat, idx) => (
