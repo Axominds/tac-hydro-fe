@@ -4,6 +4,7 @@ import { Home } from "./routes/Home/Home";
 import { AboutUs } from "./routes/AboutUs/AboutUs";
 import { OrganizationChart } from "./routes/AboutUs/OrganizationChart";
 import { CorePrinciples } from "./routes/AboutUs/CorePrinciples";
+import { OurTeam } from "./routes/AboutUs/OurTeam";
 import { Galleries } from "./routes/Galleries/Galleries";
 import { Projects } from "./routes/Projects/Projects";
 import { Services } from "./routes/Services/Services";
@@ -49,6 +50,7 @@ export const App = () => {
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/about-us/our-organization-chart" element={<OrganizationChart />} />
         <Route path="/about-us/our-core-principles" element={<CorePrinciples />} />
+        <Route path="/about-us/our-team" element={<OurTeam />} />
         <Route path="/galleries" element={<Galleries />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/services" element={<Services />} />
