@@ -19,7 +19,7 @@ const SECTIONS = [
   { title: "DESIGN LEADS", items: DESIGN_LEADS },
   { title: "OUR PROFESSIONALS", items: ENGINEER_PROFESSIONALS },
   { title: "INDEPENDENT CONSULTANTS", items: INDEPENDENT_CONSULTANTS },
-];
+].filter((section) => section.items.length > 0);
 
 export const TeamSection: FC = () => {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
@@ -83,13 +83,12 @@ export const TeamSection: FC = () => {
                     </h4>
 
                     <p className="text-xs font-bold text-blue-600 uppercase tracking-wider">
-                      {member.position}
+                      {member.technical_expertise}
                     </p>
 
-                    {/* Sub-label for specific category if needed */}
-                    {section.title === "BOARD OF DIRECTORS" && (
+                    {member.role && (
                       <span className="mt-3 px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full">
-                        Board Member
+                        {member.role}
                       </span>
                     )}
                   </div>
@@ -138,14 +137,16 @@ export const TeamSection: FC = () => {
                 {selectedMember.name}
               </h1>
               <p className="text-blue-600 font-bold uppercase tracking-wide text-sm md:text-base relative z-10">
-                {selectedMember.position}
+                {selectedMember.technical_expertise}
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-2 justify-center relative z-10">
-                <span className="px-3 py-1 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-full shadow-sm">
-                  {selectedMember.category}
-                </span>
-              </div>
+              {(selectedMember.role || selectedMember.category) && (
+                <div className="mt-6 flex flex-wrap gap-2 justify-center relative z-10">
+                  <span className="px-3 py-1 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-full shadow-sm">
+                    {selectedMember.role ?? selectedMember.category}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Right Side: Scrollable Content */}
