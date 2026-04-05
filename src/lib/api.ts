@@ -183,6 +183,7 @@ export interface TeamMember {
   education: string | null;
   bio: string | null;
   photo: string | null;
+  profile_photo?: string | null;
   is_active: boolean;
 }
 
@@ -190,7 +191,8 @@ export interface TeamMemberCategory {
   id: number;
   team_member_id: number;
   category_id: number;
-  position: string;
+  technical_expertise: string;
+  role: string;
   order: number;
 }
 

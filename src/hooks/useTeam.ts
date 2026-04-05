@@ -27,7 +27,8 @@ export interface TeamMemberWithCategories extends TeamMember {
   categories: {
     categoryId: number;
     categoryName: string;
-    position: string;
+    technical_expertise: string;
+    role: string;
     order: number;
   }[];
 }
@@ -63,7 +64,8 @@ export function useTeamMembersWithCategories() {
             .map((mc) => ({
               categoryId: mc.category_id,
               categoryName: categoryMap[mc.category_id] || "Unknown",
-              position: mc.position,
+              technical_expertise: mc.technical_expertise,
+              role: mc.role,
               order: mc.order,
             }))
             .sort((a, b) => a.order - b.order),
