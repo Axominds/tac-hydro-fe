@@ -1,4 +1,7 @@
-import { useParams, Link } from "react-router-dom";
+"use client";
+
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useNewsDetail } from "../../hooks/useNews";
 import { HeaderSection } from "../../components/sections/HeaderSection";
@@ -17,9 +20,11 @@ export const NewsDetail = () => {
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (typeof window !== "undefined") {
+        await navigator.clipboard.writeText(window.location.href);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
     } catch (err) {
       console.error("Failed to copy: ", err);
     }
@@ -38,7 +43,7 @@ export const NewsDetail = () => {
       <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa]">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-slate-900 mb-4">News Not Found</h1>
-          <Link to="/" className="text-blue-600 font-bold hover:underline">
+          <Link href="/" className="text-blue-600 font-bold hover:underline">
             Back to Home
           </Link>
         </div>
@@ -81,7 +86,7 @@ export const NewsDetail = () => {
 
             <div className="flex items-center gap-6">
               <Link
-                to="/#news-and-articles"
+                href="/#news-and-events"
                 className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors text-sm font-semibold"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -142,10 +147,10 @@ export const NewsDetail = () => {
                 </div>
 
                 <Link
-                  to="/#news-and-articles"
+                  href="/#news-and-events"
                   className="px-8 py-3 rounded-2xl bg-slate-900 text-white font-bold hover:bg-blue-600 transition-all hover:shadow-xl active:scale-95"
                 >
-                  Explore More News & Articles
+                  Explore More News & Events
                 </Link>
               </div>
             </div>

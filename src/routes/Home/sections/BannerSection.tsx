@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useMemo } from "react";
 import { ChevronRightIcon } from "lucide-react";
 import { Button } from "../../../components/ui/button";

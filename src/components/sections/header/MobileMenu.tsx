@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { SocialSection } from "./SocialSection";
@@ -25,7 +25,7 @@ export const MobileMenu = ({
   if (!isOpen) return null;
 
   const baseNavItem =
-    "text-white/80 font-semibold text-sm sm:text-base lg:text-lg transition text-center py-2";
+    "text-white/80 font-semibold text-sm sm:text-base lg:text-lg transition text-center py-2 hover:text-white";
 
   const glassClass = cn(
     "group relative inline-flex items-center px-6 py-2 rounded-[32px] border border-white/20 backdrop-blur-[30px] font-bold text-white transition-all duration-300 text-center",
@@ -51,20 +51,18 @@ export const MobileMenu = ({
             return (
               <div key={`${item.label}-${index}`} className="flex flex-col">
                 <div className="flex items-center justify-center">
-                  <NavLink
-                    to={item.href}
+                  <Link
+                    href={item.href}
                     onClick={onClose}
-                    className={({ isActive }) =>
-                      cn(
-                        baseNavItem,
-                        "flex-1 text-center",
-                        isActive || item.isActive ? activeGlass : "hover:text-white",
-                        linkClassName,
-                      )
-                    }
+                    className={cn(
+                      baseNavItem,
+                      "flex-1 text-center",
+                      item.isActive ? activeGlass : "",
+                      linkClassName,
+                    )}
                   >
                     {item.label}
-                  </NavLink>
+                  </Link>
                   <button
                     onClick={() => setExpandedItem(expandedItem === item.label ? null : item.label)}
                     className="text-white/80 hover:text-white transition p-2"
@@ -82,14 +80,14 @@ export const MobileMenu = ({
                 {expandedItem === item.label && (
                   <div className="flex flex-col gap-2 mt-2 ml-4 pl-4 border-l-2 border-white/20">
                     {item.dropdown!.map((dropdownItem, dropdownIndex) => (
-                      <NavLink
+                      <Link
                         key={`${dropdownItem.label}-${dropdownIndex}`}
-                        to={dropdownItem.href}
+                        href={dropdownItem.href}
                         onClick={onClose}
                         className="text-white/70 font-medium text-sm hover:text-white transition-colors py-1"
                       >
                         {dropdownItem.label}
-                      </NavLink>
+                      </Link>
                     ))}
                   </div>
                 )}
@@ -98,21 +96,18 @@ export const MobileMenu = ({
           }
 
           return (
-            <NavLink
+            <Link
               key={`${item.label}-${index}`}
-              to={item.href}
-              end={item.href === "/"}
+              href={item.href}
               onClick={onClose}
-              className={({ isActive }) =>
-                cn(
-                  baseNavItem,
-                  isActive || item.isActive ? activeGlass : "hover:text-white",
-                  linkClassName,
-                )
-              }
+              className={cn(
+                baseNavItem,
+                item.isActive ? activeGlass : "",
+                linkClassName,
+              )}
             >
               {item.label}
-            </NavLink>
+            </Link>
           );
         })}
         <div className="flex items-center justify-center pt-3 border-t border-white/10 mt-2">

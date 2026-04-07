@@ -1,3 +1,5 @@
+"use client";
+
 import { useValuedPartners } from "../../../hooks/useValuedPartners";
 
 export const ValuedPartnersSection = () => {

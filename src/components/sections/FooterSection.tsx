@@ -1,4 +1,6 @@
-import { FacebookIcon, LinkedinIcon, MailIcon, MapPinIcon, PhoneIcon, ArrowUp } from "lucide-react";
+"use client";
+
+import { Globe, Share2, Mail, MapPin, Phone, ArrowUp } from "lucide-react";
 
 import { LOGO_FOOTER } from "../../assets";
 import { Separator } from "../ui/separator";
@@ -46,7 +48,7 @@ export const FooterSection = () => {
                   aria-label="Visit TAC Hydro on Facebook"
                   className="flex h-auto w-auto items-center justify-center rounded-full border border-white/20 p-2 text-white hover:border-white/60"
                 >
-                  <FacebookIcon className="w-[18px] h-[18px] text-white" />
+                  <Globe className="w-[18px] h-[18px] text-white" />
                 </a>
               )}
               {settings?.linkedin_url && (
@@ -57,7 +59,7 @@ export const FooterSection = () => {
                   aria-label="Visit TAC Hydro on LinkedIn"
                   className="flex h-auto w-auto items-center justify-center rounded-full border border-white/20 p-2 text-white hover:border-white/60"
                 >
-                  <LinkedinIcon className="w-[20px] h-[20px] text-white" />
+                  <Share2 className="w-[20px] h-[20px] text-white" />
                 </a>
               )}
             </div>
@@ -100,7 +102,7 @@ export const FooterSection = () => {
                   href="/contact-us#location-map"
                   className="flex gap-3 items-start hover:text-blue-400 transition-colors group"
                 >
-                  <MapPinIcon className="w-4 h-5 text-white flex-shrink-0 mt-1 group-hover:text-blue-400 transition-colors" />
+                  <MapPin className="w-4 h-5 text-white flex-shrink-0 mt-1 group-hover:text-blue-400 transition-colors" />
                   <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 group-hover:text-blue-400 transition-colors">
                     {settings.address}
                   </span>
@@ -112,7 +114,7 @@ export const FooterSection = () => {
                   href={`tel:${settings.phone.replace(/\D/g, "")}`}
                   className="flex gap-3 items-center hover:text-blue-400 transition-colors group"
                 >
-                  <PhoneIcon className="w-[21px] h-[21px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
+                  <Phone className="w-[21px] h-[21px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
                   <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap group-hover:text-blue-400 transition-colors">
                     {settings.phone}
                   </span>
@@ -124,7 +126,7 @@ export const FooterSection = () => {
                   href={`mailto:${settings.contact_email}`}
                   className="flex gap-3 items-center hover:text-blue-400 transition-colors group"
                 >
-                  <MailIcon className="w-[23px] h-[17px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
+                  <Mail className="w-[23px] h-[17px] text-white flex-shrink-0 group-hover:text-blue-400 transition-colors" />
                   <span className="font-semibold text-white text-sm sm:text-base lg:text-lg leading-7 whitespace-nowrap group-hover:text-blue-400 transition-colors">
                     {settings.contact_email}
                   </span>

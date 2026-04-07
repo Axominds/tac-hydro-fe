@@ -1,3 +1,5 @@
+"use client";
+
 import { FC, useState, useEffect, useMemo } from "react";
 import { useTeamMembersWithCategories, TeamMemberWithCategories } from "../../../hooks/useTeam";
 import { X } from "lucide-react";

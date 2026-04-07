@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useNewsCategories, useNewsItems } from "../../../hooks/useNews";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -18,12 +20,12 @@ export const NewsAndArticlesSection = () => {
     categoryMap[cat.id] = cat.name;
   });
 
-  const items = newsData?.items || [];
-  const totalPages = newsData?.total_pages || 1;
+  const items = newsData?.results || [];
+  const totalPages = newsData?.count ? Math.ceil(newsData.count / 3) : 1;
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
-    const element = document.getElementById("news-and-articles");
+    const element = document.getElementById("news-and-events");
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
@@ -32,7 +34,7 @@ export const NewsAndArticlesSection = () => {
   if (isLoading) {
     return (
       <section
-        id="news-and-articles"
+        id="news-and-events"
         className="relative w-full bg-[#f8f9fa] min-h-screen flex flex-col justify-center py-12 lg:py-16 overflow-hidden"
       >
         <div className="relative mx-auto max-w-[1400px] w-full px-6 sm:px-8 lg:px-20">
@@ -51,14 +53,14 @@ export const NewsAndArticlesSection = () => {
 
   return (
     <section
-      id="news-and-articles"
+      id="news-and-events"
       className="relative w-full bg-[#f8f9fa] min-h-screen flex flex-col justify-center py-12 lg:py-16 overflow-hidden"
     >
       <div className="relative mx-auto max-w-[1400px] w-full px-6 sm:px-8 lg:px-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight font-extrabold text-slate-900">
-              News and Articles
+              News and Events
             </h1>
           </div>
 
@@ -98,7 +100,7 @@ export const NewsAndArticlesSection = () => {
                         <img
                           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           alt={item.title}
-                          src={getImageUrl(item.image)}
+                          src={getImageUrl(item.image) || undefined}
                           loading="lazy"
                           decoding="async"
                         />

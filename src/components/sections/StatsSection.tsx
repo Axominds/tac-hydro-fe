@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useStats } from "../../hooks/useStats";
 
@@ -46,10 +48,9 @@ export const StatsSection = () => {
     });
   }, [stats]);
 
+  // Observe when section enters viewport
   useEffect(() => {
-    if (!statsSectionRef.current) {
-      return;
-    }
+    if (!statsSectionRef.current) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -57,13 +58,26 @@ export const StatsSection = () => {
           setStatsAnimationSeed((prev) => prev + 1);
         }
       },
-      { threshold: 0.35 },
+      { threshold: 0 },
     );
 
     observer.observe(statsSectionRef.current);
     return () => observer.disconnect();
   }, []);
 
+  // When data finally loads, check if we're already visible and trigger animation
+  useEffect(() => {
+    if (!statsData.length) return;
+    if (statsSectionRef.current) {
+      const rect = statsSectionRef.current.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight && rect.bottom > 0;
+      if (inView) {
+        setStatsAnimationSeed((prev) => prev + 1);
+      }
+    }
+  }, [statsData]);
+
+  // Run count-up animation
   useEffect(() => {
     if (statsAnimationSeed === 0 || !statsData.length) {
       return;
@@ -87,7 +101,7 @@ export const StatsSection = () => {
 
   if (isLoading || !stats) {
     return (
-      <section id="stats" className="relative w-full flex flex-col bg-[#f8f9fa]">
+      <section id="stats" ref={statsSectionRef} className="relative w-full flex flex-col bg-[#f8f9fa]">
         <div className="relative flex-1 flex items-center justify-center py-10">
           <div className="w-full max-w-[1400px] px-6 sm:px-10 lg:px-20">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 sm:gap-12 lg:gap-8 w-full">
@@ -105,8 +119,8 @@ export const StatsSection = () => {
   }
 
   return (
-    <section id="stats" className="relative w-full flex flex-col bg-[#f8f9fa]">
-      <div className="relative flex-1 flex items-center justify-center py-10" ref={statsSectionRef}>
+    <section id="stats" ref={statsSectionRef} className="relative w-full flex flex-col bg-[#f8f9fa]">
+      <div className="relative flex-1 flex items-center justify-center py-10">
         <div className="w-full max-w-[1400px] px-6 sm:px-10 lg:px-20">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 sm:gap-12 lg:gap-8 w-full">
             {statsData.map((stat, index) => (

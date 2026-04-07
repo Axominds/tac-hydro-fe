@@ -15,6 +15,6 @@ export function useStats() {
     queryFn: () => apiFetch<Stats>("/api/home/stats/"),
     refetchOnMount: true,
     retry: 3,
-    staleTime: Infinity,
+    staleTime: 0,
   });
 }

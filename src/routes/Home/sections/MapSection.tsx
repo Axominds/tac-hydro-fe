@@ -1,4 +1,6 @@
-import { useMemo, useState } from "react";
+"use client";
+
+import { useMemo, useState, useEffect } from "react";
 import { Navigation } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
 import L from "leaflet";
@@ -9,13 +11,16 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-// @ts-ignore
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
+// Leaflet setup - only runs on client
+if (typeof window !== "undefined") {
+  // @ts-ignore
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+  });
+}
 
 import { useProjectScopes } from "../../../hooks/useProjectScopes";
 import { useProjectsWithScopes } from "../../../hooks/useProjects";

@@ -1,4 +1,4 @@
-import { FacebookIcon, LinkedinIcon } from "lucide-react";
+import { Globe, Share2 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { useSiteSettings } from "../../../hooks/useSiteSettings";
 
@@ -26,7 +26,7 @@ export const SocialSection = ({ isScrolled, className }: SocialSectionProps) => 
           rel="noreferrer"
           className={socialGlass}
         >
-          <FacebookIcon className="w-4 h-4" />
+          <Globe className="w-4 h-4" />
           <span className="sr-only">Facebook</span>
         </a>
       )}
@@ -37,7 +37,7 @@ export const SocialSection = ({ isScrolled, className }: SocialSectionProps) => 
           rel="noreferrer"
           className={socialGlass}
         >
-          <LinkedinIcon className="w-4 h-4" />
+          <Share2 className="w-4 h-4" />
           <span className="sr-only">LinkedIn</span>
         </a>
       )}

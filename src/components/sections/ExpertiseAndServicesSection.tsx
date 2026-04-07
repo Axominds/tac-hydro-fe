@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo } from "react";
 import { Briefcase, Settings, Users, Lightbulb } from "lucide-react";
 import { useExpertiseCategories } from "../../hooks/useExpertiseCategories";

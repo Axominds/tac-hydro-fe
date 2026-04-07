@@ -1,3 +1,5 @@
+"use client";
+
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "../../components/sections/BannerSection";
 import { CollaborativeAdvantageSection } from "./sections/CollaborativeAdvantageSection";

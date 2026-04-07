@@ -1,3 +1,5 @@
+"use client";
+
 import { FooterSection } from "../../components/sections/FooterSection";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "../../components/sections/BannerSection";

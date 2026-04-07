@@ -1,10 +1,43 @@
-const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+import Cookies from "js-cookie";
 
-export async function apiFetch<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`);
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL;
+
+interface FetchOptions {
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  body?: any;
+  headers?: Record<string, string>;
+  requireAuth?: boolean;
+}
+
+export async function apiFetch<T>(path: string, options: FetchOptions = {}): Promise<T> {
+  const { method = "GET", body, headers = {}, requireAuth = false } = options;
+
+  const token = Cookies.get("access_token");
+
+  const defaultHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  // Only attach authorization strictly when performing mutations, or explicitly flagged
+  if (token && (requireAuth || method !== "GET")) {
+    defaultHeaders["Authorization"] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers: { ...defaultHeaders, ...headers },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
   if (!res.ok) {
     throw new Error(`${path} → ${res.status}`);
   }
+
+  // DELETE requests might not return JSON
+  if (method === "DELETE") {
+    return {} as T;
+  }
+
   return res.json();
 }
 
@@ -57,6 +90,7 @@ export interface SiteSettings {
   linkedin_url: string | null;
   map_embed_url: string | null;
   organization_chart_image: string | null;
+  founded_year?: number | null;
 }
 
 export type SiteSettingsList = SiteSettings[];
@@ -133,6 +167,8 @@ export interface NewsItem {
   news_date: string;
   summary: string | null;
   content_html: string | null;
+  is_published?: boolean;
+  published_at?: string | null;
 }
 
 export interface NewsDetail {
@@ -148,14 +184,10 @@ export interface NewsDetail {
 }
 
 export interface NewsListResponse {
-  items: NewsItem[];
-  total: number;
-  has_next: boolean;
-  has_previous: boolean;
-  page: number;
-  page_size: number;
-  total_pages: number;
-  next_page: number | null;
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: NewsItem[];
 }
 
 export interface JobPosting {

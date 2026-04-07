@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+"use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { FooterSection } from "../../components/sections/FooterSection";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "../../components/sections/BannerSection";

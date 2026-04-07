@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "../../../lib/utils";
 
@@ -35,7 +35,7 @@ export const DesktopNav = ({
   );
 
   const baseNavItem =
-    "text-white/80 font-semibold text-sm sm:text-base lg:text-lg transition text-center px-4 py-2";
+    "text-white/80 font-semibold text-sm sm:text-base lg:text-lg transition text-center px-4 py-2 hover:text-white";
 
   const glassClass = cn(
     "group relative inline-flex items-center px-6 py-2 rounded-[32px] border border-white/20 backdrop-blur-[30px] font-bold text-white transition-all duration-300 text-center",
@@ -66,17 +66,14 @@ export const DesktopNav = ({
                 onMouseEnter={() => setOpenDropdown(item.label)}
                 onMouseLeave={() => setOpenDropdown(null)}
               >
-                <NavLink
-                  to={item.href}
-                  end={item.href === "/"}
-                  className={({ isActive }) =>
-                    cn(
-                      baseNavItem,
-                      "flex items-center gap-1",
-                      isActive || item.isActive ? activeGlass : "hover:text-white",
-                      linkClassName,
-                    )
-                  }
+                <Link
+                  href={item.href}
+                  className={cn(
+                    baseNavItem,
+                    "flex items-center gap-1",
+                    item.isActive ? activeGlass : "",
+                    linkClassName,
+                  )}
                 >
                   {item.label}
                   <ChevronDown
@@ -85,21 +82,21 @@ export const DesktopNav = ({
                       openDropdown === item.label ? "rotate-180" : "",
                     )}
                   />
-                </NavLink>
+                </Link>
 
                 {/* Dropdown Menu */}
                 {openDropdown === item.label && (
                   <div className="absolute top-full left-0 pt-1">
                     <div className="min-w-[240px] rounded-2xl border border-white/20 bg-[#0b1522]/70 backdrop-blur-[30px] shadow-[0_25px_45px_rgba(0,0,0,0.45)] overflow-hidden">
                       {item.dropdown!.map((dropdownItem, dropdownIndex) => (
-                        <NavLink
+                        <Link
                           key={`${dropdownItem.label}-${dropdownIndex}`}
-                          to={dropdownItem.href}
+                          href={dropdownItem.href}
                           className="block px-4 py-3 text-white/80 font-semibold text-sm hover:bg-white/10 hover:text-white transition-all duration-200 first:rounded-t-2xl last:rounded-b-2xl whitespace-nowrap"
                           onClick={() => setOpenDropdown(null)}
                         >
                           {dropdownItem.label}
-                        </NavLink>
+                        </Link>
                       ))}
                     </div>
                   </div>
@@ -109,20 +106,17 @@ export const DesktopNav = ({
           }
 
           return (
-            <NavLink
+            <Link
               key={`${item.label}-${index}`}
-              to={item.href}
-              end={item.href === "/"}
-              className={({ isActive }) =>
-                cn(
-                  baseNavItem,
-                  isActive || item.isActive ? activeGlass : "hover:text-white",
-                  linkClassName,
-                )
-              }
+              href={item.href}
+              className={cn(
+                baseNavItem,
+                item.isActive ? activeGlass : "",
+                linkClassName,
+              )}
             >
               {item.label}
-            </NavLink>
+            </Link>
           );
         })}
       </div>

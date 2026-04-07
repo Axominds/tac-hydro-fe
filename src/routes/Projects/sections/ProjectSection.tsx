@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useEffect, useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useSearchParams, usePathname } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
 import { ProjectCard } from "./ProjectCard";
 import { ScrollArea } from "../../../components/ui/scroll-area";
@@ -23,7 +25,8 @@ import { useProjectsWithScopes, useProjectDetail } from "../../../hooks/useProje
 export type ProjectFromAPI = ReturnType<typeof useProjectsWithScopes>["data"] extends (infer T)[] | undefined ? T : never;
 
 export const ProjectSection = () => {
-  const location = useLocation();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [selectedProject, setSelectedProject] = useState<ProjectFromAPI | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,8 +52,7 @@ export const ProjectSection = () => {
   }, [selectedProject, projectDetail]);
 
   const urlScope = (() => {
-    const params = new URLSearchParams(location.search);
-    const scopeParam = params.get("scope");
+    const scopeParam = searchParams.get("scope");
     return scopeParam && scopeNames.includes(scopeParam) ? scopeParam : null;
   })();
 

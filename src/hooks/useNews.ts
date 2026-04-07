@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiFetch, NewsItem, NewsDetail, NewsCategory, NewsListResponse } from "../lib/api";
+import { apiFetch, NewsDetail, NewsCategory, NewsListResponse } from "../lib/api";
 
 export function useNewsCategories() {
   return useQuery<NewsCategory[]>({
@@ -39,11 +39,11 @@ export function useNewsByCategory() {
   const { data: items, ...rest } = useNewsItems();
 
   const newsByCategory = (() => {
-    if (!categories || !items) return [];
+    if (!categories || !items?.results) return [];
 
     return categories.map((category) => ({
       ...category,
-      items: items
+      items: items.results
         .filter((item) => item.news_category_id === category.id)
         .sort((a, b) => new Date(b.news_date).getTime() - new Date(a.news_date).getTime()),
     }));

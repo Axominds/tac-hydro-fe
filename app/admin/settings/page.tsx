@@ -1,0 +1,306 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Save, Globe, Mail, MapPin, Share2, Loader2, Phone, Clock, CheckCircle2, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { Montserrat } from "next/font/google";
+import { useSiteSettings } from "../../../src/hooks/useSiteSettings";
+import { useSettingsMutation } from "../../../src/hooks/useAdminMutations";
+import { SiteSettings } from "../../../src/lib/api";
+
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
+
+export default function SiteSettingsManagementPage() {
+  const { data: settingsData, isLoading } = useSiteSettings();
+  const updateSettings = useSettingsMutation();
+  
+  // Settings might be an array or a single object depending on hook implementation
+  const settings = Array.isArray(settingsData) ? settingsData[0] : settingsData;
+  
+  const [formData, setFormData] = useState<Partial<SiteSettings>>({});
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [showMapPreview, setShowMapPreview] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (settings) {
+      setFormData({ ...settings });
+    }
+  }, [settings]);
+
+  const handleSave = async () => {
+    if (!settings?.id) return;
+    
+    setSaveStatus('saving');
+    try {
+      if (selectedFile) {
+        const fileData = new FormData();
+        fileData.append("organization_chart_image", selectedFile);
+        
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/settings/${settings.id}/organization_chart_image/`, {
+          method: 'POST',
+          headers: {
+            "Authorization": `Bearer ${document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1")}`
+          },
+          body: fileData,
+        });
+      }
+
+      const changedData: Partial<SiteSettings> = {};
+      Object.keys(formData).forEach((k) => {
+        const key = k as keyof SiteSettings;
+        if (formData[key] !== settings[key]) {
+          // @ts-ignore
+          changedData[key] = formData[key];
+        }
+      });
+
+      if (Object.keys(changedData).length > 0) {
+        await updateSettings.mutateAsync({ id: settings.id, data: changedData });
+      }
+      
+      setSaveStatus('success');
+      setTimeout(() => setSaveStatus('idle'), 3000);
+      setSelectedFile(null);
+    } catch (error) {
+      setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 5000);
+    }
+  };
+
+  return (
+    <div className="space-y-12 uppercase relative pb-40">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className={`${montserrat.className} text-4xl text-white mb-2`}>
+            Global <span className="text-blue-500">Settings</span>
+          </h1>
+          <p className="text-gray-400">Configure site-wide metadata, contact information, and social links.</p>
+        </div>
+        
+        <div className="flex items-center gap-4">
+            {saveStatus === 'success' && (
+                <span className="flex items-center gap-2 text-green-400 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Changes saved successfully
+                </span>
+            )}
+            {saveStatus === 'error' && (
+                <span className="flex items-center gap-2 text-red-400 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
+                    <AlertCircle className="h-4 w-4" />
+                    Failed to save changes
+                </span>
+            )}
+            <button 
+                onClick={handleSave}
+                disabled={saveStatus === 'saving' || isLoading}
+                className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition-all shadow-xl shadow-blue-500/20 active:scale-95"
+            >
+                {saveStatus === 'saving' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+                {saveStatus === 'saving' ? 'Saving...' : 'Apply Changes'}
+            </button>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-20">
+          {/* Contact Info Card */}
+          <div className="p-8 bg-white/5 border border-white/5 rounded-3xl space-y-8">
+              <h2 className={`${montserrat.className} text-xl text-white mb-4 flex items-center gap-2 pb-4 border-b border-white/5`}>
+                  <Globe className="h-5 w-5 text-blue-500" />
+                  Contact Metadata
+              </h2>
+              <div className="space-y-6">
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Company Name</label>
+                      <input 
+                        type="text" 
+                        value={formData.company_name || ""} 
+                        onChange={e => setFormData({...formData, company_name: e.target.value})}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium" 
+                      />
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Tagline</label>
+                      <textarea 
+                        value={formData.tagline || ""} 
+                        onChange={e => setFormData({...formData, tagline: e.target.value})}
+                        rows={2}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium resize-none text-sm normal-case" 
+                      />
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Official Email Support</label>
+                      <div className="relative group">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
+                          <input 
+                            type="email" 
+                            value={formData.contact_email || ""} 
+                            onChange={e => setFormData({...formData, contact_email: e.target.value})}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium lowercase" 
+                          />
+                      </div>
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Collaboration Email</label>
+                      <div className="relative group">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
+                          <input 
+                            type="email" 
+                            value={formData.collaboration_email || ""} 
+                            onChange={e => setFormData({...formData, collaboration_email: e.target.value})}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium lowercase" 
+                          />
+                      </div>
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Phone Number</label>
+                      <div className="relative group">
+                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
+                          <input 
+                            type="text" 
+                            value={formData.phone || ""} 
+                            onChange={e => setFormData({...formData, phone: e.target.value})}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium" 
+                          />
+                      </div>
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Business Hours</label>
+                      <div className="relative group">
+                          <Clock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
+                          <input 
+                            type="text" 
+                            value={formData.business_hours || ""} 
+                            onChange={e => setFormData({...formData, business_hours: e.target.value})}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium" 
+                          />
+                      </div>
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Headquarter Location</label>
+                      <div className="relative group">
+                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
+                          <input 
+                            type="text" 
+                            value={formData.address || ""} 
+                            onChange={e => setFormData({...formData, address: e.target.value})}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium" 
+                          />
+                      </div>
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Founded Year</label>
+                      <input 
+                        type="number" 
+                        value={formData.founded_year || ""} 
+                        onChange={e => setFormData({...formData, founded_year: parseInt(e.target.value) || undefined})}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium" 
+                      />
+                  </div>
+              </div>
+          </div>
+
+          {/* Social Presence Card */}
+          <div className="p-8 bg-white/5 border border-white/5 rounded-3xl space-y-8">
+              <h2 className={`${montserrat.className} text-xl text-white mb-4 flex items-center gap-2 pb-4 border-b border-white/5`}>
+                  <Share2 className="h-5 w-5 text-blue-500" />
+                  Social Connectivity & Maps
+              </h2>
+              <div className="space-y-6">
+                  <div className="space-y-3">
+                      <div className="flex justify-between items-center px-1">
+                          <label className="text-sm font-semibold text-gray-400 uppercase tracking-widest text-[10px]">Map Embed URL</label>
+                          {formData.map_embed_url && (
+                             <button 
+                               onClick={() => setShowMapPreview(!showMapPreview)} 
+                               className="text-[10px] uppercase font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1.5 transition-colors bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20"
+                               type="button"
+                             >
+                               {showMapPreview ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                               {showMapPreview ? "Hide Preview" : "View Map"}
+                             </button>
+                          )}
+                      </div>
+                      <div className="relative group">
+                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
+                          <input 
+                            type="url" 
+                            value={formData.map_embed_url || ""} 
+                            onChange={e => setFormData({...formData, map_embed_url: e.target.value})}
+                            placeholder="https://www.google.com/maps/embed?pb=..." 
+                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium" 
+                          />
+                      </div>
+                      {showMapPreview && formData.map_embed_url && (
+                          <div className="w-full h-64 bg-white/10 rounded-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-white/10 shadow-inner">
+                              <iframe 
+                                src={formData.map_embed_url} 
+                                width="100%" 
+                                height="100%" 
+                                style={{ border: 0 }} 
+                                allowFullScreen 
+                                loading="lazy" 
+                                referrerPolicy="no-referrer-when-downgrade"
+                              />
+                          </div>
+                      )}
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">LinkedIn URL</label>
+                      <input 
+                        type="url" 
+                        value={formData.linkedin_url || ""} 
+                        onChange={e => setFormData({...formData, linkedin_url: e.target.value})}
+                        placeholder="https://linkedin.com/company/tachydro" 
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium" 
+                      />
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Facebook URL</label>
+                      <input 
+                        type="url" 
+                        value={formData.facebook_url || ""} 
+                        onChange={e => setFormData({...formData, facebook_url: e.target.value})}
+                        placeholder="https://facebook.com/tachydro" 
+                        className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium" 
+                      />
+                  </div>
+              </div>
+          </div>
+
+          {/* Organization Chart Card */}
+          <div className="lg:col-span-2 p-8 bg-white/5 border border-white/5 rounded-3xl space-y-8">
+              <h2 className={`${montserrat.className} text-xl text-white mb-4 flex items-center gap-2 pb-4 border-b border-white/5`}>
+                  <Globe className="h-5 w-5 text-blue-500" />
+                  Organization Chart
+              </h2>
+              <div className="space-y-4">
+                  <label className="text-sm font-semibold text-gray-400 px-1 uppercase tracking-widest text-[10px]">Chart Image</label>
+                  <div className="flex flex-col gap-4">
+                    {(selectedFile || formData.organization_chart_image) && (
+                      <div className="h-48 w-full md:w-96 rounded-xl overflow-hidden border border-white/10 bg-white/5">
+                        <img 
+                          src={selectedFile ? URL.createObjectURL(selectedFile) : formData.organization_chart_image!} 
+                          alt="Org Chart" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    )}
+                    <input 
+                      type="file"
+                      accept="image/*"
+                      onChange={e => e.target.files && setSelectedFile(e.target.files[0])}
+                      className="block w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer bg-white/5 border border-white/10 rounded-xl"
+                    />
+                  </div>
+              </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
