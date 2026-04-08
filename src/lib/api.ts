@@ -14,9 +14,12 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
 
   const token = Cookies.get("access_token");
 
-  const defaultHeaders: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+  const isFormData = body instanceof FormData;
+  
+  const defaultHeaders: Record<string, string> = {};
+  if (!isFormData) {
+    defaultHeaders["Content-Type"] = "application/json";
+  }
 
   // Only attach authorization strictly when performing mutations, or explicitly flagged
   if (token && (requireAuth || method !== "GET")) {
@@ -26,7 +29,7 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
     headers: { ...defaultHeaders, ...headers },
-    body: body ? JSON.stringify(body) : undefined,
+    body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
   });
 
   if (!res.ok) {
@@ -250,10 +253,11 @@ export interface Stats {
   years: number;
 }
 
-export interface GalleryCategory {
+export interface GalleryImage {
   id: number;
-  name: string;
+  gallery_subcategory_id: number;
   order: number;
+  image: string;
 }
 
 export interface GallerySubcategory {
@@ -263,9 +267,8 @@ export interface GallerySubcategory {
   order: number;
 }
 
-export interface GalleryImage {
+export interface GalleryCategory {
   id: number;
-  gallery_subcategory_id: number;
+  name: string;
   order: number;
-  image: string;
 }

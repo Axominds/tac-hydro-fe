@@ -2,8 +2,7 @@
 
 import { useMemo } from "react";
 import { Briefcase, Settings, Users, Lightbulb } from "lucide-react";
-import { useExpertiseCategories } from "../../hooks/useExpertiseCategories";
-import { useExpertiseItems } from "../../hooks/useExpertiseItems";
+import { useExpertiseCategories, useExpertiseItems } from "../../hooks/useExpertiseCategories";
 import { useProjectScopes } from "../../hooks/useProjectScopes";
 import { useSiteSettings } from "../../hooks/useSiteSettings";
 

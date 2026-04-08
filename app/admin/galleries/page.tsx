@@ -1,17 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { 
   Plus, Edit2, Trash2, Loader2, X, Save, 
   Image as ImageIcon, Layers, List, GripVertical, 
   Check, ChevronRight, Upload, Pencil, MoreVertical
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
-import { 
-  useGalleryCategories, 
-  useGallerySubcategories, 
-  useGalleryImages 
-} from "../../../src/hooks/useGalleries";
+import { useGalleryCategories, useGallerySubcategories, useGalleryImages } from "../../../src/hooks/useGalleries";
 import { 
   useGalleryCategoryMutations, 
   useGallerySubcategoryMutations, 
@@ -120,17 +116,17 @@ function EditableRow({
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 export default function GalleriesManagementPage() {
+  // Selection states (must be declared before hooks that use them)
+  const [selectedCatId, setSelectedCatId] = useState<number | null>(null);
+  const [selectedSubCatId, setSelectedSubCatId] = useState<number | null>(null);
+
   const { data: categories, isLoading: catLoading } = useGalleryCategories();
-  const { data: subcategories, isLoading: subLoading } = useGallerySubcategories();
-  const { data: images, isLoading: imgLoading } = useGalleryImages();
+  const { data: subcategories, isLoading: subLoading, refetch: refetchSubcategories } = useGallerySubcategories(selectedCatId || 0);
+  const { data: images, isLoading: imgLoading, refetch: refetchImages } = useGalleryImages(selectedCatId || 0, selectedSubCatId || 0);
 
   const { createCategory, updateCategory, reorderCategories, deleteCategory } = useGalleryCategoryMutations();
   const { createSubcategory, updateSubcategory, reorderSubcategories, deleteSubcategory } = useGallerySubcategoryMutations();
   const { uploadImage, reorderImages, deleteImage } = useGalleryImageMutations();
-
-  // Selection states
-  const [selectedCatId, setSelectedCatId] = useState<number | null>(null);
-  const [selectedSubCatId, setSelectedSubCatId] = useState<number | null>(null);
 
   // Form states
   const [newCatName, setNewCatName] = useState("");
@@ -140,6 +136,9 @@ export default function GalleriesManagementPage() {
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
 
+  // Get current category object
+  const currentCategory = categories?.find(c => c.id === selectedCatId) || null;
+
   // Set initial selections
   useEffect(() => {
     if (categories && categories.length > 0 && !selectedCatId) {
@@ -147,20 +146,15 @@ export default function GalleriesManagementPage() {
     }
   }, [categories, selectedCatId]);
 
+  // Auto-select first subcategory when subcategories are loaded
   useEffect(() => {
-    if (subcategories && selectedCatId) {
-      const firstSubInCat = subcategories.find(s => s.category_id === selectedCatId);
-      if (firstSubInCat && !selectedSubCatId) {
-        setSelectedSubCatId(firstSubInCat.id);
-      }
+    if (subcategories && subcategories.length > 0 && !selectedSubCatId) {
+      setSelectedSubCatId(subcategories[0].id);
     }
-  }, [subcategories, selectedCatId, selectedSubCatId]);
+  }, [subcategories, selectedSubCatId]);
 
-  const activeSubcategories = subcategories?.filter(s => s.category_id === selectedCatId)
-    .sort((a, b) => a.order - b.order) || [];
-  
-  const activeImages = images?.filter(img => img.gallery_subcategory_id === selectedSubCatId)
-    .sort((a, b) => a.order - b.order) || [];
+  const activeSubcategories = subcategories?.sort((a: any, b: any) => a.order - b.order) || [];
+  const activeImages = images?.sort((a: any, b: any) => a.order - b.order) || [];
 
   // Handlers
   const handleAddCategory = async () => {
@@ -172,24 +166,29 @@ export default function GalleriesManagementPage() {
   const handleAddSubcategory = async () => {
     if (!newSubCatName.trim() || !selectedCatId) return;
     await createSubcategory.mutateAsync({ 
-      name: newSubCatName.trim(), 
-      category_id: selectedCatId,
-      order: (activeSubcategories.length || 0) + 1 
+      categoryId: selectedCatId,
+      data: {
+        name: newSubCatName.trim(), 
+        order: (activeSubcategories.length || 0) + 1 
+      }
     });
     setNewSubCatName("");
+    refetchSubcategories();
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || !selectedSubCatId) return;
+    if (!files || !selectedCatId || !selectedSubCatId) return;
 
     for (let i = 0; i < files.length; i++) {
         await uploadImage.mutateAsync({
+          categoryId: selectedCatId,
           subcategoryId: selectedSubCatId,
           file: files[i],
           order: activeImages.length + i + 1
         });
     }
+    refetchImages();
   };
 
   // Reordering handlers
@@ -206,22 +205,22 @@ export default function GalleriesManagementPage() {
       list.splice(toIdx, 0, moved);
       itemsToUpdate = list.map((item, index) => ({ id: item.id, order: index + 1 }));
       await reorderCategories.mutateAsync(itemsToUpdate);
-    } else if (type === 'sub') {
+    } else if (type === 'sub' && selectedCatId) {
       const list = [...activeSubcategories];
-      const fromIdx = list.findIndex(i => i.id === draggedId);
-      const toIdx = list.findIndex(i => i.id === targetId);
+      const fromIdx = list.findIndex((i: any) => i.id === draggedId);
+      const toIdx = list.findIndex((i: any) => i.id === targetId);
       const [moved] = list.splice(fromIdx, 1);
       list.splice(toIdx, 0, moved);
-      itemsToUpdate = list.map((item, index) => ({ id: item.id, order: index + 1 }));
-      await reorderSubcategories.mutateAsync(itemsToUpdate);
-    } else if (type === 'img') {
+      itemsToUpdate = list.map((item: any, index: number) => ({ id: item.id, order: index + 1 }));
+      await reorderSubcategories.mutateAsync({ categoryId: selectedCatId, items: itemsToUpdate });
+    } else if (type === 'img' && selectedCatId && selectedSubCatId) {
       const list = [...activeImages];
-      const fromIdx = list.findIndex(i => i.id === draggedId);
-      const toIdx = list.findIndex(i => i.id === targetId);
+      const fromIdx = list.findIndex((i: any) => i.id === draggedId);
+      const toIdx = list.findIndex((i: any) => i.id === targetId);
       const [moved] = list.splice(fromIdx, 1);
       list.splice(toIdx, 0, moved);
-      itemsToUpdate = list.map((item, index) => ({ id: item.id, order: index + 1 }));
-      await reorderImages.mutateAsync(itemsToUpdate);
+      itemsToUpdate = list.map((item: any, index: number) => ({ id: item.id, order: index + 1 }));
+      await reorderImages.mutateAsync({ categoryId: selectedCatId, subcategoryId: selectedSubCatId, items: itemsToUpdate });
     }
 
     setDraggedId(null);
@@ -296,22 +295,33 @@ export default function GalleriesManagementPage() {
           <div className="p-6 border-b border-white/5 shrink-0 bg-white/[0.02]">
             <div className="flex items-center gap-2 mb-4 text-white font-bold tracking-widest text-xs uppercase">
               <List className="h-4 w-4 text-blue-500" />
-              Subcategories in {categories?.find(c => c.id === selectedCatId)?.name || '...'}
+              Subcategories in {currentCategory?.name || '...'}
             </div>
             
             <div className="flex items-center gap-3 overflow-x-auto pb-2 pr-4 custom-scrollbar-h">
               {subLoading ? (
                 <div className="py-2"><Loader2 className="h-4 w-4 animate-spin text-blue-500" /></div>
-              ) : (
-                activeSubcategories.map((sub) => (
+              ) : selectedCatId ? (
+                activeSubcategories.map((sub: any) => (
                   <div key={sub.id} className="relative shrink-0">
                     <EditableRow
                       id={sub.id}
                       initialName={sub.name}
                       isActive={selectedSubCatId === sub.id}
                       onSelect={() => setSelectedSubCatId(sub.id)}
-                      onSave={async (id, name) => { await updateSubcategory.mutateAsync({ id, data: { name } }); }}
-                      onDelete={async (id) => { await deleteSubcategory.mutateAsync(id); setSelectedSubCatId(null); }}
+                      onSave={async (id, name) => { 
+                        if (selectedCatId) {
+                          await updateSubcategory.mutateAsync({ categoryId: selectedCatId, id, data: { name } }); 
+                          refetchSubcategories();
+                        }
+                      }}
+                      onDelete={async (id) => { 
+                        if (selectedCatId) {
+                          await deleteSubcategory.mutateAsync({ categoryId: selectedCatId, id }); 
+                          setSelectedSubCatId(null);
+                          refetchSubcategories();
+                        }
+                      }}
                       onDragStart={() => setDraggedId(sub.id)}
                       onDragOver={(e) => { e.preventDefault(); setDragOverId(sub.id); }}
                       onDrop={() => onDropReorder(sub.id, 'sub')}
@@ -319,23 +329,25 @@ export default function GalleriesManagementPage() {
                     />
                   </div>
                 ))
-              )}
+              ) : null}
               
-              <div className="flex items-center gap-2 border-l border-white/10 pl-3 ml-2 shrink-0">
-                <input 
-                  placeholder="New Subcategory..."
-                  value={newSubCatName}
-                  onChange={e => setNewSubCatName(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && handleAddSubcategory()}
-                  className="w-40 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-xs normal-case outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                <button 
-                    onClick={handleAddSubcategory}
-                    className="p-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-white transition-all shadow-lg shadow-blue-600/10"
-                >
-                    <Plus className="h-4 w-4" />
-                </button>
-              </div>
+              {selectedCatId && (
+                <div className="flex items-center gap-2 border-l border-white/10 pl-3 ml-2 shrink-0">
+                  <input 
+                    placeholder="New Subcategory..."
+                    value={newSubCatName}
+                    onChange={e => setNewSubCatName(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && handleAddSubcategory()}
+                    className="w-40 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-xs normal-case outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                  <button 
+                      onClick={handleAddSubcategory}
+                      className="p-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-white transition-all shadow-lg shadow-blue-600/10"
+                  >
+                      <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -364,7 +376,7 @@ export default function GalleriesManagementPage() {
                             onChange={handleFileUpload}
                             accept="image/*"
                          />
-                     </label>
+                    </label>
                 </div>
 
                 {imgLoading ? (
@@ -376,7 +388,7 @@ export default function GalleriesManagementPage() {
                    </div>
                 ) : (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                    {activeImages.map((img) => (
+                    {activeImages.map((img: any) => (
                       <div 
                         key={img.id}
                         draggable
@@ -394,8 +406,13 @@ export default function GalleriesManagementPage() {
                         />
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                              <button 
-                                onClick={() => deleteImage.mutateAsync(img.id)}
-                                className="p-2 bg-red-600 hover:bg-red-500 rounded-xl text-white shadow-xl transition-all active:scale-90"
+                               onClick={async () => {
+                                 if (selectedCatId && selectedSubCatId) {
+                                   await deleteImage.mutateAsync({ categoryId: selectedCatId, subcategoryId: selectedSubCatId, id: img.id });
+                                   refetchImages();
+                                 }
+                               }}
+                               className="p-2 bg-red-600 hover:bg-red-500 rounded-xl text-white shadow-xl transition-all active:scale-90"
                              >
                                 <Trash2 className="h-4 w-4" />
                              </button>

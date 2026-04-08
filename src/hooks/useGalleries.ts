@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiFetch, getImageUrl, GalleryCategory, GallerySubcategory, GalleryImage } from "../lib/api";
+import { apiFetch, getImageUrl, GalleryCategory } from "../lib/api";
 
 export function useGalleryCategories() {
   return useQuery<GalleryCategory[]>({
@@ -8,70 +8,63 @@ export function useGalleryCategories() {
   });
 }
 
-export function useGallerySubcategories() {
-  return useQuery<GallerySubcategory[]>({
-    queryKey: ["gallery-subcategories"],
-    queryFn: () => apiFetch<GallerySubcategory[]>("/api/galleries/subcategories/"),
+export function useGallerySubcategories(categoryId: number) {
+  return useQuery({
+    queryKey: ["gallery-subcategories", categoryId],
+    queryFn: () => apiFetch<any[]>(`/api/galleries/categories/${categoryId}/subcategories/`),
+    enabled: !!categoryId,
   });
 }
 
-export function useGalleryImages() {
-  return useQuery<GalleryImage[]>({
-    queryKey: ["gallery-images"],
-    queryFn: () => apiFetch<GalleryImage[]>("/api/galleries/images/"),
+export function useGalleryImages(categoryId: number, subcategoryId: number) {
+  return useQuery({
+    queryKey: ["gallery-images", categoryId, subcategoryId],
+    queryFn: () => apiFetch<any[]>(`/api/galleries/categories/${categoryId}/subcategories/${subcategoryId}/images/`),
+    enabled: !!categoryId && !!subcategoryId,
   });
 }
 
-export interface GallerySubcategoryWithImages {
-  id: number;
-  name: string;
-  order: number;
-  images: string[]; // resolved absolute URLs
+export function useAllGalleryImages(categories: GalleryCategory[] | undefined) {
+  return useQuery({
+    queryKey: ["gallery-all-images", categories?.map(c => c.id).join(",")],
+    queryFn: async () => {
+      if (!categories || categories.length === 0) return [];
+      
+      const fetchedImages: string[] = [];
+      
+      for (const cat of categories) {
+        const subs = await apiFetch<any[]>(`/api/galleries/categories/${cat.id}/subcategories/`);
+        for (const sub of subs) {
+          const imgs = await apiFetch<any[]>(`/api/galleries/categories/${cat.id}/subcategories/${sub.id}/images/`);
+          for (const img of imgs) {
+            if (img.image) fetchedImages.push(img.image);
+          }
+        }
+      }
+      
+      return fetchedImages;
+    },
+    enabled: !!categories && categories.length > 0,
+  });
 }
 
-export interface GalleryCategoryWithSubcategories {
-  id: number;
-  name: string;
-  order: number;
-  subcategories: GallerySubcategoryWithImages[];
-}
-
-/** Combines all three queries into a fully-resolved tree. */
-export function useGalleryData() {
-  const { data: categories, isLoading: catLoading } = useGalleryCategories();
-  const { data: subcategories, isLoading: subLoading } = useGallerySubcategories();
-  const { data: images, isLoading: imgLoading } = useGalleryImages();
-
-  const isLoading = catLoading || subLoading || imgLoading;
-
-  const tree: GalleryCategoryWithSubcategories[] = (() => {
-    if (!categories || !subcategories || !images) return [];
-
-    return categories
-      .slice()
-      .sort((a, b) => a.order - b.order)
-      .map((cat) => {
-        const catSubcategories = subcategories
-          .filter((sub) => sub.category_id === cat.id)
-          .sort((a, b) => a.order - b.order)
-          .map((sub) => ({
-            id: sub.id,
-            name: sub.name,
-            order: sub.order,
-            images: images
-              .filter((img) => img.gallery_subcategory_id === sub.id)
-              .sort((a, b) => a.order - b.order)
-              .map((img) => getImageUrl(img.image) ?? ""),
-          }));
-
-        return {
-          id: cat.id,
-          name: cat.name,
-          order: cat.order,
-          subcategories: catSubcategories,
-        };
-      });
-  })();
-
-  return { tree, isLoading };
+export function useCategoryAllImages(categoryId: number, subcategories: any[] | undefined) {
+  return useQuery({
+    queryKey: ["gallery-category-all-images", categoryId, subcategories?.map(s => s.id).join(",")],
+    queryFn: async () => {
+      if (!subcategories || subcategories.length === 0) return [];
+      
+      const fetchedImages: string[] = [];
+      
+      for (const sub of subcategories) {
+        const imgs = await apiFetch<any[]>(`/api/galleries/categories/${categoryId}/subcategories/${sub.id}/images/`);
+        for (const img of imgs) {
+          if (img.image) fetchedImages.push(img.image);
+        }
+      }
+      
+      return fetchedImages;
+    },
+    enabled: !!categoryId && !!subcategories && subcategories.length > 0,
+  });
 }

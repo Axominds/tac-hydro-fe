@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage } from "../lib/api";
+import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage, ExpertiseCategory, ServiceSector } from "../lib/api";
 
 // --- PROJECTS ---
 // ... (omitting projects for brevity in replacement, but I will target the right lines)
@@ -169,30 +169,30 @@ export function useGallerySubcategoryMutations() {
   const queryClient = useQueryClient();
 
   const createSubcategory = useMutation({
-    mutationFn: (data: Partial<GallerySubcategory>) =>
-      apiFetch<GallerySubcategory>("/api/galleries/subcategories/", { method: "POST", body: data }),
+    mutationFn: ({ categoryId, data }: { categoryId: number; data: Partial<GallerySubcategory> }) =>
+      apiFetch<GallerySubcategory>(`/api/galleries/categories/${categoryId}/subcategories/`, { method: "POST", body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery-subcategories"] }),
   });
 
   const updateSubcategory = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<GallerySubcategory> }) =>
-      apiFetch<GallerySubcategory>(`/api/galleries/subcategories/${id}/`, { method: "PATCH", body: data }),
+    mutationFn: ({ categoryId, id, data }: { categoryId: number; id: number; data: Partial<GallerySubcategory> }) =>
+      apiFetch<GallerySubcategory>(`/api/galleries/categories/${categoryId}/subcategories/${id}/`, { method: "PATCH", body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery-subcategories"] }),
   });
 
   const reorderSubcategories = useMutation({
-    mutationFn: (items: { id: number; order: number }[]) =>
+    mutationFn: ({ categoryId, items }: { categoryId: number; items: { id: number; order: number }[] }) =>
       Promise.all(
         items.map((item) =>
-          apiFetch(`/api/galleries/subcategories/${item.id}/`, { method: "PATCH", body: { order: item.order } })
+          apiFetch(`/api/galleries/categories/${categoryId}/subcategories/${item.id}/`, { method: "PATCH", body: { order: item.order } })
         )
       ),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery-subcategories"] }),
   });
 
   const deleteSubcategory = useMutation({
-    mutationFn: (id: number) =>
-      apiFetch(`/api/galleries/subcategories/${id}/`, { method: "DELETE" }),
+    mutationFn: ({ categoryId, id }: { categoryId: number; id: number }) =>
+      apiFetch(`/api/galleries/categories/${categoryId}/subcategories/${id}/`, { method: "DELETE" }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery-subcategories"] }),
   });
 
@@ -203,36 +203,138 @@ export function useGalleryImageMutations() {
   const queryClient = useQueryClient();
 
   const uploadImage = useMutation({
-    mutationFn: ({ subcategoryId, file, order }: { subcategoryId: number; file: File; order: number }) => {
+    mutationFn: ({ categoryId, subcategoryId, file, order }: { categoryId: number; subcategoryId: number; file: File; order: number }) => {
       const formData = new FormData();
-      formData.append("gallery_subcategory_id", subcategoryId.toString());
       formData.append("image", file);
       formData.append("order", order.toString());
-      return apiFetch<GalleryImage>("/api/galleries/images/", {
+      return apiFetch<GalleryImage>(`/api/galleries/categories/${categoryId}/subcategories/${subcategoryId}/images/`, {
         method: "POST",
         body: formData,
-        headers: { "Content-Type": "multipart/form-data" },
       });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery-images"] }),
   });
 
   const reorderImages = useMutation({
-    mutationFn: (items: { id: number; order: number }[]) =>
+    mutationFn: ({ categoryId, subcategoryId, items }: { categoryId: number; subcategoryId: number; items: { id: number; order: number }[] }) =>
       Promise.all(
         items.map((item) =>
-          apiFetch(`/api/galleries/images/${item.id}/`, { method: "PATCH", body: { order: item.order } })
+          apiFetch(`/api/galleries/categories/${categoryId}/subcategories/${subcategoryId}/images/${item.id}/`, { method: "PATCH", body: { order: item.order } })
         )
       ),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery-images"] }),
   });
 
   const deleteImage = useMutation({
-    mutationFn: (id: number) =>
-      apiFetch(`/api/galleries/images/${id}/`, { method: "DELETE" }),
+    mutationFn: ({ categoryId, subcategoryId, id }: { categoryId: number; subcategoryId: number; id: number }) =>
+      apiFetch(`/api/galleries/categories/${categoryId}/subcategories/${subcategoryId}/images/${id}/`, { method: "DELETE" }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["gallery-images"] }),
   });
 
   return { uploadImage, reorderImages, deleteImage };
+}
+
+// --- SERVICES ---
+
+export function useExpertiseCategoryMutations() {
+  const queryClient = useQueryClient();
+
+  const createCategory = useMutation({
+    mutationFn: (data: Partial<ExpertiseCategory>) =>
+      apiFetch<ExpertiseCategory>("/api/services/expertise-categories/", { method: "POST", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["expertise-categories"] }),
+  });
+
+  const updateCategory = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<ExpertiseCategory> }) =>
+      apiFetch<ExpertiseCategory>(`/api/services/expertise-categories/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["expertise-categories"] }),
+  });
+
+  const deleteCategory = useMutation({
+    mutationFn: (id: number) =>
+      apiFetch(`/api/services/expertise-categories/${id}/`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["expertise-categories"] }),
+  });
+
+  const reorderCategories = useMutation({
+    mutationFn: (items: { id: number; order: number }[]) =>
+      Promise.all(
+        items.map((item) =>
+          apiFetch(`/api/services/expertise-categories/${item.id}/`, { method: "PATCH", body: { order: item.order } })
+        )
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["expertise-categories"] }),
+  });
+
+  return { createCategory, updateCategory, deleteCategory, reorderCategories };
+}
+
+export function useExpertiseItemMutations() {
+  const queryClient = useQueryClient();
+
+  const createItem = useMutation({
+    mutationFn: ({ categoryId, data }: { categoryId: number; data: any }) =>
+      apiFetch<ExpertiseItem>(`/api/services/expertise-categories/${categoryId}/items/`, { method: "POST", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["expertise-items"] }),
+  });
+
+  const updateItem = useMutation({
+    mutationFn: ({ categoryId, id, data }: { categoryId: number; id: number; data: any }) =>
+      apiFetch<ExpertiseItem>(`/api/services/expertise-categories/${categoryId}/items/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["expertise-items"] }),
+  });
+
+  const deleteItem = useMutation({
+    mutationFn: ({ categoryId, id }: { categoryId: number; id: number }) =>
+      apiFetch(`/api/services/expertise-categories/${categoryId}/items/${id}/`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["expertise-items"] }),
+  });
+
+  const reorderItems = useMutation({
+    mutationFn: ({ categoryId, items }: { categoryId: number; items: { id: number; order: number }[] }) =>
+      Promise.all(
+        items.map((item) =>
+          apiFetch(`/api/services/expertise-categories/${categoryId}/items/${item.id}/`, { method: "PATCH", body: { order: item.order } })
+        )
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["expertise-items"] }),
+  });
+
+  return { createItem, updateItem, deleteItem, reorderItems };
+}
+
+export function useServiceSectorMutations() {
+  const queryClient = useQueryClient();
+
+  const createSector = useMutation({
+    mutationFn: (data: Partial<ServiceSector>) =>
+      apiFetch<ServiceSector>("/api/services/sectors/", { method: "POST", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["service-sectors"] }),
+  });
+
+  const updateSector = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<ServiceSector> }) =>
+      apiFetch<ServiceSector>(`/api/services/sectors/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["service-sectors"] }),
+  });
+
+  const deleteSector = useMutation({
+    mutationFn: (id: number) =>
+      apiFetch(`/api/services/sectors/${id}/`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["service-sectors"] }),
+  });
+
+  const reorderSectors = useMutation({
+    mutationFn: (items: { id: number; order: number }[]) =>
+      Promise.all(
+        items.map((item) =>
+          apiFetch(`/api/services/sectors/${item.id}/`, { method: "PATCH", body: { order: item.order } })
+        )
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["service-sectors"] }),
+  });
+
+  return { createSector, updateSector, deleteSector, reorderSectors };
 }
 
