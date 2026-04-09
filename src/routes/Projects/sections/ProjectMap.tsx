@@ -67,7 +67,9 @@ export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
     if (activeScope === "All") {
       return projects.filter((p) => p.latitude && p.longitude);
     }
-    return projects.filter((p) => p.scope === activeScope && p.latitude && p.longitude);
+    return projects.filter(
+      (p) => p.scopes?.some((s) => s.name === activeScope) && p.latitude && p.longitude,
+    );
   }, [projects, activeScope]);
 
   return (
@@ -92,7 +94,8 @@ export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
         {filteredProjects.map((project) => {
-          const colors = scopeColors[project.scope || ""] || scopeColors["Detailed Feasibility Study"];
+          const colors =
+            scopeColors[project.scope || ""] || scopeColors["Detailed Feasibility Study"];
           return (
             <Marker
               key={project.id}

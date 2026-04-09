@@ -26,7 +26,7 @@ import { useProjectScopes } from "../../../hooks/useProjectScopes";
 import { useProjectsWithScopes } from "../../../hooks/useProjects";
 
 interface MapLocation {
-  id: number;
+  id: string;
   coords: [number, number];
   title: string;
   scope: string;
@@ -72,15 +72,21 @@ export const MapSection = () => {
 
   const mapLocations: MapLocation[] = useMemo(() => {
     if (!projects) return [];
-    return projects
-      .filter((p) => p.latitude && p.longitude && p.scope)
-      .map((project) => ({
-        id: project.id,
-        coords: [project.latitude, project.longitude] as [number, number],
-        title: project.title,
-        scope: project.scope || "Detailed Feasibility Study",
-        capacity: `${project.installed_capacity} ${project.installed_capacity_unit}`,
-      }));
+    const locations: MapLocation[] = [];
+    projects
+      .filter((p) => p.latitude && p.longitude && p.scopes?.length)
+      .forEach((project) => {
+        project.scopes.forEach((scope) => {
+          locations.push({
+            id: `${project.id}-${scope.id}`,
+            coords: [project.latitude, project.longitude] as [number, number],
+            title: project.title,
+            scope: scope.name,
+            capacity: `${project.installed_capacity} ${project.installed_capacity_unit}`,
+          });
+        });
+      });
+    return locations;
   }, [projects]);
 
   const filteredLocations = useMemo(() => {
@@ -119,7 +125,8 @@ export const MapSection = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
               />
               {filteredLocations.map((location) => {
-                const colors = scopeColors[location.scope] || scopeColors["Detailed Feasibility Study"];
+                const colors =
+                  scopeColors[location.scope] || scopeColors["Detailed Feasibility Study"];
                 return (
                   <Marker
                     key={location.id}

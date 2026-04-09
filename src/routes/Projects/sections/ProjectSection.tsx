@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../components/ui/dialog";
 import { ProjectCard } from "./ProjectCard";
 import { ScrollArea } from "../../../components/ui/scroll-area";
@@ -22,11 +22,16 @@ import { ImageViewer } from "../../../components/ui/ImageViewer";
 import { useProjectScopes } from "../../../hooks/useProjectScopes";
 import { useProjectsWithScopes, useProjectDetail } from "../../../hooks/useProjects";
 
-export type ProjectFromAPI = ReturnType<typeof useProjectsWithScopes>["data"] extends (infer T)[] | undefined ? T : never;
+export type ProjectFromAPI = ReturnType<typeof useProjectsWithScopes>["data"] extends
+  | (infer T)[]
+  | undefined
+  ? T
+  : never;
 
 export const ProjectSection = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const router = useRouter();
   const [selectedProject, setSelectedProject] = useState<ProjectFromAPI | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,7 +41,7 @@ export const ProjectSection = () => {
   const { data: scopes, isLoading: scopesLoading } = useProjectScopes();
   const { data: projects, isLoading: projectsLoading } = useProjectsWithScopes();
   const { data: projectDetail, isLoading: projectDetailLoading } = useProjectDetail(
-    selectedProject ? selectedProject.id : null
+    selectedProject ? selectedProject.id : null,
   );
 
   const scopeNames = useMemo(() => scopes?.map((s) => s.name) || [], [scopes]);
@@ -58,15 +63,12 @@ export const ProjectSection = () => {
 
   const effectiveScope = urlScope ?? activeScope;
 
-  // Scroll to projects section when URL has scope param
   useEffect(() => {
-    if (urlScope) {
-      const section = document.getElementById("projects-section");
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth" });
-      }
+    const section = document.getElementById("projects-section");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  }, [urlScope]);
+  }, [effectiveScope]);
 
   const handleProjectClick = (project: ProjectFromAPI) => {
     setSelectedProject(project);
@@ -76,13 +78,20 @@ export const ProjectSection = () => {
   const filteredProjects = useMemo(() => {
     if (!projects) return [];
     return projects
-      .filter((p) => p.scope === effectiveScope && p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+      .filter((p) => {
+        const matchesScope = p.scopes?.some((s) => s.name === effectiveScope);
+        const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesScope && matchesSearch;
+      })
       .sort((a, b) => b.installed_capacity - a.installed_capacity);
   }, [projects, effectiveScope, searchQuery]);
 
   if (scopesLoading || projectsLoading) {
     return (
-      <section id="projects-section" className="relative w-full py-16 lg:py-24 bg-[#f8f9fa] min-h-screen flex items-center justify-center">
+      <section
+        id="projects-section"
+        className="relative w-full py-16 lg:py-24 bg-[#f8f9fa] min-h-screen flex items-center justify-center"
+      >
         <div className="animate-pulse text-slate-400">Loading projects...</div>
       </section>
     );
@@ -90,7 +99,10 @@ export const ProjectSection = () => {
 
   if (!scopes?.length || !projects?.length) {
     return (
-      <section id="projects-section" className="relative w-full bg-[#f8f9fa] min-h-screen flex items-center justify-center py-16 lg:py-24">
+      <section
+        id="projects-section"
+        className="relative w-full bg-[#f8f9fa] min-h-screen flex items-center justify-center py-16 lg:py-24"
+      >
         <div className="flex flex-col items-center justify-center py-32 px-4 bg-white rounded-[40px] border border-dashed border-slate-200 animate-fade-in max-w-lg mx-4">
           <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-3xl bg-slate-50 text-blue-600">
             <svg
@@ -110,7 +122,8 @@ export const ProjectSection = () => {
           </div>
           <h3 className="text-xl font-bold text-slate-900 mb-2">No Projects Found</h3>
           <p className="text-slate-500 text-center max-w-sm mb-8 leading-relaxed">
-            We're currently preparing our project portfolio. Check back soon for updates on our completed and ongoing projects.
+            We're currently preparing our project portfolio. Check back soon for updates on our
+            completed and ongoing projects.
           </p>
         </div>
       </section>
@@ -133,24 +146,23 @@ export const ProjectSection = () => {
                 </h1>
                 <nav className="space-y-2">
                   {scopes.map((scope) => {
-                    const scopeProjects = projects.filter((p) => p.scope === scope.name);
+                    const scopeProjects = projects.filter((p) =>
+                      p.scopes?.some((s) => s.name === scope.name),
+                    );
                     const count = scopeProjects.length;
-                    const totalCapacity = scopeProjects.reduce((sum, p) => sum + p.installed_capacity, 0);
+                    const totalCapacity = scopeProjects.reduce(
+                      (sum, p) => sum + p.installed_capacity,
+                      0,
+                    );
                     const isActive = effectiveScope === scope.name;
 
                     return (
                       <button
                         key={scope.id}
                         onClick={() => {
-                          setActiveScope(scope.name);
-                          // Wait for React to render the new list before scrolling
-                          // This prevents the scroll height from jumping mid-animation
-                          setTimeout(() => {
-                            const section = document.getElementById("projects-section");
-                            if (section) {
-                              section.scrollIntoView({ behavior: "smooth", block: "start" });
-                            }
-                          }, 50);
+                          router.replace(`/projects?scope=${encodeURIComponent(scope.name)}`, {
+                            scroll: false,
+                          });
                         }}
                         className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl text-left transition-all duration-300 group ${
                           isActive
@@ -243,6 +255,7 @@ export const ProjectSection = () => {
       {/* Project Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-[95vw] lg:max-w-5xl h-[85vh] p-0 overflow-hidden bg-white gap-0 border-0 flex flex-col">
+          <DialogTitle className="sr-only">Project Details</DialogTitle>
           {projectDetailLoading ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="animate-pulse text-slate-400">Loading project details...</div>
@@ -257,7 +270,8 @@ export const ProjectSection = () => {
                     </span>
                   </div>
                   <DialogTitle className="text-2xl lg:text-3xl font-bold text-slate-900 leading-tight">
-                    {modalData.title} ({modalData.installed_capacity} {modalData.installed_capacity_unit})
+                    {modalData.title} ({modalData.installed_capacity}{" "}
+                    {modalData.installed_capacity_unit})
                   </DialogTitle>
                 </div>
               </DialogHeader>
@@ -314,39 +328,41 @@ export const ProjectSection = () => {
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {Object.entries(modalData.technical_highlights || {}).map(([key, value]) => {
-                          // Icon Selection Logic based on Standard 10 Points
-                          let Icon = Settings;
-                          const lowerKey = key.toLowerCase();
+                        {Object.entries(modalData.technical_highlights || {}).map(
+                          ([key, value]) => {
+                            // Icon Selection Logic based on Standard 10 Points
+                            let Icon = Settings;
+                            const lowerKey = key.toLowerCase();
 
-                          if (lowerKey.includes("location")) Icon = MapPin;
-                          if (lowerKey.includes("capacity")) Icon = Zap;
-                          if (lowerKey.includes("discharge")) Icon = Droplets;
-                          if (lowerKey.includes("flood")) Icon = Waves;
-                          if (lowerKey.includes("head")) Icon = ArrowUpRight;
-                          if (lowerKey.includes("headrace")) Icon = Maximize;
-                          if (lowerKey.includes("penstock")) Icon = Maximize;
-                          if (lowerKey.includes("thickness")) Icon = ShieldCheck;
+                            if (lowerKey.includes("location")) Icon = MapPin;
+                            if (lowerKey.includes("capacity")) Icon = Zap;
+                            if (lowerKey.includes("discharge")) Icon = Droplets;
+                            if (lowerKey.includes("flood")) Icon = Waves;
+                            if (lowerKey.includes("head")) Icon = ArrowUpRight;
+                            if (lowerKey.includes("headrace")) Icon = Maximize;
+                            if (lowerKey.includes("penstock")) Icon = Maximize;
+                            if (lowerKey.includes("thickness")) Icon = ShieldCheck;
 
-                          return (
-                            <div
-                              key={key}
-                              className="flex gap-4 p-4 rounded-xl border border-slate-100 bg-white hover:border-blue-100 transition-colors"
-                            >
-                              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center">
-                                <Icon className="w-5 h-5 text-blue-600" />
+                            return (
+                              <div
+                                key={key}
+                                className="flex gap-4 p-4 rounded-xl border border-slate-100 bg-white hover:border-blue-100 transition-colors"
+                              >
+                                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center">
+                                  <Icon className="w-5 h-5 text-blue-600" />
+                                </div>
+                                <div className="flex flex-col">
+                                  <dt className="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-0.5">
+                                    {key}
+                                  </dt>
+                                  <dd className="text-slate-900 font-bold text-sm leading-tight">
+                                    {value}
+                                  </dd>
+                                </div>
                               </div>
-                              <div className="flex flex-col">
-                                <dt className="text-[10px] font-bold uppercase text-slate-400 tracking-wider mb-0.5">
-                                  {key}
-                                </dt>
-                                <dd className="text-slate-900 font-bold text-sm leading-tight">
-                                  {value}
-                                </dd>
-                              </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          },
+                        )}
                       </div>
                     </div>
 
