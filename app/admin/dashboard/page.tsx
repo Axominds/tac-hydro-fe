@@ -44,7 +44,7 @@ export default function AdminDashboardPage() {
   if (!mounted) return null;
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-15">
       {/* Welcome Header */}
       <div>
         <h1 className={`${montserrat.className} text-4xl mb-3`} style={classes.text.primary}>

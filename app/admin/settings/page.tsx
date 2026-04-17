@@ -102,7 +102,7 @@ export default function SiteSettingsManagementPage() {
   };
 
   return (
-    <div className="space-y-12 uppercase relative pb-40">
+    <div className="space-y-15 uppercase relative pb-40">
       <div className="flex items-center justify-between">
         <div>
           <h1

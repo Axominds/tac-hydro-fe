@@ -7,16 +7,22 @@ import { useProjectsWithScopes } from "../../../src/hooks/useProjects";
 import { useProjectMutations } from "../../../src/hooks/useAdminMutations";
 import { Project } from "../../../src/lib/api";
 import { useAdminTheme, getThemedClasses } from "../../../src/hooks/useAdminTheme";
+import { useModalContext } from "../layout";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
 export default function ProjectsManagementPage() {
   const { theme, colors, mounted } = useAdminTheme();
+  const { setIsModalOpen: setContextModalOpen } = useModalContext();
   const classes = getThemedClasses(theme);
   const { data: projects, isLoading } = useProjectsWithScopes();
   const { createProject, updateProject, deleteProject } = useProjectMutations();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpenLocal] = useState(false);
+  const setIsModalOpen = (open: boolean) => {
+    setIsModalOpenLocal(open);
+    setContextModalOpen(open);
+  };
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState<Partial<Project>>({});
 
@@ -72,7 +78,7 @@ export default function ProjectsManagementPage() {
   };
 
   return (
-    <div className="space-y-10 uppercase relative">
+    <div className="space-y-15 uppercase relative">
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`${montserrat.className} text-4xl mb-2`} style={classes.text.primary}>

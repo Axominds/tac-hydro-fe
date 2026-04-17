@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useNewsItems, useNewsCategories } from "../../../src/hooks/useNews";
+import { useModalContext } from "../layout";
 import { useNewsMutations, useNewsCategoryMutations } from "../../../src/hooks/useAdminMutations";
 import { NewsItem, NewsCategory } from "../../../src/lib/api";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
@@ -155,12 +156,21 @@ export default function NewsManagementPage() {
   const { createNews, updateNews, deleteNews } = useNewsMutations();
   const { createCategory, updateCategory, reorderCategories, deleteCategory } =
     useNewsCategoryMutations();
+  const { setIsModalOpen: setContextModalOpen } = useModalContext();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpenLocal] = useState(false);
+  const setIsModalOpen = (open: boolean) => {
+    setIsModalOpenLocal(open);
+    setContextModalOpen(open);
+  };
   const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
   const [formData, setFormData] = useState<Partial<NewsItem>>({});
 
-  const [isCatModalOpen, setIsCatModalOpen] = useState(false);
+  const [isCatModalOpen, setIsCatModalOpenLocal] = useState(false);
+  const setIsCatModalOpen = (open: boolean) => {
+    setIsCatModalOpenLocal(open);
+    setContextModalOpen(open);
+  };
   const [newCatName, setNewCatName] = useState("");
   const [addingCat, setAddingCat] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
@@ -302,7 +312,7 @@ export default function NewsManagementPage() {
   };
 
   return (
-    <div className="space-y-10 uppercase relative">
+    <div className="space-y-15 uppercase relative">
       <div className="flex items-center justify-between">
         <div>
           <h1
@@ -590,9 +600,13 @@ export default function NewsManagementPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
           <div
-            className="w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col"
+            className="absolute inset-0 z-0 bg-black/60 backdrop-blur-sm w-screen h-screen"
+            onClick={() => setIsModalOpen(false)}
+          />
+          <div
+            className="relative z-10 w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
             style={{
               backgroundColor: isDark ? "#0a0a0a" : "#ffffff",
               border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,
@@ -770,9 +784,13 @@ export default function NewsManagementPage() {
       )}
 
       {isCatModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
           <div
-            className="w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl relative flex flex-col max-h-[80vh]"
+            className="absolute inset-0 z-0 bg-black/60 backdrop-blur-sm w-screen h-screen"
+            onClick={() => setIsCatModalOpen(false)}
+          />
+          <div
+            className="relative z-10 w-full max-w-xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[80vh]"
             style={{
               backgroundColor: isDark ? "#0a0a0a" : "#ffffff",
               border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,

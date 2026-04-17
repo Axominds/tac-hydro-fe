@@ -95,10 +95,13 @@ export function ServiceSectorModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden">
       <div
-        className="relative w-full max-w-lg max-h-[90vh] rounded-2xl overflow-hidden flex flex-col"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm w-screen h-screen"
+        onClick={onClose}
+      />
+      <div
+        className="relative z-10 w-full max-w-lg max-h-[90vh] rounded-2xl overflow-hidden flex flex-col"
         style={{
           backgroundColor: isDark ? "#0a0a0a" : "#ffffff",
           border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,

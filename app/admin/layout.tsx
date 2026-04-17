@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { AdminSidebar } from "../../components/admin/AdminSidebar";
 import { ThemeToggle, getTheme } from "../../src/components/admin/ThemeToggle";
@@ -41,12 +42,26 @@ export const adminTheme = {
   },
 };
 
+interface ModalContextType {
+  isModalOpen: boolean;
+  setIsModalOpen: (open: boolean) => void;
+}
+
+export const ModalContext = createContext<ModalContextType>({
+  isModalOpen: false,
+  setIsModalOpen: () => {},
+});
+
+export function useModalContext() {
+  return useContext(ModalContext);
+}
+
 export function AdminCard({
   children,
   className = "",
   style = {},
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   style?: React.CSSProperties;
 }) {
@@ -116,9 +131,13 @@ export function AdminInput({ style = {}, ...props }: React.InputHTMLAttributes<H
   );
 }
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const isLoginPage = pathname === "/admin/login";
 
   useEffect(() => {
     const initialTheme = Cookies.get(THEME_KEY) as "light" | "dark" | undefined;
@@ -139,28 +158,48 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const colors = adminTheme[theme];
 
+  if (!mounted) return null;
+
+  const sidebarStyle = isModalOpen
+    ? { filter: "blur(8px)", pointerEvents: "none", userSelect: "none" }
+    : {};
+
   return (
-    <div
-      className="admin-dashboard"
-      style={{
-        backgroundColor: colors.bg,
-        color: colors.text,
-        minHeight: "100vh",
-        transition: "background-color 0.3s ease, color 0.3s ease",
-      }}
-    >
-      <AdminSidebar theme={theme} />
-      {mounted && <ThemeToggle />}
-      <main className="flex-1 ml-72 p-10 relative">
-        <div
-          className="absolute top-0 right-0 w-full h-[300px] pointer-events-none transition-opacity duration-300"
-          style={{
-            background: `linear-gradient(to bottom right, ${colors.gradient}, transparent)`,
-            opacity: theme === "dark" ? 1 : 0.5,
-          }}
-        />
-        <div className="relative z-10 max-w-7xl mx-auto">{children}</div>
-      </main>
-    </div>
+    <ModalContext.Provider value={{ isModalOpen, setIsModalOpen }}>
+      <div
+        className="admin-dashboard"
+        style={{
+          backgroundColor: colors.bg,
+          color: colors.text,
+          minHeight: "100vh",
+          transition: "background-color 0.3s ease, color 0.3s ease",
+        }}
+      >
+        {!isLoginPage && (
+          <>
+            <div style={{ ...sidebarStyle, transition: "filter 0.3s ease" }}>
+              <AdminSidebar theme={theme} />
+            </div>
+            {mounted && (
+              <div style={{ ...sidebarStyle, transition: "filter 0.3s ease" }}>
+                <ThemeToggle />
+              </div>
+            )}
+          </>
+        )}
+        <main className={isLoginPage ? "flex-1 p-10 relative" : "flex-1 ml-72 p-10 relative"}>
+          {!isLoginPage && (
+            <div
+              className="absolute top-0 right-0 w-full h-[300px] pointer-events-none transition-opacity duration-300"
+              style={{
+                background: `linear-gradient(to bottom right, ${colors.gradient}, transparent)`,
+                opacity: theme === "dark" ? 1 : 0.5,
+              }}
+            />
+          )}
+          <div className="relative z-10 max-w-7xl mx-auto">{children}</div>
+        </main>
+      </div>
+    </ModalContext.Provider>
   );
 }

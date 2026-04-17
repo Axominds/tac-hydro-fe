@@ -23,6 +23,7 @@ import {
 import { ExpertiseCategoryModal } from "./ExpertiseCategoryModal";
 import { ServiceSectorModal } from "./ServiceSectorModal";
 import { useAdminTheme, getThemedClasses } from "../../../src/hooks/useAdminTheme";
+import { useModalContext } from "../layout";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -522,6 +523,7 @@ function AddNewSectorCard({
 
 export default function ServicesManagementPage() {
   const { theme, colors, mounted } = useAdminTheme();
+  const { setIsModalOpen } = useModalContext();
   const {
     data: categories,
     isLoading: catLoading,
@@ -533,7 +535,11 @@ export default function ServicesManagementPage() {
     useExpertiseCategoryMutations();
   const { createSector, updateSector, deleteSector, reorderSectors } = useServiceSectorMutations();
 
-  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [editingCategory, setEditingCategoryLocal] = useState<any>(null);
+  const setEditingCategory = (cat: any) => {
+    setEditingCategoryLocal(cat);
+    setIsModalOpen(!!cat);
+  };
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
 
@@ -577,8 +583,16 @@ export default function ServicesManagementPage() {
 
   const [sectorDraggedId, setSectorDraggedId] = useState<number | null>(null);
   const [sectorDragOverId, setSectorDragOverId] = useState<number | null>(null);
-  const [editingSector, setEditingSector] = useState<any>(null);
-  const [isAddingSector, setIsAddingSector] = useState(false);
+  const [editingSector, setEditingSectorLocal] = useState<any>(null);
+  const setEditingSector = (sector: any) => {
+    setEditingSectorLocal(sector);
+    setIsModalOpen(!!sector);
+  };
+  const [isAddingSector, setIsAddingSectorLocal] = useState(false);
+  const setIsAddingSector = (open: boolean) => {
+    setIsAddingSectorLocal(open);
+    setIsModalOpen(open);
+  };
 
   const sortedSectors = [...(sectors || [])].sort((a: any, b: any) => a.order - b.order);
 
@@ -623,7 +637,7 @@ export default function ServicesManagementPage() {
   if (!mounted) return null;
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-15">
       <div>
         <h1 className={`${montserrat.className} text-4xl mb-2`} style={colors.text.primary}>
           Our <span className="text-blue-500">Services</span>

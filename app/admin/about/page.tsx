@@ -21,7 +21,7 @@ export default function AboutManagementPage() {
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-15">
       <div className="flex items-center justify-between">
         <div>
           <h1

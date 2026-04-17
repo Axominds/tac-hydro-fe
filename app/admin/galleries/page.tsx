@@ -26,6 +26,7 @@ import {
   useGalleryImageMutations,
 } from "../../../src/hooks/useAdminMutations";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
+import { useModalContext } from "../layout";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -307,7 +308,7 @@ export default function GalleriesManagementPage() {
   };
 
   return (
-    <div className="space-y-10 uppercase relative h-[calc(100vh-140px)] flex flex-col">
+    <div className="space-y-15 uppercase relative h-[calc(100vh-140px)] flex flex-col">
       <div className="flex items-center justify-between shrink-0">
         <div>
           <h1
