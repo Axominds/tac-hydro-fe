@@ -11,7 +11,7 @@ export const NewsAndArticlesSection = () => {
   const pageSize = 3;
 
   const { data: categories, isLoading: isLoadingCategories } = useNewsCategories();
-  const { data: newsData, isLoading: isLoadingItems } = useNewsItems(activeFilter, currentPage, pageSize);
+  const { data: newsData, isLoading: isLoadingItems } = useNewsItems(activeFilter, currentPage, pageSize, true);
 
   const isLoading = isLoadingCategories || isLoadingItems;
 

@@ -1,6 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch, NewsDetail, NewsCategory, NewsListResponse } from "../lib/api";
 
+export interface NewsCounts {
+  all: number;
+  published: number;
+  drafts: number;
+  by_category: Record<number, number>;
+}
+
 export function useNewsCategories() {
   return useQuery<NewsCategory[]>({
     queryKey: ["news-categories"],
@@ -8,13 +15,21 @@ export function useNewsCategories() {
   });
 }
 
-export function useNewsItems(categoryId?: number | null, page: number = 1, pageSize: number = 3) {
+export function useNewsItems(
+  categoryId?: number | null,
+  page: number = 1,
+  pageSize: number = 100,
+  isPublished?: boolean | null
+) {
   return useQuery<NewsListResponse>({
-    queryKey: categoryId ? ["news", { categoryId, page, pageSize }] : ["news", { page, pageSize }],
+    queryKey: ["news", { categoryId, page, pageSize, isPublished }],
     queryFn: () => {
       let url = `/api/home/news/?page=${page}&page_size=${pageSize}`;
       if (categoryId) {
         url += `&news_category_id=${categoryId}`;
+      }
+      if (isPublished !== null && isPublished !== undefined) {
+        url += `&is_published=${isPublished}`;
       }
       return apiFetch<NewsListResponse>(url);
     },
@@ -31,6 +46,14 @@ export function useNewsDetail(id: number | null) {
       return apiFetch<NewsDetail>(`/api/home/news/${id}/`);
     },
     enabled: !!id,
+  });
+}
+
+export function useNewsCounts() {
+  return useQuery<NewsCounts>({
+    queryKey: ["news-counts"],
+    queryFn: () => apiFetch<NewsCounts>("/api/home/news/counts/"),
+    staleTime: 60 * 1000,
   });
 }
 

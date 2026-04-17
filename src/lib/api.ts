@@ -156,6 +156,14 @@ export interface ProjectScopeMembership {
   image_urls: string[];
 }
 
+export interface ProjectScopeImage {
+  id: number;
+  project_scope_membership_id: number;
+  alt_text: string | null;
+  order: number;
+  image: string | null;
+}
+
 export interface NewsCategory {
   id: number;
   name: string;

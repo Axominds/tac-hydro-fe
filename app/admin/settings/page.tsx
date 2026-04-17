@@ -103,8 +103,7 @@ export default function SiteSettingsManagementPage() {
 
   return (
     <div className="space-y-15 uppercase relative pb-40">
-      <div className="flex items-center justify-between">
-        <div>
+      <div>
           <h1
             className={`${montserrat.className} text-4xl mb-2`}
             style={{ color: colors.text as string }}
@@ -115,34 +114,6 @@ export default function SiteSettingsManagementPage() {
             Configure site-wide metadata, contact information, and social links.
           </p>
         </div>
-
-        <div className="flex items-center gap-4">
-          {saveStatus === "success" && (
-            <span className="flex items-center gap-2 text-green-500 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
-              <CheckCircle2 className="h-4 w-4" />
-              Changes saved successfully
-            </span>
-          )}
-          {saveStatus === "error" && (
-            <span className="flex items-center gap-2 text-red-500 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
-              <AlertCircle className="h-4 w-4" />
-              Failed to save changes
-            </span>
-          )}
-          <button
-            onClick={handleSave}
-            disabled={saveStatus === "saving" || isLoading}
-            className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition-all shadow-xl shadow-blue-500/20 active:scale-95"
-          >
-            {saveStatus === "saving" ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Save className="h-5 w-5" />
-            )}
-            {saveStatus === "saving" ? "Saving..." : "Apply Changes"}
-          </button>
-        </div>
-      </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
@@ -479,6 +450,32 @@ export default function SiteSettingsManagementPage() {
           </div>
         </div>
       )}
+      <div className="flex justify-end pt-8 pb-8">
+        {saveStatus === "success" && (
+          <span className="flex items-center gap-2 text-green-500 text-xs font-bold mr-4">
+            <CheckCircle2 className="h-4 w-4" />
+            Saved successfully
+          </span>
+        )}
+        {saveStatus === "error" && (
+          <span className="flex items-center gap-2 text-red-500 text-xs font-bold mr-4">
+            <AlertCircle className="h-4 w-4" />
+            Failed to save
+          </span>
+        )}
+        <button
+          onClick={handleSave}
+          disabled={saveStatus === "saving" || isLoading}
+          className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition-all shadow-xl shadow-blue-500/20 active:scale-95"
+        >
+          {saveStatus === "saving" ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Save className="h-5 w-5" />
+          )}
+          {saveStatus === "saving" ? "Saving..." : "Save"}
+        </button>
+      </div>
     </div>
   );
 }

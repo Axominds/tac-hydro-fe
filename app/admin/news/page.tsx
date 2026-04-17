@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Newspaper,
   Plus,
@@ -17,11 +17,12 @@ import {
   GripVertical,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
-import { useNewsItems, useNewsCategories } from "../../../src/hooks/useNews";
+import { useNewsItems, useNewsCategories, useNewsCounts } from "../../../src/hooks/useNews";
 import { useModalContext } from "../layout";
 import { useNewsMutations, useNewsCategoryMutations } from "../../../src/hooks/useAdminMutations";
-import { NewsItem, NewsCategory } from "../../../src/lib/api";
+import { NewsItem, NewsCategory, apiFetch, NewsDetail } from "../../../src/lib/api";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
+import { QuillEditor } from "../../../src/components/admin/QuillEditor";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -151,7 +152,6 @@ function CategoryRow({
 
 export default function NewsManagementPage() {
   const { theme, colors, mounted } = useAdminTheme();
-  const { data: newsData, isLoading: itemsLoading } = useNewsItems(null, 1, 100);
   const { data: categories, isLoading: catsLoading } = useNewsCategories();
   const { createNews, updateNews, deleteNews } = useNewsMutations();
   const { createCategory, updateCategory, reorderCategories, deleteCategory } =
@@ -165,6 +165,8 @@ export default function NewsManagementPage() {
   };
   const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
   const [formData, setFormData] = useState<Partial<NewsItem>>({});
+  const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const [isCatModalOpen, setIsCatModalOpenLocal] = useState(false);
   const setIsCatModalOpen = (open: boolean) => {
@@ -173,13 +175,26 @@ export default function NewsManagementPage() {
   };
   const [newCatName, setNewCatName] = useState("");
   const [addingCat, setAddingCat] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<number | null>(null);
 
   const [orderedCategories, setOrderedCategories] = useState<NewsCategory[]>([]);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
   const dragItemId = useRef<number | null>(null);
   const [reordering, setReordering] = useState(false);
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
+  const [categoryFilter, setCategoryFilter] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const statusFilterValue = statusFilter === "all" ? null : statusFilter === "published";
+
+  const { data: newsData, isLoading: itemsLoading } = useNewsItems(
+    categoryFilter,
+    currentPage,
+    4,
+    statusFilterValue
+  );
+  const { data: counts } = useNewsCounts();
+
+  const totalPages = newsData?.count ? Math.ceil(newsData.count / 4) : 1;
 
   const syncedRef = useRef(false);
   if (categories && (!syncedRef.current || orderedCategories.length !== categories.length)) {
@@ -189,13 +204,6 @@ export default function NewsManagementPage() {
   }
 
   const newsItems = newsData?.results || [];
-  const filteredItems = newsItems.filter((item) => {
-    const categoryMatch = !activeCategory || item.news_category_id === activeCategory;
-    const statusMatch =
-      statusFilter === "all" ||
-      (statusFilter === "published" ? item.is_published : !item.is_published);
-    return categoryMatch && statusMatch;
-  });
 
   const openCreateModal = () => {
     setEditingItem(null);
@@ -208,33 +216,86 @@ export default function NewsManagementPage() {
       is_published: false,
       published_at: null,
     });
+    setSelectedImage(null);
     setIsModalOpen(true);
   };
 
-  const openEditModal = (item: NewsItem) => {
+  const openEditModal = async (item: NewsItem) => {
     setEditingItem(item);
-    setFormData({ ...item });
+    setFormData({});
+    setSelectedImage(null);
     setIsModalOpen(true);
+    setIsLoadingDetail(true);
+    const detail = await apiFetch<NewsDetail>(`/api/home/news/${item.id}/`);
+    setFormData(detail);
+    setIsLoadingDetail(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanedContent = (formData.content_html || "").replace(/&nbsp;/g, " ");
+    const cleanedFormData = { ...formData, content_html: cleanedContent };
+
+    let newsId = editingItem?.id;
+
     if (editingItem) {
       const changedData: Partial<NewsItem> = {};
-      Object.keys(formData).forEach((k) => {
+      Object.keys(cleanedFormData).forEach((k) => {
         const key = k as keyof NewsItem;
-        if (formData[key] !== editingItem[key]) {
-          // @ts-ignore
-          changedData[key] = formData[key];
+        if (cleanedFormData[key] !== editingItem[key]) {
+          changedData[key] = cleanedFormData[key];
         }
       });
       if (Object.keys(changedData).length > 0) {
-        await updateNews.mutateAsync({ id: editingItem.id, data: changedData });
+        const res = await updateNews.mutateAsync({ id: editingItem.id, data: changedData });
+        newsId = res.id;
+      }
+
+      if (selectedImage) {
+        const fileData = new FormData();
+        fileData.append("file", selectedImage);
+        const token = document.cookie.replace(
+          /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
+          "$1",
+        );
+        await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/news/${editingItem.id}/image_upload/`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: fileData,
+          },
+        );
       }
     } else {
-      await createNews.mutateAsync(formData);
+      const res = await createNews.mutateAsync(cleanedFormData);
+      newsId = res.id;
+
+      if (selectedImage && newsId) {
+        const fileData = new FormData();
+        fileData.append("file", selectedImage);
+        const token = document.cookie.replace(
+          /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
+          "$1",
+        );
+        await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/news/${newsId}/image_upload/`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: fileData,
+          },
+        );
+      }
     }
+    closeModal();
+  };
+
+  const closeModal = () => {
     setIsModalOpen(false);
+    setEditingItem(null);
+    setFormData({});
+    setSelectedImage(null);
   };
 
   const handleDelete = async (id: number) => {
@@ -343,7 +404,7 @@ export default function NewsManagementPage() {
             className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
           >
             <Plus className="h-5 w-5" />
-            Add Article
+            Add
           </button>
         </div>
       </div>
@@ -355,10 +416,10 @@ export default function NewsManagementPage() {
               className="text-xs font-bold tracking-widest"
               style={{ color: colors.textMuted as string }}
             >
-              {filteredItems.length} Article{filteredItems.length !== 1 ? "s" : ""}
-              {activeCategory && categories && (
+              {newsItems.length} Article{newsItems.length !== 1 ? "s" : ""}
+              {categoryFilter && categories && (
                 <span className="ml-2 text-blue-500">
-                  in {categories.find((c) => c.id === activeCategory)?.name}
+                  in {categories.find((c) => c.id === categoryFilter)?.name}
                 </span>
               )}
             </p>
@@ -368,7 +429,7 @@ export default function NewsManagementPage() {
             <div className="flex items-center justify-center py-20">
               <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
             </div>
-          ) : filteredItems.length === 0 ? (
+          ) : newsItems.length === 0 ? (
             <div
               className="flex flex-col items-center justify-center py-32 border-dashed rounded-3xl"
               style={cardStyle}
@@ -385,8 +446,9 @@ export default function NewsManagementPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4">
-              {filteredItems.map((item: NewsItem) => (
+            <>
+              <div className="grid grid-cols-1 gap-4">
+                {newsItems.map((item: NewsItem) => (
                 <div
                   key={item.id}
                   className="rounded-2xl p-6 flex items-center gap-6 group transition-all"
@@ -467,7 +529,56 @@ export default function NewsManagementPage() {
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-8">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg transition-all"
+                    style={{
+                      backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                      color: colors.textSecondary as string,
+                      opacity: currentPage === 1 ? 0.3 : 1,
+                    }}
+                  >
+                    <ChevronRight className="h-4 w-4 rotate-180" />
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-semibold transition-all"
+                      style={
+                        currentPage === page
+                          ? { backgroundColor: "#3b82f6", color: "#ffffff" }
+                          : {
+                              color: colors.textSecondary as string,
+                              backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                            }
+                      }
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg transition-all"
+                    style={{
+                      backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                      color: colors.textSecondary as string,
+                      opacity: currentPage === totalPages ? 0.3 : 1,
+                    }}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -511,10 +622,10 @@ export default function NewsManagementPage() {
                     }}
                   >
                     {status.id === "all"
-                      ? newsItems.length
-                      : newsItems.filter((n) =>
-                          status.id === "published" ? n.is_published : !n.is_published,
-                        ).length}
+                      ? counts?.all
+                      : status.id === "published"
+                        ? counts?.published
+                        : counts?.drafts}
                   </span>
                 </button>
               ))}
@@ -540,10 +651,10 @@ export default function NewsManagementPage() {
             ) : (
               <div className="space-y-2">
                 <button
-                  onClick={() => setActiveCategory(null)}
+                  onClick={() => setCategoryFilter(null)}
                   className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
                   style={
-                    activeCategory === null
+                    categoryFilter === null
                       ? { backgroundColor: "#3b82f6", color: "#ffffff" }
                       : {
                           color: colors.textSecondary as string,
@@ -559,17 +670,17 @@ export default function NewsManagementPage() {
                       backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
                     }}
                   >
-                    {newsItems.length}
+                    {counts?.all}
                   </span>
                 </button>
 
                 {categories?.map((cat) => (
                   <button
                     key={cat.id}
-                    onClick={() => setActiveCategory(activeCategory === cat.id ? null : cat.id)}
+                    onClick={() => setCategoryFilter(categoryFilter === cat.id ? null : cat.id)}
                     className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
                     style={
-                      activeCategory === cat.id
+                      categoryFilter === cat.id
                         ? {
                             backgroundColor: "rgba(59,130,246,0.2)",
                             color: "#60a5fa",
@@ -589,7 +700,7 @@ export default function NewsManagementPage() {
                         backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
                       }}
                     >
-                      {newsItems.filter((n) => n.news_category_id === cat.id).length}
+                      {counts?.by_category?.[cat.id] ?? 0}
                     </span>
                   </button>
                 ))}
@@ -603,7 +714,7 @@ export default function NewsManagementPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
           <div
             className="absolute inset-0 z-0 bg-black/60 backdrop-blur-sm w-screen h-screen"
-            onClick={() => setIsModalOpen(false)}
+            onClick={() => closeModal()}
           />
           <div
             className="relative z-10 w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
@@ -620,10 +731,10 @@ export default function NewsManagementPage() {
                 className={`${montserrat.className} text-2xl`}
                 style={{ color: colors.text as string }}
               >
-                {editingItem ? "Edit" : "New"} <span className="text-blue-500">Article</span>
+                {editingItem ? "Edit" : "New"} <span className="text-blue-500">News and Events</span>
               </h2>
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => closeModal()}
                 style={{ color: colors.textMuted as string }}
               >
                 <X className="h-6 w-6" />
@@ -631,13 +742,19 @@ export default function NewsManagementPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto">
+              {isLoadingDetail ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+                </div>
+              ) : (
+                <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2 col-span-2">
                   <label
                     className="text-[10px] font-bold tracking-widest uppercase ml-1"
                     style={{ color: colors.textMuted as string }}
                   >
-                    Article Title
+                    News Title
                   </label>
                   <input
                     required
@@ -677,7 +794,7 @@ export default function NewsManagementPage() {
                     className="text-[10px] font-bold tracking-widest uppercase ml-1"
                     style={{ color: colors.textMuted as string }}
                   >
-                    Publication Date
+                    News Date
                   </label>
                   <input
                     type="date"
@@ -687,6 +804,59 @@ export default function NewsManagementPage() {
                     className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                     style={inputStyle}
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                    style={{ color: colors.textMuted as string }}
+                  >
+                    Featured Image
+                  </label>
+                  <div className="flex flex-col gap-2">
+                    {(selectedImage || formData.image) && (
+                      <div
+                        className="h-24 w-32 rounded-xl overflow-hidden border"
+                        style={{
+                          backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+                          borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+                        }}
+                      >
+                        <img
+                          src={
+                            selectedImage
+                              ? URL.createObjectURL(selectedImage)
+                              : formData.image!
+                          }
+                          alt="News"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <label className="cursor-pointer">
+                      <span
+                        className="text-[10px] font-bold tracking-widest uppercase"
+                        style={{ color: colors.textMuted as string }}
+                      >
+                        {selectedImage ? "Change image" : "Choose image"}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => e.target.files?.[0] && setSelectedImage(e.target.files[0])}
+                        className="hidden"
+                      />
+                    </label>
+                    {selectedImage && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedImage(null)}
+                        className="text-xs font-bold text-red-500"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2 col-span-2">
@@ -711,22 +881,15 @@ export default function NewsManagementPage() {
                     className="text-[10px] font-bold tracking-widest uppercase ml-1"
                     style={{ color: colors.textMuted as string }}
                   >
-                    Content (HTML)
+                    Content
                   </label>
-                  <textarea
+                  <QuillEditor
+                    key={editingItem?.id}
                     value={formData.content_html || ""}
-                    onChange={(e) => setFormData({ ...formData, content_html: e.target.value })}
-                    rows={10}
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none font-mono text-sm normal-case"
-                    style={inputStyle}
-                    placeholder="<p>Detailed article content...</p>"
+                    onChange={(value) => setFormData({ ...formData, content_html: value })}
+                    isDark={isDark}
+                    placeholder="Enter article content..."
                   />
-                  <p
-                    className="text-[10px] ml-1 italic normal-case"
-                    style={{ color: colors.textMuted as string }}
-                  >
-                    Basic HTML tags are supported.
-                  </p>
                 </div>
 
                 <div className="flex items-center gap-3 col-span-2">
@@ -738,7 +901,6 @@ export default function NewsManagementPage() {
                         setFormData({
                           ...formData,
                           is_published: e.target.checked,
-                          published_at: e.target.checked ? new Date().toISOString() : null,
                         })
                       }
                       className="sr-only peer"
@@ -751,7 +913,7 @@ export default function NewsManagementPage() {
                       className="ml-3 text-sm font-semibold normal-case"
                       style={{ color: colors.textSecondary as string }}
                     >
-                      Publish immediately to live site
+                      Publish to live site
                     </span>
                   </label>
                 </div>
@@ -763,11 +925,11 @@ export default function NewsManagementPage() {
                   className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95"
                 >
                   <Save className="h-5 w-5" />
-                  {editingItem ? "Update Article" : "Publish Article"}
+                  Save
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => closeModal()}
                   className="px-8 font-bold rounded-2xl transition-all"
                   style={{
                     border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,
@@ -778,6 +940,8 @@ export default function NewsManagementPage() {
                   Cancel
                 </button>
               </div>
+                </>
+              )}
             </form>
           </div>
         </div>

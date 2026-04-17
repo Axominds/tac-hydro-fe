@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   BarChart3,
   Users,
@@ -12,10 +13,14 @@ import {
   Megaphone,
   Newspaper,
   ChevronRight,
+  ChevronLeft,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import Cookies from "js-cookie";
+import { setThemeValue } from "../../src/components/admin/ThemeToggle";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["700"] });
 
@@ -36,7 +41,38 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ theme }: AdminSidebarProps) {
   const pathname = usePathname();
-  const isDark = theme === "dark";
+  const [localTheme, setLocalTheme] = useState(theme);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("tac-admin-sidebar-collapsed") === "true";
+    }
+    return false;
+  });
+  const isDark = localTheme === "dark";
+
+  const toggleTheme = () => {
+    const newTheme = isDark ? "light" : "dark";
+    setLocalTheme(newTheme);
+    setThemeValue(newTheme);
+  };
+
+  const toggleCollapse = () => {
+    const newCollapsed = !isCollapsed;
+    setIsCollapsed(newCollapsed);
+    localStorage.setItem("tac-admin-sidebar-collapsed", String(newCollapsed));
+    window.dispatchEvent(new CustomEvent("admin-sidebar-toggle"));
+  };
+
+  useEffect(() => {
+    setLocalTheme(theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("tac-admin-sidebar-collapsed");
+    if (stored !== null) {
+      setIsCollapsed(stored === "true");
+    }
+  }, []);
 
   const colors = {
     sidebarBg: isDark ? "#0c0c0c" : "#ffffff",
@@ -50,7 +86,9 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
 
   return (
     <aside
-      className="w-72 h-screen fixed left-0 top-0 flex flex-col z-50 transition-colors duration-300 shadow-lg"
+      className={`h-screen fixed left-0 top-0 flex flex-col z-50 transition-all duration-300 shadow-lg ${
+        isCollapsed ? "w-20" : "w-72"
+      }`}
       style={{
         backgroundColor: colors.sidebarBg,
         borderRight: `1px solid ${colors.sidebarBorder}`,
@@ -59,27 +97,69 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
     >
       {/* Brand Header */}
       <div
-        className="p-8 flex items-center justify-between transition-colors duration-300"
+        className={`flex items-center justify-between transition-colors duration-300 ${isCollapsed ? "p-3" : "p-6"}`}
         style={{ borderBottom: `1px solid ${colors.sidebarBorder}` }}
       >
-        <h1
-          className={`${montserrat.className} text-xl tracking-tight font-bold`}
-          style={{ color: colors.textColor }}
-        >
-          Tac-Hydro <span className="text-blue-500">Admin</span>
-        </h1>
-        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+        {!isCollapsed && (
+          <>
+            <h1
+              className={`${montserrat.className} text-xl tracking-tight font-bold`}
+              style={{ color: colors.textColor }}
+            >
+              Tac-Hydro <span className="text-blue-500">Admin</span>
+            </h1>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg transition-all hover:scale-110"
+              style={{
+                backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                color: colors.textColor,
+              }}
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+          </>
+        )}
+        {isCollapsed && (
+          <button
+            onClick={toggleCollapse}
+            className="p-2 rounded-lg transition-all hover:scale-110 mx-auto"
+            style={{
+              backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+              color: colors.textColor,
+            }}
+            title="Expand sidebar"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        )}
+        {!isCollapsed && (
+          <button
+            onClick={toggleCollapse}
+            className="p-2 rounded-lg transition-all hover:scale-110"
+            style={{
+              backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+              color: colors.textColor,
+            }}
+            title="Collapse sidebar"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 p-6 space-y-2 overflow-y-auto custom-scrollbar">
+      <nav className={`flex-1 overflow-y-auto custom-scrollbar ${isCollapsed ? "p-3" : "p-6"}`}>
         {MENU_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link
               key={item.name}
               href={item.href}
-              className="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group"
+              className={`flex items-center gap-3 rounded-xl transition-all duration-300 group ${
+                isCollapsed ? "justify-center w-full py-3" : "px-4 py-3.5"
+              }`}
               style={{
                 backgroundColor: isActive ? colors.activeBg : "transparent",
                 color: isActive ? colors.activeText : colors.mutedColor,
@@ -87,11 +167,15 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
               }}
             >
               <item.icon
-                className={`h-5 w-5 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
+                className={`h-5 w-5 flex-shrink-0 transition-transform duration-300 ${
+                  isActive ? "scale-110" : "group-hover:scale-110"
+                }`}
                 style={{ color: isActive ? colors.activeText : colors.mutedColor }}
               />
-              <span className="font-medium text-sm tracking-wide">{item.name}</span>
-              {isActive && (
+              {!isCollapsed && (
+                <span className="font-medium text-sm tracking-wide">{item.name}</span>
+              )}
+              {isActive && !isCollapsed && (
                 <ChevronRight className="h-4 w-4 ml-auto" style={{ color: colors.activeText }} />
               )}
             </Link>
@@ -101,7 +185,7 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
 
       {/* Footer Profile/Logout */}
       <div
-        className="p-6 mt-auto transition-colors duration-300"
+        className={`mt-auto transition-colors duration-300 ${isCollapsed ? "p-3" : "p-6"}`}
         style={{ borderTop: `1px solid ${colors.sidebarBorder}` }}
       >
         <button
@@ -110,11 +194,13 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
             Cookies.remove("refresh_token");
             window.location.href = "/admin/login";
           }}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium text-sm group"
-          style={{ color: "#ef4444" }}
+className={`w-full flex items-center gap-3 rounded-xl transition-all font-medium text-sm group ${
+              isCollapsed ? "justify-center py-3" : "px-4 py-3.5"
+            }`}
+            style={{ color: "#ef4444" }}
         >
           <LogOut className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-          <span>Terminate Session</span>
+          {!isCollapsed && <span>Logout</span>}
         </button>
       </div>
     </aside>

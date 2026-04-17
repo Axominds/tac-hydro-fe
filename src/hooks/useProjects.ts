@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiFetch, Project, ProjectScopeMembership, ProjectScope } from "../lib/api";
+import { apiFetch, Project, ProjectScopeMembership, ProjectScope, ProjectScopeImage } from "../lib/api";
 import { useProjectScopes } from "./useProjectScopes";
 
 export function useProjects() {
@@ -13,6 +13,13 @@ export function useProjectScopeMemberships() {
   return useQuery<ProjectScopeMembership[]>({
     queryKey: ["project-scope-memberships"],
     queryFn: () => apiFetch<ProjectScopeMembership[]>("/api/projects/scope-memberships/"),
+  });
+}
+
+export function useProjectScopeImages() {
+  return useQuery<ProjectScopeImage[]>({
+    queryKey: ["project-scope-images"],
+    queryFn: () => apiFetch<ProjectScopeImage[]>("/api/projects/scope-images/"),
   });
 }
 

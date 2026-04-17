@@ -31,13 +31,6 @@ export default function BannerManagementPage() {
   const [typewriterInput, setTypewriterInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  useEffect(() => {
-    if (banner) {
-      setFormData({ ...banner });
-      setTypewriterInput(banner.typewriter_words?.join(", ") || "");
-    }
-  }, [banner]);
-
   const handleSave = async () => {
     if (!banner?.id) return;
 
@@ -73,7 +66,6 @@ export default function BannerManagementPage() {
       Object.keys(currentFormData).forEach((k) => {
         const key = k as keyof Banner;
         if (JSON.stringify(currentFormData[key]) !== JSON.stringify(banner[key])) {
-          // @ts-ignore
           changedData[key] = currentFormData[key];
         }
       });
@@ -89,6 +81,13 @@ export default function BannerManagementPage() {
       setTimeout(() => setSaveStatus("idle"), 5000);
     }
   };
+
+  useEffect(() => {
+    if (banner) {
+      setFormData({ ...banner });
+      setTypewriterInput(banner.typewriter_words?.join(", ") || "");
+    }
+  }, [banner]);
 
   if (!mounted) return null;
 
@@ -110,45 +109,16 @@ export default function BannerManagementPage() {
 
   return (
     <div className="space-y-15 uppercase relative pb-40">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1
-            className={`${montserrat.className} text-4xl mb-2`}
-            style={{ color: colors.text as string }}
-          >
-            Home <span className="text-blue-500">Banner</span>
-          </h1>
-          <p style={{ color: colors.textSecondary as string }}>
-            Edit the hero banner displayed on the main landing page.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {saveStatus === "success" && (
-            <span className="flex items-center gap-2 text-green-500 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
-              <CheckCircle2 className="h-4 w-4" />
-              Changes saved successfully
-            </span>
-          )}
-          {saveStatus === "error" && (
-            <span className="flex items-center gap-2 text-red-500 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
-              <AlertCircle className="h-4 w-4" />
-              Failed to save changes
-            </span>
-          )}
-          <button
-            onClick={handleSave}
-            disabled={saveStatus === "saving" || isLoading || !banner}
-            className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition-all shadow-xl shadow-blue-500/20 active:scale-95"
-          >
-            {saveStatus === "saving" ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Save className="h-5 w-5" />
-            )}
-            {saveStatus === "saving" ? "Saving..." : "Apply Changes"}
-          </button>
-        </div>
+      <div>
+        <h1
+          className={`${montserrat.className} text-4xl mb-2`}
+          style={{ color: colors.text as string }}
+        >
+          Home <span className="text-blue-500">Banner</span>
+        </h1>
+        <p style={{ color: colors.textSecondary as string }}>
+          Edit the hero banner displayed on the main landing page.
+        </p>
       </div>
 
       {isLoading ? (
@@ -173,7 +143,6 @@ export default function BannerManagementPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Hero Text Card */}
           <div className="p-8 rounded-3xl space-y-8" style={cardStyle}>
             <h2
               className={`${montserrat.className} text-xl flex items-center gap-2 pb-4`}
@@ -223,7 +192,6 @@ export default function BannerManagementPage() {
             </div>
           </div>
 
-          {/* Typewriter & Preview Card */}
           <div className="p-8 rounded-3xl space-y-8" style={cardStyle}>
             <h2
               className={`${montserrat.className} text-xl flex items-center gap-2 pb-4`}
@@ -258,12 +226,6 @@ export default function BannerManagementPage() {
                   className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium resize-none normal-case text-sm"
                   style={inputStyle}
                 />
-                <p
-                  className="text-[10px] px-1 normal-case"
-                  style={{ color: colors.textMuted as string }}
-                >
-                  Each word cycles in the animated typewriter effect on the banner.
-                </p>
               </div>
 
               {typewriterInput && (
@@ -291,12 +253,9 @@ export default function BannerManagementPage() {
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Background Image Card */}
-          <div className="lg:col-span-2 p-8 rounded-3xl space-y-4" style={cardStyle}>
             <h2
-              className={`${montserrat.className} text-xl flex items-center gap-2 pb-4`}
+              className={`${montserrat.className} text-xl flex items-center gap-2 pb-4 pt-4`}
               style={{
                 color: colors.text as string,
                 borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
@@ -308,7 +267,7 @@ export default function BannerManagementPage() {
             <div className="flex flex-col gap-4">
               {(selectedFile || formData.background_image) && (
                 <div
-                  className="h-56 w-full rounded-2xl overflow-hidden border"
+                  className="h-32 w-48 rounded-2xl overflow-hidden border"
                   style={{
                     backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
                     borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
@@ -319,7 +278,7 @@ export default function BannerManagementPage() {
                       selectedFile ? URL.createObjectURL(selectedFile) : formData.background_image!
                     }
                     alt="Banner background"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               )}
@@ -360,12 +319,39 @@ export default function BannerManagementPage() {
               >
                 Upload a new background image for the hero banner. The image will be saved when you
                 click{" "}
-                <strong style={{ color: colors.textSecondary as string }}> Apply Changes</strong>.
+                <strong style={{ color: colors.textSecondary as string }}> Save</strong>.
               </p>
             </div>
           </div>
         </div>
       )}
+
+      <div className="flex justify-end pt-8 pb-8">
+        {saveStatus === "success" && (
+          <span className="flex items-center gap-2 text-green-500 text-xs font-bold mr-4">
+            <CheckCircle2 className="h-4 w-4" />
+            Saved successfully
+          </span>
+        )}
+        {saveStatus === "error" && (
+          <span className="flex items-center gap-2 text-red-500 text-xs font-bold mr-4">
+            <AlertCircle className="h-4 w-4" />
+            Failed to save
+          </span>
+        )}
+        <button
+          onClick={handleSave}
+          disabled={saveStatus === "saving" || isLoading || !banner}
+          className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition-all shadow-xl shadow-blue-500/20 active:scale-95"
+        >
+          {saveStatus === "saving" ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Save className="h-5 w-5" />
+          )}
+          {saveStatus === "saving" ? "Saving..." : "Save"}
+        </button>
+      </div>
     </div>
   );
 }

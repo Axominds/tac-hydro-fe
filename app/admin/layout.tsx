@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import { AdminSidebar } from "../../components/admin/AdminSidebar";
-import { ThemeToggle, getTheme } from "../../src/components/admin/ThemeToggle";
+import { getTheme } from "../../src/components/admin/ThemeToggle";
 
 const THEME_KEY = "admin-theme";
 const DEFAULT_THEME = "light";
@@ -136,6 +136,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const isLoginPage = pathname === "/admin/login";
 
@@ -144,6 +145,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     const theme = initialTheme || DEFAULT_THEME;
     setTheme(theme);
     setMounted(true);
+
+    const stored = localStorage.getItem("tac-admin-sidebar-collapsed");
+    if (stored === "true") {
+      setSidebarCollapsed(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -152,8 +158,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       setTheme(newTheme);
     };
 
+    const handleSidebarToggle = () => {
+      const stored = localStorage.getItem("tac-admin-sidebar-collapsed");
+      setSidebarCollapsed(stored === "true");
+    };
+
     window.addEventListener("admin-theme-change", handleThemeChange);
-    return () => window.removeEventListener("admin-theme-change", handleThemeChange);
+    window.addEventListener("admin-sidebar-toggle", handleSidebarToggle);
+    return () => {
+      window.removeEventListener("admin-theme-change", handleThemeChange);
+      window.removeEventListener("admin-sidebar-toggle", handleSidebarToggle);
+    };
   }, []);
 
   const colors = adminTheme[theme];
@@ -176,18 +191,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         }}
       >
         {!isLoginPage && (
-          <>
-            <div style={{ ...sidebarStyle, transition: "filter 0.3s ease" }}>
-              <AdminSidebar theme={theme} />
-            </div>
-            {mounted && (
-              <div style={{ ...sidebarStyle, transition: "filter 0.3s ease" }}>
-                <ThemeToggle />
-              </div>
-            )}
-          </>
+          <div style={{ ...sidebarStyle, transition: "filter 0.3s ease" }}>
+            <AdminSidebar theme={theme} />
+          </div>
         )}
-        <main className={isLoginPage ? "flex-1 p-10 relative" : "flex-1 ml-72 p-10 relative"}>
+        <main className={isLoginPage ? "flex-1 p-10 relative" : `flex-1 ${sidebarCollapsed ? "ml-20" : "ml-72"} p-10 relative transition-all duration-300`}>
           {!isLoginPage && (
             <div
               className="absolute top-0 right-0 w-full h-[300px] pointer-events-none transition-opacity duration-300"

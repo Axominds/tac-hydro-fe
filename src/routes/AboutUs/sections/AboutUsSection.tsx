@@ -51,7 +51,7 @@ export const AboutUsSection = ({ section }: Props) => {
               {section.title}
             </h1>
             <div
-              className="flex flex-col gap-8 text-[#555555] text-lg leading-relaxed"
+              className="content-html text-[#555555] text-lg leading-relaxed"
               dangerouslySetInnerHTML={{ __html: section.content_html }}
             />
           </div>
