@@ -1,13 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { Briefcase, Plus, Edit2, Trash2, Loader2, Upload, Settings, Users, Lightbulb, GripVertical } from "lucide-react";
+import {
+  Briefcase,
+  Plus,
+  Edit2,
+  Trash2,
+  Loader2,
+  Upload,
+  Settings,
+  Users,
+  Lightbulb,
+  GripVertical,
+} from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useExpertiseCategories } from "../../../src/hooks/useExpertiseCategories";
 import { useServiceSectors } from "../../../src/hooks/useServiceSectors";
-import { useExpertiseCategoryMutations, useServiceSectorMutations } from "../../../src/hooks/useAdminMutations";
+import {
+  useExpertiseCategoryMutations,
+  useServiceSectorMutations,
+} from "../../../src/hooks/useAdminMutations";
 import { ExpertiseCategoryModal } from "./ExpertiseCategoryModal";
 import { ServiceSectorModal } from "./ServiceSectorModal";
+import { useAdminTheme, getThemedClasses } from "../../../src/hooks/useAdminTheme";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -40,16 +55,18 @@ interface CategoryWithItems {
   items?: any[];
 }
 
-function ExpertiseCategoryCard({ 
-  category, 
+function ExpertiseCategoryCard({
+  category,
   onEdit,
   onDelete,
   onDragStart,
   onDragOver,
   onDrop,
   isDragging,
-  isDragOver
-}: { 
+  isDragOver,
+  theme,
+  colors,
+}: {
   category: CategoryWithItems;
   onEdit: (category: CategoryWithItems) => void;
   onDelete: (id: number) => Promise<void>;
@@ -58,42 +75,64 @@ function ExpertiseCategoryCard({
   onDrop: (e: React.DragEvent, id: number) => void;
   isDragging: boolean;
   isDragOver: boolean;
+  theme: "light" | "dark";
+  colors: ReturnType<typeof getThemedClasses>;
 }) {
-  const CurrentIcon = SUPPORTED_ICONS.find(i => i.value === category.icon_key)?.icon || Briefcase;
-  const colors = colorStylesMap[category.theme_color] || colorStylesMap.blue;
+  const CurrentIcon = SUPPORTED_ICONS.find((i) => i.value === category.icon_key)?.icon || Briefcase;
+  const categoryColors = colorStylesMap[category.theme_color] || colorStylesMap.blue;
 
   return (
-    <div 
+    <div
       draggable
       onDragStart={(e) => onDragStart(e, category.id)}
       onDragOver={(e) => onDragOver(e, category.id)}
       onDrop={(e) => onDrop(e, category.id)}
-      className={`bg-white/5 border border-white/5 rounded-2xl overflow-hidden group transition-all ${
-        isDragOver ? "border-2 border-blue-500 bg-blue-500/10" : ""
-      } ${isDragging ? "opacity-50" : ""}`}
+      className="rounded-2xl overflow-hidden group transition-all"
+      style={{
+        backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: isDragOver
+          ? "#3b82f6"
+          : theme === "dark"
+            ? "rgba(255,255,255,0.08)"
+            : "#e2e8f0",
+        opacity: isDragging ? 0.5 : 1,
+      }}
     >
       <div className="p-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <GripVertical className="h-4 w-4 text-gray-600 cursor-grab shrink-0" />
-          <div className={`p-2 rounded-xl ${colors.bg}`}>
-            <CurrentIcon className={`h-5 w-5 ${colors.text}`} />
+          <GripVertical
+            className="h-4 w-4 cursor-grab shrink-0"
+            style={{ color: theme === "dark" ? "#555" : "#94a3b8" }}
+          />
+          <div className={`p-2 rounded-xl ${categoryColors.bg}`}>
+            <CurrentIcon className={`h-5 w-5 ${categoryColors.text}`} />
           </div>
-          
+
           <div className="flex items-center gap-2">
-            <h3 className="text-white font-bold">{category.title}</h3>
+            <h3 className="font-bold" style={colors.text.primary}>
+              {category.title}
+            </h3>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button 
+          <button
             onClick={() => onEdit(category)}
-            className="p-1 hover:bg-white/10 rounded"
+            className="p-1 rounded transition-all"
+            style={{
+              backgroundColor: theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+            }}
           >
-            <Edit2 className="h-3 w-3 text-gray-400" />
+            <Edit2 className="h-3 w-3" style={{ color: colors.text.secondary as string }} />
           </button>
-          <button 
+          <button
             onClick={() => window.confirm("Delete this category?") && onDelete(category.id)}
-            className="p-1 hover:bg-white/10 rounded"
+            className="p-1 rounded transition-all"
+            style={{
+              backgroundColor: theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+            }}
           >
             <Trash2 className="h-3 w-3 text-red-400" />
           </button>
@@ -103,7 +142,15 @@ function ExpertiseCategoryCard({
   );
 }
 
-function AddNewCategoryCard({ onAdd }: { onAdd: (data: any) => Promise<void> }) {
+function AddNewCategoryCard({
+  onAdd,
+  theme,
+  colors,
+}: {
+  onAdd: (data: any) => Promise<void>;
+  theme: "light" | "dark";
+  colors: ReturnType<typeof getThemedClasses>;
+}) {
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState("");
   const [iconKey, setIconKey] = useState("briefcase");
@@ -121,31 +168,62 @@ function AddNewCategoryCard({ onAdd }: { onAdd: (data: any) => Promise<void> }) 
 
   if (isAdding) {
     return (
-      <div className="bg-white/5 border border-white/10 border-dashed rounded-2xl p-4 space-y-3">
+      <div
+        className="border border-dashed rounded-2xl p-4 space-y-3"
+        style={{
+          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
+          borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#e2e8f0",
+        }}
+      >
         <input
           autoFocus
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Category title..."
-          className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white font-bold focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full rounded-lg px-3 py-2 font-bold focus:outline-none focus:ring-1 focus:ring-blue-500"
+          style={{
+            backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
+            color: theme === "dark" ? "#ffffff" : "#1e293b",
+          }}
         />
         <div className="flex gap-2">
           <select
             value={iconKey}
             onChange={(e) => setIconKey(e.target.value)}
-            className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
+            className="flex-1 rounded-lg px-3 py-2 text-sm"
+            style={{
+              backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+              borderWidth: "1px",
+              borderStyle: "solid",
+              borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
+              color: theme === "dark" ? "#ffffff" : "#1e293b",
+            }}
           >
-            {SUPPORTED_ICONS.map(icon => (
-              <option key={icon.value} value={icon.value}>{icon.label}</option>
+            {SUPPORTED_ICONS.map((icon) => (
+              <option key={icon.value} value={icon.value}>
+                {icon.label}
+              </option>
             ))}
           </select>
           <select
             value={themeColor}
             onChange={(e) => setThemeColor(e.target.value)}
-            className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm"
+            className="flex-1 rounded-lg px-3 py-2 text-sm"
+            style={{
+              backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+              borderWidth: "1px",
+              borderStyle: "solid",
+              borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
+              color: theme === "dark" ? "#ffffff" : "#1e293b",
+            }}
           >
-            {SUPPORTED_COLORS.map(color => (
-              <option key={color.value} value={color.value}>{color.label}</option>
+            {SUPPORTED_COLORS.map((color) => (
+              <option key={color.value} value={color.value}>
+                {color.label}
+              </option>
             ))}
           </select>
         </div>
@@ -159,7 +237,11 @@ function AddNewCategoryCard({ onAdd }: { onAdd: (data: any) => Promise<void> }) 
           </button>
           <button
             onClick={() => setIsAdding(false)}
-            className="px-4 py-2 bg-white/5 text-gray-400 hover:text-white rounded-lg text-sm"
+            className="px-4 py-2 rounded-lg text-sm transition-all"
+            style={{
+              backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+              color: colors.text.secondary,
+            }}
           >
             Cancel
           </button>
@@ -171,29 +253,44 @@ function AddNewCategoryCard({ onAdd }: { onAdd: (data: any) => Promise<void> }) 
   return (
     <button
       onClick={() => setIsAdding(true)}
-      className="bg-white/5 border border-white/5 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center gap-3 hover:bg-white/10 transition-all"
+      className="border border-dashed rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-all"
+      style={{
+        backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
+        borderColor: theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+      }}
     >
-      <div className="p-3 rounded-xl bg-white/5">
-        <Plus className="h-6 w-6 text-gray-500" />
+      <div
+        className="p-3 rounded-xl"
+        style={{
+          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+        }}
+      >
+        <Plus className="h-6 w-6" style={{ color: colors.text.muted }} />
       </div>
-      <span className="text-gray-500 text-sm font-medium">Add Expertise Category</span>
+      <span className="text-sm font-medium" style={{ color: colors.text.muted }}>
+        Add Expertise Category
+      </span>
     </button>
   );
 }
 
 // Service Sector Card (simplified)
-function EditableServiceSectorCard({ 
-  id, 
-  title, 
+function EditableServiceSectorCard({
+  id,
+  title,
   description,
-  onUpdate, 
-  onDelete 
-}: { 
+  onUpdate,
+  onDelete,
+  theme,
+  colors,
+}: {
   id: number;
   title: string;
   description?: string;
   onUpdate: (id: number, data: any) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
+  theme: "light" | "dark";
+  colors: ReturnType<typeof getThemedClasses>;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
@@ -209,23 +306,60 @@ function EditableServiceSectorCard({
 
   if (isEditing) {
     return (
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
+      <div
+        className="rounded-2xl p-4 space-y-3"
+        style={{
+          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#e2e8f0",
+        }}
+      >
         <input
           value={editTitle}
           onChange={(e) => setEditTitle(e.target.value)}
-          className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white font-bold focus:outline-none"
+          className="w-full rounded-lg px-3 py-2 font-bold focus:outline-none"
+          style={{
+            backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
+            color: theme === "dark" ? "#ffffff" : "#1e293b",
+          }}
         />
         <textarea
           value={editDesc}
           onChange={(e) => setEditDesc(e.target.value)}
           rows={2}
-          className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-gray-300 text-sm resize-none focus:outline-none"
+          className="w-full rounded-lg px-3 py-2 text-sm resize-none focus:outline-none"
+          style={{
+            backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
+            color: theme === "dark" ? "#ffffff" : "#1e293b",
+          }}
         />
         <div className="flex gap-2">
-          <button onClick={handleSave} disabled={isSaving} className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm">
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm"
+          >
             {isSaving ? <Loader2 className="h-4 w-4 mx-auto animate-spin" /> : "Save"}
           </button>
-          <button onClick={() => { setEditTitle(title); setEditDesc(description || ""); setIsEditing(false); }} className="px-4 py-2 bg-white/5 text-gray-400 rounded-lg text-sm">
+          <button
+            onClick={() => {
+              setEditTitle(title);
+              setEditDesc(description || "");
+              setIsEditing(false);
+            }}
+            className="px-4 py-2 rounded-lg text-sm transition-all"
+            style={{
+              backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+              color: colors.text.secondary,
+            }}
+          >
             Cancel
           </button>
         </div>
@@ -234,30 +368,66 @@ function EditableServiceSectorCard({
   }
 
   return (
-    <div 
+    <div
       onClick={() => setIsEditing(true)}
-      className="bg-white/5 border border-white/5 rounded-2xl p-6 hover:bg-white/10 cursor-pointer group"
+      className="rounded-2xl p-6 cursor-pointer group transition-all"
+      style={{
+        backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+      }}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="p-3 rounded-xl bg-blue-600/10">
           <Upload className="h-6 w-6 text-blue-500" />
         </div>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100">
-          <button onClick={(e) => { e.stopPropagation(); setIsEditing(true); }} className="p-2 hover:bg-white/10 rounded">
-            <Edit2 className="h-4 w-4 text-gray-400" />
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing(true);
+            }}
+            className="p-2 rounded transition-all"
+            style={{
+              backgroundColor: theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+            }}
+          >
+            <Edit2 className="h-4 w-4" style={{ color: colors.text.secondary }} />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); window.confirm("Delete?") && onDelete(id); }} className="p-2 hover:bg-red-500/20 rounded">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              window.confirm("Delete?") && onDelete(id);
+            }}
+            className="p-2 rounded transition-all"
+            style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
+          >
             <Trash2 className="h-4 w-4 text-red-400" />
           </button>
         </div>
       </div>
-      <h3 className="text-white font-bold text-lg mb-2">{title}</h3>
-      {description && <p className="text-gray-500 text-sm line-clamp-2">{description}</p>}
+      <h3 className="font-bold text-lg mb-2" style={colors.text.primary}>
+        {title}
+      </h3>
+      {description && (
+        <p className="text-sm line-clamp-2" style={colors.text.muted}>
+          {description}
+        </p>
+      )}
     </div>
   );
 }
 
-function AddNewSectorCard({ onAdd }: { onAdd: (data: any) => Promise<void> }) {
+function AddNewSectorCard({
+  onAdd,
+  theme,
+  colors,
+}: {
+  onAdd: (data: any) => Promise<void>;
+  theme: "light" | "dark";
+  colors: ReturnType<typeof getThemedClasses>;
+}) {
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -275,44 +445,92 @@ function AddNewSectorCard({ onAdd }: { onAdd: (data: any) => Promise<void> }) {
 
   if (isAdding) {
     return (
-      <div className="bg-white/5 border border-white/10 border-dashed rounded-2xl p-4 space-y-3">
+      <div
+        className="border border-dashed rounded-2xl p-4 space-y-3"
+        style={{
+          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
+          borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#e2e8f0",
+        }}
+      >
         <input
           autoFocus
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Sector title..."
-          className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white font-bold focus:outline-none"
+          className="w-full rounded-lg px-3 py-2 font-bold focus:outline-none"
+          style={{
+            backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
+            color: theme === "dark" ? "#ffffff" : "#1e293b",
+          }}
         />
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={2}
           placeholder="Description..."
-          className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-gray-300 text-sm resize-none focus:outline-none"
+          className="w-full rounded-lg px-3 py-2 text-sm resize-none focus:outline-none"
+          style={{
+            backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
+            color: theme === "dark" ? "#ffffff" : "#1e293b",
+          }}
         />
         <div className="flex gap-2">
-          <button onClick={handleAdd} disabled={isSaving} className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm">
+          <button
+            onClick={handleAdd}
+            disabled={isSaving}
+            className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm"
+          >
             {isSaving ? <Loader2 className="h-4 w-4 mx-auto animate-spin" /> : "Add"}
           </button>
-          <button onClick={() => setIsAdding(false)} className="px-4 py-2 bg-white/5 text-gray-400 rounded-lg text-sm">Cancel</button>
+          <button
+            onClick={() => setIsAdding(false)}
+            className="px-4 py-2 rounded-lg text-sm transition-all"
+            style={{
+              backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+              color: colors.text.secondary,
+            }}
+          >
+            Cancel
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <button onClick={() => setIsAdding(true)} className="bg-white/5 border border-white/5 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center gap-3 hover:bg-white/10">
-      <Plus className="h-6 w-6 text-gray-500" />
-      <span className="text-gray-500 text-sm">Add Service Sector</span>
+    <button
+      onClick={() => setIsAdding(true)}
+      className="border border-dashed rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-all"
+      style={{
+        backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
+        borderColor: theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+      }}
+    >
+      <Plus className="h-6 w-6" style={{ color: colors.text.muted }} />
+      <span className="text-sm" style={{ color: colors.text.muted }}>
+        Add Service Sector
+      </span>
     </button>
   );
 }
 
 export default function ServicesManagementPage() {
-  const { data: categories, isLoading: catLoading, refetch: refetchCategories } = useExpertiseCategories();
+  const { theme, colors, mounted } = useAdminTheme();
+  const {
+    data: categories,
+    isLoading: catLoading,
+    refetch: refetchCategories,
+  } = useExpertiseCategories();
   const { data: sectors, isLoading: sectorLoading } = useServiceSectors();
-  
-  const { createCategory, updateCategory, deleteCategory, reorderCategories } = useExpertiseCategoryMutations();
+
+  const { createCategory, updateCategory, deleteCategory, reorderCategories } =
+    useExpertiseCategoryMutations();
   const { createSector, updateSector, deleteSector, reorderSectors } = useServiceSectorMutations();
 
   const [editingCategory, setEditingCategory] = useState<any>(null);
@@ -349,15 +567,10 @@ export default function ServicesManagementPage() {
 
     const reordered = sortedCategories.map((c: any, idx: number) => ({
       id: c.id,
-      order: idx + 1
+      order: idx + 1,
     }));
 
     await reorderCategories.mutateAsync(reordered);
-    setDraggedId(null);
-    setDragOverId(null);
-  };
-
-  const handleDragEnd = () => {
     setDraggedId(null);
     setDragOverId(null);
   };
@@ -397,7 +610,7 @@ export default function ServicesManagementPage() {
 
     const reordered = sortedSectors.map((s: any, idx: number) => ({
       id: s.id,
-      order: idx + 1
+      order: idx + 1,
     }));
 
     await reorderSectors.mutateAsync(reordered);
@@ -407,24 +620,30 @@ export default function ServicesManagementPage() {
 
   const isLoading = catLoading || sectorLoading;
 
+  if (!mounted) return null;
+
   return (
     <div className="space-y-12">
       <div>
-        <h1 className={`${montserrat.className} text-4xl text-white mb-2`}>
+        <h1 className={`${montserrat.className} text-4xl mb-2`} style={colors.text.primary}>
           Our <span className="text-blue-500">Services</span>
         </h1>
-        <p className="text-gray-400">Manage expertise categories, items, and service sectors.</p>
+        <p style={colors.text.secondary}>
+          Manage expertise categories, items, and service sectors.
+        </p>
       </div>
 
       {/* Expertise Categories */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-white font-bold text-xl flex items-center gap-2">
+          <h2 className="font-bold text-xl flex items-center gap-2" style={colors.text.primary}>
             <Briefcase className="h-5 w-5 text-blue-500" />
             Expertise Categories
           </h2>
           <button
-            onClick={() => setEditingCategory({ title: "", icon_key: "briefcase", theme_color: "blue" } as any)}
+            onClick={() =>
+              setEditingCategory({ title: "", icon_key: "briefcase", theme_color: "blue" } as any)
+            }
             className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg"
           >
             <Plus className="h-4 w-4" />
@@ -452,8 +671,21 @@ export default function ServicesManagementPage() {
                   onDrop={handleDrop}
                   isDragging={draggedId === cat.id}
                   isDragOver={dragOverId === cat.id}
+                  theme={theme}
+                  colors={colors}
                 />
               ))}
+              <AddNewCategoryCard
+                onAdd={async (data) => {
+                  await createCategory.mutateAsync({
+                    ...data,
+                    order: (categories?.length || 0) + 1,
+                  });
+                  refetchCategories();
+                }}
+                theme={theme}
+                colors={colors}
+              />
             </>
           )}
         </div>
@@ -462,7 +694,7 @@ export default function ServicesManagementPage() {
       {/* Service Sectors */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-white font-bold text-xl flex items-center gap-2">
+          <h2 className="font-bold text-xl flex items-center gap-2" style={colors.text.primary}>
             <Upload className="h-5 w-5 text-blue-500" />
             Service Sectors
           </h2>
@@ -489,20 +721,50 @@ export default function ServicesManagementPage() {
                   onDragOver={(e) => handleSectorDragOver(e, sector.id)}
                   onDrop={(e) => handleSectorDrop(e, sector.id)}
                   onClick={() => setEditingSector(sector)}
-                  className={`bg-white/5 border border-white/5 rounded-2xl p-6 cursor-pointer hover:bg-white/10 transition-all ${
-                    sectorDragOverId === sector.id ? "border-2 border-blue-500 bg-blue-500/10" : ""
-                  } ${sectorDraggedId === sector.id ? "opacity-50" : ""}`}
+                  className="rounded-2xl p-6 cursor-pointer transition-all"
+                  style={{
+                    backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
+                    borderWidth: "1px",
+                    borderStyle: "solid",
+                    borderColor:
+                      sectorDragOverId === sector.id
+                        ? "#3b82f6"
+                        : theme === "dark"
+                          ? "rgba(255,255,255,0.08)"
+                          : "#e2e8f0",
+                    opacity: sectorDraggedId === sector.id ? 0.5 : 1,
+                  }}
                 >
                   <div className="flex items-start justify-end mb-3">
-                    <GripVertical className="h-4 w-4 text-gray-600 cursor-grab" />
+                    <GripVertical
+                      className="h-4 w-4 cursor-grab"
+                      style={{ color: theme === "dark" ? "#555" : "#94a3b8" }}
+                    />
                   </div>
-                  <h3 className="text-white font-bold text-lg mb-2">{sector.title}</h3>
-                  {sector.description && <p className="text-gray-500 text-sm line-clamp-2">{sector.description}</p>}
+                  <h3 className="font-bold text-lg mb-2" style={colors.text.primary}>
+                    {sector.title}
+                  </h3>
+                  {sector.description && (
+                    <p className="text-sm line-clamp-2" style={colors.text.muted}>
+                      {sector.description}
+                    </p>
+                  )}
                   {sector.image && (
-                    <img src={sector.image} alt={sector.title} className="mt-3 w-full h-32 object-cover rounded-lg" />
+                    <img
+                      src={sector.image}
+                      alt={sector.title}
+                      className="mt-3 w-full h-32 object-cover rounded-lg"
+                    />
                   )}
                 </div>
               ))}
+              <AddNewSectorCard
+                onAdd={async (data) => {
+                  await createSector.mutateAsync(data);
+                }}
+                theme={theme}
+                colors={colors}
+              />
             </>
           )}
         </div>
@@ -521,10 +783,14 @@ export default function ServicesManagementPage() {
             }
             refetchCategories();
           }}
-          onDelete={editingCategory.id ? async (id) => {
-            await deleteCategory.mutateAsync(id);
-            refetchCategories();
-          } : undefined}
+          onDelete={
+            editingCategory.id
+              ? async (id) => {
+                  await deleteCategory.mutateAsync(id);
+                  refetchCategories();
+                }
+              : undefined
+          }
         />
       )}
 
@@ -532,7 +798,10 @@ export default function ServicesManagementPage() {
         <ServiceSectorModal
           sector={editingSector}
           isOpen={!!editingSector || isAddingSector}
-          onClose={() => { setEditingSector(null); setIsAddingSector(false); }}
+          onClose={() => {
+            setEditingSector(null);
+            setIsAddingSector(false);
+          }}
           onSave={async (formData) => {
             if (editingSector) {
               await updateSector.mutateAsync({ id: editingSector.id, data: formData });
@@ -543,9 +812,13 @@ export default function ServicesManagementPage() {
               await createSector.mutateAsync(data);
             }
           }}
-          onDelete={editingSector ? async (id) => {
-            await deleteSector.mutateAsync(id);
-          } : undefined}
+          onDelete={
+            editingSector
+              ? async (id) => {
+                  await deleteSector.mutateAsync(id);
+                }
+              : undefined
+          }
         />
       )}
     </div>

@@ -1,19 +1,29 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Type, AlignLeft, Loader2, CheckCircle2, AlertCircle, Layers, List } from "lucide-react";
+import {
+  Save,
+  Type,
+  AlignLeft,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  Layers,
+  List,
+} from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useBanners } from "../../../src/hooks/useBanner";
 import { useBannerMutations } from "../../../src/hooks/useAdminMutations";
 import { Banner } from "../../../src/lib/api";
+import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
 export default function BannerManagementPage() {
+  const { theme, colors, mounted } = useAdminTheme();
   const { data: banners, isLoading } = useBanners();
   const { updateBanner } = useBannerMutations();
 
-  // There is only one banner — take the first one
   const banner = Array.isArray(banners) ? banners[0] : undefined;
 
   const [formData, setFormData] = useState<Partial<Banner>>({});
@@ -21,7 +31,6 @@ export default function BannerManagementPage() {
   const [typewriterInput, setTypewriterInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // Sync form data when banner loads
   useEffect(() => {
     if (banner) {
       setFormData({ ...banner });
@@ -34,20 +43,24 @@ export default function BannerManagementPage() {
 
     setSaveStatus("saving");
     try {
-      // Upload background image if a new file was selected
       if (selectedFile) {
         const fileData = new FormData();
         fileData.append("file", selectedFile);
-        const token = document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/banners/${banner.id}/background_image/`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: fileData,
-        });
+        const token = document.cookie.replace(
+          /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
+          "$1",
+        );
+        await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/banners/${banner.id}/background_image/`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: fileData,
+          },
+        );
         setSelectedFile(null);
       }
 
-      // Compute only changed text fields
       const changedData: Partial<Banner> = {};
       const currentFormData = {
         ...formData,
@@ -77,28 +90,48 @@ export default function BannerManagementPage() {
     }
   };
 
+  if (!mounted) return null;
+
+  const isDark = theme === "dark";
+  const cardStyle = {
+    backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+  };
+
+  const inputStyle = {
+    backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: isDark ? "rgba(255,255,255,0.1)" : "#cbd5e1",
+    color: isDark ? "#ffffff" : "#1e293b",
+  };
+
   return (
     <div className="space-y-12 uppercase relative pb-40">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`${montserrat.className} text-4xl text-white mb-2`}>
+          <h1
+            className={`${montserrat.className} text-4xl mb-2`}
+            style={{ color: colors.text as string }}
+          >
             Home <span className="text-blue-500">Banner</span>
           </h1>
-          <p className="text-gray-400">
+          <p style={{ color: colors.textSecondary as string }}>
             Edit the hero banner displayed on the main landing page.
           </p>
         </div>
 
         <div className="flex items-center gap-4">
           {saveStatus === "success" && (
-            <span className="flex items-center gap-2 text-green-400 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
+            <span className="flex items-center gap-2 text-green-500 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
               <CheckCircle2 className="h-4 w-4" />
               Changes saved successfully
             </span>
           )}
           {saveStatus === "error" && (
-            <span className="flex items-center gap-2 text-red-400 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
+            <span className="flex items-center gap-2 text-red-500 text-xs font-bold animate-in fade-in slide-in-from-right-4 lowercase">
               <AlertCircle className="h-4 w-4" />
               Failed to save changes
             </span>
@@ -123,26 +156,42 @@ export default function BannerManagementPage() {
           <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
         </div>
       ) : !banner ? (
-        <div className="flex flex-col items-center justify-center py-32 px-4 bg-white/5 rounded-3xl border border-dashed border-white/10">
+        <div
+          className="flex flex-col items-center justify-center py-32 px-4 border-dashed rounded-3xl"
+          style={cardStyle}
+        >
           <Layers className="h-12 w-12 text-blue-500/40 mb-4" />
-          <h3 className="text-lg font-bold text-white mb-2">No Banner Found</h3>
-          <p className="text-gray-500 text-sm text-center max-w-sm normal-case">
+          <h3 className="text-lg font-bold mb-2" style={{ color: colors.text as string }}>
+            No Banner Found
+          </h3>
+          <p
+            className="text-sm text-center max-w-sm normal-case"
+            style={{ color: colors.textMuted as string }}
+          >
             No banner record exists in the database yet. Create one via the Django admin or API.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
           {/* Hero Text Card */}
-          <div className="p-8 bg-white/5 border border-white/5 rounded-3xl space-y-8">
-            <h2 className={`${montserrat.className} text-xl text-white flex items-center gap-2 pb-4 border-b border-white/5`}>
+          <div className="p-8 rounded-3xl space-y-8" style={cardStyle}>
+            <h2
+              className={`${montserrat.className} text-xl flex items-center gap-2 pb-4`}
+              style={{
+                color: colors.text as string,
+                borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+              }}
+            >
               <Type className="h-5 w-5 text-blue-500" />
               Hero Text
             </h2>
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase px-1">
+                <label
+                  className="text-[10px] font-bold tracking-widest uppercase px-1"
+                  style={{ color: colors.textMuted as string }}
+                >
                   Headline
                 </label>
                 <input
@@ -150,12 +199,16 @@ export default function BannerManagementPage() {
                   value={formData.headline || ""}
                   onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
                   placeholder="e.g. Building the Future of Energy"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+                  className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+                  style={inputStyle}
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase px-1">
+                <label
+                  className="text-[10px] font-bold tracking-widest uppercase px-1"
+                  style={{ color: colors.textMuted as string }}
+                >
                   Subheadline
                 </label>
                 <textarea
@@ -163,24 +216,37 @@ export default function BannerManagementPage() {
                   onChange={(e) => setFormData({ ...formData, subheadline: e.target.value })}
                   rows={4}
                   placeholder="Supporting description shown below the headline..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium resize-none normal-case text-sm"
+                  className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium resize-none normal-case text-sm"
+                  style={inputStyle}
                 />
               </div>
             </div>
           </div>
 
           {/* Typewriter & Preview Card */}
-          <div className="p-8 bg-white/5 border border-white/5 rounded-3xl space-y-8">
-            <h2 className={`${montserrat.className} text-xl text-white flex items-center gap-2 pb-4 border-b border-white/5`}>
+          <div className="p-8 rounded-3xl space-y-8" style={cardStyle}>
+            <h2
+              className={`${montserrat.className} text-xl flex items-center gap-2 pb-4`}
+              style={{
+                color: colors.text as string,
+                borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+              }}
+            >
               <List className="h-5 w-5 text-blue-500" />
               Typewriter Animation
             </h2>
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase px-1">
+                <label
+                  className="text-[10px] font-bold tracking-widest uppercase px-1"
+                  style={{ color: colors.textMuted as string }}
+                >
                   Typewriter Words
-                  <span className="ml-2 normal-case text-gray-600 font-normal">
+                  <span
+                    className="ml-2 normal-case font-normal"
+                    style={{ color: colors.textMuted as string }}
+                  >
                     (comma separated)
                   </span>
                 </label>
@@ -189,17 +255,23 @@ export default function BannerManagementPage() {
                   onChange={(e) => setTypewriterInput(e.target.value)}
                   rows={3}
                   placeholder="Sustainable, Reliable, Innovative"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium resize-none normal-case text-sm"
+                  className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium resize-none normal-case text-sm"
+                  style={inputStyle}
                 />
-                <p className="text-[10px] text-gray-600 px-1 normal-case">
+                <p
+                  className="text-[10px] px-1 normal-case"
+                  style={{ color: colors.textMuted as string }}
+                >
                   Each word cycles in the animated typewriter effect on the banner.
                 </p>
               </div>
 
-              {/* Live preview of typewriter words */}
               {typewriterInput && (
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-500 tracking-widest uppercase px-1">
+                  <label
+                    className="text-[10px] font-bold tracking-widest uppercase px-1"
+                    style={{ color: colors.textMuted as string }}
+                  >
                     Word Preview
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -222,16 +294,30 @@ export default function BannerManagementPage() {
           </div>
 
           {/* Background Image Card */}
-          <div className="lg:col-span-2 p-8 bg-white/5 border border-white/5 rounded-3xl space-y-4">
-            <h2 className={`${montserrat.className} text-xl text-white flex items-center gap-2 pb-4 border-b border-white/5`}>
+          <div className="lg:col-span-2 p-8 rounded-3xl space-y-4" style={cardStyle}>
+            <h2
+              className={`${montserrat.className} text-xl flex items-center gap-2 pb-4`}
+              style={{
+                color: colors.text as string,
+                borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+              }}
+            >
               <AlignLeft className="h-5 w-5 text-blue-500" />
               Background Image
             </h2>
             <div className="flex flex-col gap-4">
               {(selectedFile || formData.background_image) && (
-                <div className="h-56 w-full rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+                <div
+                  className="h-56 w-full rounded-2xl overflow-hidden border"
+                  style={{
+                    backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+                    borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+                  }}
+                >
                   <img
-                    src={selectedFile ? URL.createObjectURL(selectedFile) : formData.background_image!}
+                    src={
+                      selectedFile ? URL.createObjectURL(selectedFile) : formData.background_image!
+                    }
                     alt="Banner background"
                     className="w-full h-full object-cover"
                   />
@@ -239,28 +325,42 @@ export default function BannerManagementPage() {
               )}
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2 cursor-pointer flex-1">
-                  <span className="text-[10px] font-bold text-gray-500 tracking-widest uppercase">
+                  <span
+                    className="text-[10px] font-bold tracking-widest uppercase"
+                    style={{ color: colors.textMuted as string }}
+                  >
                     {selectedFile ? "New file selected" : "Choose image"}
                   </span>
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => e.target.files && setSelectedFile(e.target.files[0])}
-                    className="block w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer bg-white/5 border border-white/10 rounded-xl"
+                    className="block w-full text-sm file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-xl"
+                    style={inputStyle}
                   />
                 </label>
                 {selectedFile && (
                   <button
                     type="button"
                     onClick={() => setSelectedFile(null)}
-                    className="text-xs text-red-400 hover:text-red-300 font-bold border border-red-500/20 bg-red-500/10 px-3 py-2 rounded-lg transition-all normal-case"
+                    className="text-xs font-bold border px-3 py-2 rounded-lg transition-all normal-case"
+                    style={{
+                      color: "#ef4444",
+                      backgroundColor: "rgba(239,68,68,0.1)",
+                      borderColor: "rgba(239,68,68,0.2)",
+                    }}
                   >
                     Clear
                   </button>
                 )}
               </div>
-              <p className="text-[10px] text-gray-600 normal-case px-1">
-                Upload a new background image for the hero banner. The image will be saved when you click <strong className="text-gray-500">Apply Changes</strong>.
+              <p
+                className="text-[10px] normal-case px-1"
+                style={{ color: colors.textMuted as string }}
+              >
+                Upload a new background image for the hero banner. The image will be saved when you
+                click{" "}
+                <strong style={{ color: colors.textSecondary as string }}> Apply Changes</strong>.
               </p>
             </div>
           </div>

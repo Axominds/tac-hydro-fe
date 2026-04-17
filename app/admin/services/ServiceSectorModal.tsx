@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Plus, Edit2, Trash2, Loader2, X } from "lucide-react";
+import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 
 interface SectorData {
   id: number;
@@ -25,6 +26,7 @@ export function ServiceSectorModal({
   onSave,
   onDelete,
 }: ServiceSectorModalProps) {
+  const { theme, colors, mounted } = useAdminTheme();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<File | null>(null);
@@ -48,7 +50,9 @@ export function ServiceSectorModal({
     }
   }, [isOpen, sector]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
+
+  const isDark = theme === "dark";
 
   const handleSave = async () => {
     if (!title.trim()) return;
@@ -82,49 +86,86 @@ export function ServiceSectorModal({
     }
   };
 
+  const inputStyle = {
+    backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+    borderWidth: "1px",
+    borderStyle: "solid",
+    borderColor: isDark ? "rgba(255,255,255,0.15)" : "#cbd5e1",
+    color: isDark ? "#ffffff" : "#1e293b",
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg max-h-[90vh] bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-white">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="relative w-full max-w-lg max-h-[90vh] rounded-2xl overflow-hidden flex flex-col"
+        style={{
+          backgroundColor: isDark ? "#0a0a0a" : "#ffffff",
+          border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,
+        }}
+      >
+        <div
+          className="p-6 flex items-center justify-between"
+          style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
+        >
+          <h2 className="text-xl font-bold" style={{ color: colors.text as string }}>
             {sector ? "Edit Sector" : "Add Sector"}
           </h2>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg">
-            <X className="h-5 w-5 text-gray-400" />
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg transition-all"
+            style={{ backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)" }}
+          >
+            <X className="h-5 w-5" style={{ color: colors.textMuted as string }} />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Title</label>
+            <label className="block text-sm mb-1" style={{ color: colors.textMuted as string }}>
+              Title
+            </label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Sector title..."
-              className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              style={inputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Description</label>
+            <label className="block text-sm mb-1" style={{ color: colors.textMuted as string }}>
+              Description
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Description..."
               rows={4}
-              className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-white text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
+              style={inputStyle}
             />
           </div>
 
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Image</label>
+            <label className="block text-sm mb-1" style={{ color: colors.textMuted as string }}>
+              Image
+            </label>
             <div className="flex items-center gap-4">
-              <div className="w-24 h-24 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+              <div
+                className="w-24 h-24 rounded-lg flex items-center justify-center overflow-hidden"
+                style={{
+                  backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+                  border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                }}
+              >
                 {imagePreview ? (
                   <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-gray-500 text-xs">No image</span>
+                  <span className="text-xs" style={{ color: colors.textMuted as string }}>
+                    No image
+                  </span>
                 )}
               </div>
               <div>
@@ -137,14 +178,22 @@ export function ServiceSectorModal({
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-3 py-1.5 bg-white/10 text-white text-sm rounded-lg hover:bg-white/20"
+                  className="px-3 py-1.5 text-sm rounded-lg transition-all"
+                  style={{
+                    backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                    color: colors.text as string,
+                  }}
                 >
                   Choose Image
                 </button>
                 {imagePreview && (
                   <button
-                    onClick={() => { setImage(null); setImagePreview(null); }}
-                    className="ml-2 px-3 py-1.5 text-red-400 text-sm hover:text-red-300"
+                    onClick={() => {
+                      setImage(null);
+                      setImagePreview(null);
+                    }}
+                    className="ml-2 px-3 py-1.5 text-sm"
+                    style={{ color: "#ef4444" }}
                   >
                     Remove
                   </button>
@@ -154,21 +203,36 @@ export function ServiceSectorModal({
           </div>
         </div>
 
-        <div className="p-6 border-t border-white/10 flex items-center justify-between">
+        <div
+          className="p-6 flex items-center justify-between"
+          style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
+        >
           {sector && onDelete ? (
             <button
               onClick={handleDelete}
               disabled={isDeleting}
-              className="px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg text-sm flex items-center gap-2"
+              className="px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+              style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
             >
-              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
               Delete
             </button>
           ) : (
             <div />
           )}
           <div className="flex gap-2">
-            <button onClick={onClose} className="px-4 py-2 bg-white/5 text-gray-400 hover:text-white rounded-lg text-sm">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg text-sm"
+              style={{
+                backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                color: colors.textSecondary as string,
+              }}
+            >
               Cancel
             </button>
             <button
