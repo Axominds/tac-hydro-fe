@@ -37,7 +37,7 @@ export const CorePrinciplesSection = ({ intro, principles }: Props) => {
           <div className="flex flex-col md:flex-row gap-12 items-center">
             <div className="w-full md:w-1/2">
               <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-[#0b1522] mb-6">
-                Our Core Principles
+                {intro?.title || "Our Core Principles"}
               </h1>
               <div
                 className="space-y-6 text-slate-700 leading-relaxed text-justify"

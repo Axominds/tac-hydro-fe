@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage, ExpertiseCategory, ServiceSector, AboutPageSection, ProjectScopeMembership, ProjectScopeImage } from "../lib/api";
+import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage, ExpertiseCategory, ServiceSector, AboutPageSection, ProjectScopeMembership, ProjectScopeImage, CorePrinciple, TeamCategory, TeamMember, TeamMemberCategory } from "../lib/api";
 
 // --- PROJECTS ---
 // ... (omitting projects for brevity in replacement, but I will target the right lines)
@@ -193,7 +193,21 @@ export function useProjectScopeImageMutations() {
     },
   });
 
-  return { createScopeImage, deleteScopeImage };
+  const reorderScopeImages = useMutation({
+    mutationFn: (items: { id: number; order: number }[]) =>
+      Promise.all(
+        items.map((item) =>
+          apiFetch(`/api/projects/scope-images/${item.id}/`, { method: "PATCH", body: { order: item.order } })
+        )
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["project-scope-images"] });
+      queryClient.invalidateQueries({ queryKey: ["project-scope-memberships"] });
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
+  return { createScopeImage, deleteScopeImage, reorderScopeImages };
 }
 
 // --- BANNERS ---
@@ -494,4 +508,158 @@ export function useAboutSectionMutations() {
   });
 
   return { createSection, updateSection, uploadImage, deleteSection };
+}
+
+// --- CORE PRINCIPLES INTRO ---
+
+export function useCorePrinciplesIntroMutations() {
+  const queryClient = useQueryClient();
+
+  const updateIntro = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<AboutPageSection> }) =>
+      apiFetch<AboutPageSection>(`/api/about-us/core-principles-intro/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["core-principles-intro"] }),
+  });
+
+  const uploadImage = useMutation({
+    mutationFn: ({ id, file }: { id: number; file: File }) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      return apiFetch<{ detail: string }>(`/api/about-us/core-principles-intro/${id}/image/`, {
+        method: "POST",
+        body: formData,
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["core-principles-intro"] }),
+  });
+
+  const deleteIntro = useMutation({
+    mutationFn: (id: number) =>
+      apiFetch(`/api/about-us/core-principles-intro/${id}/`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["core-principles-intro"] }),
+  });
+
+  return { updateIntro, uploadImage, deleteIntro };
+}
+
+// --- CORE PRINCIPLES ---
+
+export function useCorePrinciplesMutations() {
+  const queryClient = useQueryClient();
+
+  const createCorePrinciple = useMutation({
+    mutationFn: (data: Partial<CorePrinciple>) =>
+      apiFetch<CorePrinciple>("/api/about-us/core-principles/", { method: "POST", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["core-principles"] }),
+  });
+
+  const updateCorePrinciple = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<CorePrinciple> }) =>
+      apiFetch<CorePrinciple>(`/api/about-us/core-principles/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["core-principles"] }),
+  });
+
+  const deleteCorePrinciple = useMutation({
+    mutationFn: (id: number) =>
+      apiFetch(`/api/about-us/core-principles/${id}/`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["core-principles"] }),
+  });
+
+  const reorderCorePrinciples = useMutation({
+    mutationFn: (items: { id: number; order: number }[]) =>
+      Promise.all(
+        items.map((item) =>
+          apiFetch(`/api/about-us/core-principles/${item.id}/`, { method: "PATCH", body: { order: item.order } })
+        )
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["core-principles"] }),
+  });
+
+  return { createCorePrinciple, updateCorePrinciple, deleteCorePrinciple, reorderCorePrinciples };
+}
+
+// --- TEAM CATEGORIES ---
+
+export function useTeamCategoryMutations() {
+  const queryClient = useQueryClient();
+
+  const createTeamCategory = useMutation({
+    mutationFn: (data: Partial<TeamCategory>) =>
+      apiFetch<TeamCategory>("/api/about-us/team-categories/", { method: "POST", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["team-categories"] }),
+  });
+
+  const updateTeamCategory = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<TeamCategory> }) =>
+      apiFetch<TeamCategory>(`/api/about-us/team-categories/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["team-categories"] }),
+  });
+
+  const deleteTeamCategory = useMutation({
+    mutationFn: (id: number) =>
+      apiFetch(`/api/about-us/team-categories/${id}/`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["team-categories"] }),
+  });
+
+  const reorderTeamCategories = useMutation({
+    mutationFn: (items: { id: number; order: number }[]) =>
+      Promise.all(
+        items.map((item) =>
+          apiFetch(`/api/about-us/team-categories/${item.id}/`, { method: "PATCH", body: { order: item.order } })
+        )
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["team-categories"] }),
+  });
+
+  return { createTeamCategory, updateTeamCategory, deleteTeamCategory, reorderTeamCategories };
+}
+
+// --- TEAM MEMBERS ---
+
+export function useTeamMemberMutations() {
+  const queryClient = useQueryClient();
+
+  const createTeamMember = useMutation({
+    mutationFn: (data: Partial<TeamMember>) =>
+      apiFetch<TeamMember>("/api/about-us/team-members/", { method: "POST", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["team-members"] }),
+  });
+
+  const updateTeamMember = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<TeamMember> }) =>
+      apiFetch<TeamMember>(`/api/about-us/team-members/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["team-members"] }),
+  });
+
+  const deleteTeamMember = useMutation({
+    mutationFn: (id: number) =>
+      apiFetch(`/api/about-us/team-members/${id}/`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["team-members"] }),
+  });
+
+  return { createTeamMember, updateTeamMember, deleteTeamMember };
+}
+
+// --- TEAM MEMBER CATEGORIES ---
+
+export function useTeamMemberCategoryMutations() {
+  const queryClient = useQueryClient();
+
+  const addMemberCategory = useMutation({
+    mutationFn: (data: { team_member_id: number; category_id: number }) =>
+      apiFetch<TeamMemberCategory>("/api/about-us/team-member-categories/", { method: "POST", body: data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["team-member-categories"] });
+    },
+  });
+
+  const removeMemberCategory = useMutation({
+    mutationFn: (id: number) =>
+      apiFetch(`/api/about-us/team-member-categories/${id}/`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["team-member-categories"] });
+    },
+  });
+
+  return { addMemberCategory, removeMemberCategory };
 }

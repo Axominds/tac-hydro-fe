@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import {
   Lightbulb,
   Leaf,
@@ -9,6 +10,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { useCorePrinciples } from "../../../hooks/useCorePrinciples";
+import { apiFetch, CorePrinciplesIntroList } from "../../../lib/api";
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Scale,
@@ -23,6 +25,11 @@ const ICON_MAP: Record<string, React.ElementType> = {
 
 export const CorePrinciplesSection = () => {
   const { data: principles, isLoading } = useCorePrinciples();
+  const { data: introList } = useQuery<CorePrinciplesIntroList>({
+    queryKey: ["core-principles-intro"],
+    queryFn: () => apiFetch<CorePrinciplesIntroList>("/api/about-us/core-principles-intro/"),
+  });
+  const intro = introList?.[0];
 
   if (isLoading) {
     return (
@@ -77,7 +84,7 @@ export const CorePrinciplesSection = () => {
       <div className="w-full max-w-[1400px] px-6 sm:px-10 lg:px-20 py-8">
         <div className="mb-8 sm:mb-20 text-center max-w-3xl mx-auto">
           <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-slate-900 mb-6">
-            Our Core Principles
+            {intro?.title || "Our Core Principles"}
           </h1>
         </div>
         <div className="flex gap-6 py-2 justify-between flex-wrap sm:flex-nowrap">

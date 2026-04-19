@@ -141,16 +141,11 @@ export default function AboutManagementPage() {
                     <h3 className="font-bold text-lg mb-1" style={{ color: colors.text as string }}>
                       {title}
                     </h3>
-                    <p className="text-sm" style={{ color: colors.textMuted as string }}>
-                      {section ? (
-                        <>
-                          Last modified: {new Date().toLocaleDateString()} -{" "}
-                          <span className="text-green-500">Active</span>
-                        </>
-                      ) : (
+                    {!section && (
+                      <p className="text-sm" style={{ color: colors.textMuted as string }}>
                         <span className="text-yellow-500">Not configured</span>
-                      )}
-                    </p>
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -319,7 +314,7 @@ export default function AboutManagementPage() {
                   ) : (
                     <Save className="h-5 w-5" />
                   )}
-                  {editingSection ? "Update Section" : "Save Section"}
+                  Save
                 </button>
                 <button
                   type="button"

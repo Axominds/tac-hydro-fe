@@ -56,9 +56,10 @@ export function useAdminTheme() {
 
 export function getThemedClasses(theme: "light" | "dark") {
   const c = adminColors[theme];
+  const isDark = theme === "dark";
   return {
     card: {
-      base: { backgroundColor: c.cardBg, borderColor: c.border },
+      default: { backgroundColor: c.cardBg, borderWidth: "1px", borderStyle: "solid", borderColor: c.border },
       hover: { backgroundColor: c.cardBgHover, borderColor: c.borderHover },
     },
     text: {
@@ -67,10 +68,11 @@ export function getThemedClasses(theme: "light" | "dark") {
       muted: { color: c.textMuted },
     },
     input: {
-      bg: { backgroundColor: c.inputBg, borderColor: c.border, color: c.text },
+      bg: { backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9", borderWidth: "1px", borderStyle: "solid", borderColor: c.border, color: c.text },
     },
     modal: {
       bg: { backgroundColor: c.modalBg, borderColor: c.border },
     },
+    colors: c,
   };
 }

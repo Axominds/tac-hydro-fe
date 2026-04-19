@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Plus, Edit2, Trash2, Loader2, X } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader2, X, Save } from "lucide-react";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 
 interface SectorData {
@@ -243,7 +243,7 @@ export function ServiceSectorModal({
               disabled={isSaving || !title.trim()}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2 disabled:opacity-50"
             >
-              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               Save
             </button>
           </div>

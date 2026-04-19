@@ -45,7 +45,7 @@ export default function ProjectsManagementPage() {
   const { data: scopes } = useProjectScopes();
   const { createScope, updateScope, reorderScopes, deleteScope } = useProjectScopeMutations();
   const { createMembership, updateMembership, deleteMembership } = useProjectScopeMembershipMutations();
-  const { createScopeImage, deleteScopeImage } = useProjectScopeImageMutations();
+  const { createScopeImage, deleteScopeImage, reorderScopeImages } = useProjectScopeImageMutations();
 
   const [isModalOpen, setIsModalOpenLocal] = useState(false);
   const [isMembershipModalOpen, setIsMembershipModalOpen] = useState(false);
@@ -58,6 +58,9 @@ export default function ProjectsManagementPage() {
   const [dragOverId, setDragOverId] = useState<number | null>(null);
   const dragItemId = useRef<number | null>(null);
   const [reordering, setReordering] = useState(false);
+  const [dragOverImageId, setDragOverImageId] = useState<number | null>(null);
+  const imageDragItemId = useRef<number | null>(null);
+  const [imageReordering, setImageReordering] = useState(false);
   const [newScopeName, setNewScopeName] = useState("");
   const [addingScope, setAddingScope] = useState(false);
   const [editingScopeId, setEditingScopeId] = useState<number | null>(null);
@@ -210,6 +213,39 @@ export default function ProjectsManagementPage() {
       );
     } finally {
       setReordering(false);
+    }
+  };
+
+  const handleImageDragStart = (id: number) => {
+    imageDragItemId.current = id;
+  };
+
+  const handleImageDragOver = (e: React.DragEvent, id: number) => {
+    e.preventDefault();
+    setDragOverImageId(id);
+  };
+
+  const handleImageDrop = async (targetId: number, membershipId: number) => {
+    setDragOverImageId(null);
+    const sourceId = imageDragItemId.current;
+    if (!sourceId || sourceId === targetId) return;
+
+    const currentImages = getMembershipImages(membershipId);
+    const newOrder = [...currentImages];
+    const fromIdx = newOrder.findIndex((img) => img.id === sourceId);
+    const toIdx = newOrder.findIndex((img) => img.id === targetId);
+    const [moved] = newOrder.splice(fromIdx, 1);
+    newOrder.splice(toIdx, 0, moved);
+
+    imageDragItemId.current = null;
+
+    setImageReordering(true);
+    try {
+      await reorderScopeImages.mutateAsync(
+        newOrder.map((img, idx) => ({ id: img.id, order: idx })),
+      );
+    } finally {
+      setImageReordering(false);
     }
   };
 
@@ -907,8 +943,9 @@ export default function ProjectsManagementPage() {
                           <button
                             type="button"
                             onClick={() => handleUpdateMembershipRole(membership.id)}
-                            className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-sm font-semibold"
+                            className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2"
                           >
+                            <Save className="h-4 w-4" />
                             Save Role
                           </button>
                         </div>
@@ -946,19 +983,32 @@ export default function ProjectsManagementPage() {
                               {membershipImages.map((image) => (
                                 <div
                                   key={image.id}
-                                  className="relative rounded-lg overflow-hidden border"
-                                  style={{ borderColor: theme === "dark" ? "rgba(255,255,255,0.12)" : "#e2e8f0" }}
+                                  draggable
+                                  onDragStart={() => handleImageDragStart(image.id)}
+                                  onDragOver={(e) => handleImageDragOver(e, image.id)}
+                                  onDrop={() => handleImageDrop(image.id, membership.id)}
+                                  className="relative rounded-lg overflow-hidden border cursor-move transition-all"
+                                  style={{
+                                    borderColor: dragOverImageId === image.id ? "#3b82f6" : theme === "dark" ? "rgba(255,255,255,0.12)" : "#e2e8f0",
+                                    transform: dragOverImageId === image.id ? "scale(1.02)" : "scale(1)",
+                                    boxShadow: dragOverImageId === image.id ? "0 0 0 2px #3b82f6" : "none",
+                                  }}
                                 >
                                   {image.image && (
-                                    <img src={image.image} alt="Scope" className="h-24 w-full object-cover" />
+                                    <img src={image.image} alt="Scope" className="h-24 w-full object-cover pointer-events-none" />
                                   )}
-                                  <button
-                                    type="button"
-                                    onClick={() => deleteScopeImage.mutateAsync(image.id)}
-                                    className="absolute top-1 right-1 p-1 rounded bg-black/60 text-white"
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </button>
+                                  <div className="absolute top-1 right-1 flex gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => deleteScopeImage.mutateAsync(image.id)}
+                                      className="p-1 rounded bg-black/60 text-white"
+                                    >
+                                      <Trash2 className="h-3 w-3" />
+                                    </button>
+                                  </div>
+                                  <div className="absolute bottom-1 left-1 text-[10px] text-white bg-black/50 px-1 rounded">
+                                    {image.order + 1}
+                                  </div>
                                 </div>
                               ))}
                             </div>

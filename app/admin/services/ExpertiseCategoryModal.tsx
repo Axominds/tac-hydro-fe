@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Briefcase, Plus, Edit2, Trash2, Loader2, GripVertical, X } from "lucide-react";
+import { Briefcase, Plus, Edit2, Trash2, Loader2, GripVertical, X, Save } from "lucide-react";
 import { useExpertiseItems } from "../../../src/hooks/useExpertiseCategories";
 import { useProjectScopes } from "../../../src/hooks/useProjectScopes";
 import { useExpertiseItemMutations } from "../../../src/hooks/useAdminMutations";
@@ -80,6 +80,7 @@ export function ExpertiseCategoryModal({
     setIsSaving(true);
     await onSave({ title: title.trim(), icon_key: iconKey, theme_color: themeColor });
     setIsSaving(false);
+    onClose();
   };
 
   const handleDelete = async () => {
@@ -481,8 +482,8 @@ export function ExpertiseCategoryModal({
               disabled={isSaving}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2"
             >
-              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              Save Changes
+              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              Save
             </button>
           </div>
         </div>

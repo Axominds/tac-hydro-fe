@@ -2,26 +2,72 @@ import Cookies from "js-cookie";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL;
 
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+function subscribeToTokenRefresh(callback: (token: string) => void) {
+  refreshSubscribers.push(callback);
+}
+
+function onTokenRefreshed(token: string) {
+  refreshSubscribers.forEach((cb) => cb(token));
+  refreshSubscribers = [];
+}
+
+async function refreshAccessToken(): Promise<boolean> {
+  const refreshToken = Cookies.get("refresh_token");
+  if (!refreshToken) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/token-refresh/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh: refreshToken }),
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const data = await response.json();
+    Cookies.set("access_token", data.access, { expires: 1, secure: true, sameSite: "strict" });
+    onTokenRefreshed(data.access);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function clearAuthAndRedirect() {
+  Cookies.remove("access_token");
+  Cookies.remove("refresh_token");
+  if (typeof window !== "undefined") {
+    window.location.href = "/admin/login";
+  }
+}
+
 interface FetchOptions {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: any;
   headers?: Record<string, string>;
   requireAuth?: boolean;
+  _retry?: boolean;
 }
 
 export async function apiFetch<T>(path: string, options: FetchOptions = {}): Promise<T> {
-  const { method = "GET", body, headers = {}, requireAuth = false } = options;
+  const { method = "GET", body, headers = {}, requireAuth = false, _retry = false } = options;
 
   const token = Cookies.get("access_token");
 
   const isFormData = body instanceof FormData;
-  
+
   const defaultHeaders: Record<string, string> = {};
   if (!isFormData) {
     defaultHeaders["Content-Type"] = "application/json";
   }
 
-  // Only attach authorization strictly when performing mutations, or explicitly flagged
   if (token && (requireAuth || method !== "GET")) {
     defaultHeaders["Authorization"] = `Bearer ${token}`;
   }
@@ -32,11 +78,45 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
     body: isFormData ? body : (body ? JSON.stringify(body) : undefined),
   });
 
+  if (res.status === 401 && !_retry) {
+    if (isRefreshing) {
+      return new Promise((resolve) => {
+        subscribeToTokenRefresh((newToken) => {
+          resolve(
+            apiFetch(path, {
+              method,
+              body,
+              headers,
+              requireAuth,
+              _retry: true,
+            })
+          );
+        });
+      });
+    }
+
+    isRefreshing = true;
+    const refreshed = await refreshAccessToken();
+    isRefreshing = false;
+
+    if (refreshed) {
+      return apiFetch(path, {
+        method,
+        body,
+        headers,
+        requireAuth,
+        _retry: true,
+      });
+    }
+
+    clearAuthAndRedirect();
+    throw new Error("Session expired. Please login again.");
+  }
+
   if (!res.ok) {
     throw new Error(`${path} → ${res.status}`);
   }
 
-  // DELETE requests might not return JSON
   if (method === "DELETE") {
     return {} as T;
   }

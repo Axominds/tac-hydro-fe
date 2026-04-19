@@ -26,7 +26,17 @@ const montserrat = Montserrat({ subsets: ["latin"], weight: ["700"] });
 
 const MENU_ITEMS = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { name: "About Us", href: "/admin/about", icon: Users },
+  { 
+    name: "About Us", 
+    href: "/admin/about", 
+    icon: Users,
+    isDropdown: true,
+    subItems: [
+      { name: "About Us", href: "/admin/about" },
+      { name: "Core Principles", href: "/admin/about/core-principles" },
+      { name: "Team", href: "/admin/about/team" },
+    ]
+  },
   { name: "Services", href: "/admin/services", icon: Briefcase },
   { name: "Projects", href: "/admin/projects", icon: BarChart3 },
   { name: "Galleries", href: "/admin/galleries", icon: ImageIcon },
@@ -42,6 +52,7 @@ interface AdminSidebarProps {
 export function AdminSidebar({ theme }: AdminSidebarProps) {
   const pathname = usePathname();
   const [localTheme, setLocalTheme] = useState(theme);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("tac-admin-sidebar-collapsed") === "true";
@@ -82,6 +93,19 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
     hoverBg: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
     activeBg: "rgba(37, 99, 235, 0.1)",
     activeText: "#3b82f6",
+  };
+
+  const isAboutUsDropDown = (itemName: string) => {
+    if (itemName !== "About Us") return false;
+    const aboutUsPath = pathname === "/admin/about" || 
+                        pathname === "/admin/about/core-principles" || 
+                        pathname === "/admin/about/team";
+    return aboutUsPath;
+  };
+
+  const isDropdownItemActive = (item: typeof MENU_ITEMS[0]) => {
+    if (!item.subItems) return pathname === item.href;
+    return item.subItems.some(sub => pathname === sub.href);
   };
 
   return (
@@ -152,6 +176,42 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
       {/* Navigation Links */}
       <nav className={`flex-1 overflow-y-auto custom-scrollbar ${isCollapsed ? "p-3" : "p-6"}`}>
         {MENU_ITEMS.map((item) => {
+          if (item.subItems && !isCollapsed) {
+            const isDropdownActive = isDropdownItemActive(item);
+            return (
+              <div key={item.name}>
+                <button
+                  onClick={() => setOpenDropdown(openDropdown === item.name ? null : item.name)}
+                  className="flex items-center gap-3 rounded-xl transition-all duration-300 group w-full px-4 py-3.5"
+                  style={{
+                    backgroundColor: isDropdownActive ? colors.activeBg : "transparent",
+                    color: isDropdownActive ? colors.activeText : colors.mutedColor,
+                  }}
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" style={{ color: isDropdownActive ? colors.activeText : colors.mutedColor }} />
+                  <span className="font-medium text-sm tracking-wide flex-1 text-left">{item.name}</span>
+                  <ChevronRight className={`h-4 w-4 transition-transform ${openDropdown === item.name ? "rotate-90" : ""}`} />
+                </button>
+                {openDropdown === item.name && (
+                  <div className="ml-6 mt-1 space-y-1 border-l-2 border-blue-500/30 pl-4">
+                    {item.subItems.map((sub) => (
+                      <Link
+                        key={sub.href}
+                        href={sub.href}
+                        className="block px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                        style={{
+                          backgroundColor: pathname === sub.href ? colors.activeBg : "transparent",
+                          color: pathname === sub.href ? colors.activeText : colors.mutedColor,
+                        }}
+                      >
+                        {sub.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          }
           const isActive = pathname === item.href;
           return (
             <Link

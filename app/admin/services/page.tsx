@@ -6,6 +6,7 @@ import {
   Plus,
   Edit2,
   Trash2,
+  Save,
   Loader2,
   Upload,
   Settings,
@@ -143,138 +144,6 @@ function ExpertiseCategoryCard({
   );
 }
 
-function AddNewCategoryCard({
-  onAdd,
-  theme,
-  colors,
-}: {
-  onAdd: (data: any) => Promise<void>;
-  theme: "light" | "dark";
-  colors: ReturnType<typeof getThemedClasses>;
-}) {
-  const [isAdding, setIsAdding] = useState(false);
-  const [title, setTitle] = useState("");
-  const [iconKey, setIconKey] = useState("briefcase");
-  const [themeColor, setThemeColor] = useState("blue");
-  const [isSaving, setIsSaving] = useState(false);
-
-  const handleAdd = async () => {
-    if (!title.trim()) return;
-    setIsSaving(true);
-    await onAdd({ title: title.trim(), icon_key: iconKey, theme_color: themeColor });
-    setIsSaving(false);
-    setTitle("");
-    setIsAdding(false);
-  };
-
-  if (isAdding) {
-    return (
-      <div
-        className="border border-dashed rounded-2xl p-4 space-y-3"
-        style={{
-          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
-          borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#e2e8f0",
-        }}
-      >
-        <input
-          autoFocus
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Category title..."
-          className="w-full rounded-lg px-3 py-2 font-bold focus:outline-none focus:ring-1 focus:ring-blue-500"
-          style={{
-            backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
-            color: theme === "dark" ? "#ffffff" : "#1e293b",
-          }}
-        />
-        <div className="flex gap-2">
-          <select
-            value={iconKey}
-            onChange={(e) => setIconKey(e.target.value)}
-            className="flex-1 rounded-lg px-3 py-2 text-sm"
-            style={{
-              backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
-              borderWidth: "1px",
-              borderStyle: "solid",
-              borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
-              color: theme === "dark" ? "#ffffff" : "#1e293b",
-            }}
-          >
-            {SUPPORTED_ICONS.map((icon) => (
-              <option key={icon.value} value={icon.value}>
-                {icon.label}
-              </option>
-            ))}
-          </select>
-          <select
-            value={themeColor}
-            onChange={(e) => setThemeColor(e.target.value)}
-            className="flex-1 rounded-lg px-3 py-2 text-sm"
-            style={{
-              backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
-              borderWidth: "1px",
-              borderStyle: "solid",
-              borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
-              color: theme === "dark" ? "#ffffff" : "#1e293b",
-            }}
-          >
-            {SUPPORTED_COLORS.map((color) => (
-              <option key={color.value} value={color.value}>
-                {color.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={handleAdd}
-            disabled={isSaving || !title.trim()}
-            className="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold text-sm disabled:opacity-50"
-          >
-            {isSaving ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : "Add"}
-          </button>
-          <button
-            onClick={() => setIsAdding(false)}
-            className="px-4 py-2 rounded-lg text-sm transition-all"
-            style={{
-              backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-              color: colors.text.secondary,
-            }}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      onClick={() => setIsAdding(true)}
-      className="border border-dashed rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-all"
-      style={{
-        backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
-        borderColor: theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0",
-      }}
-    >
-      <div
-        className="p-3 rounded-xl"
-        style={{
-          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-        }}
-      >
-        <Plus className="h-6 w-6" style={{ color: colors.text.muted }} />
-      </div>
-      <span className="text-sm font-medium" style={{ color: colors.text.muted }}>
-        Add Expertise Category
-      </span>
-    </button>
-  );
-}
-
 // Service Sector Card (simplified)
 function EditableServiceSectorCard({
   id,
@@ -345,9 +214,10 @@ function EditableServiceSectorCard({
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm"
+            className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm flex items-center justify-center gap-2"
           >
-            {isSaving ? <Loader2 className="h-4 w-4 mx-auto animate-spin" /> : "Save"}
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Save
           </button>
           <button
             onClick={() => {
@@ -417,107 +287,6 @@ function EditableServiceSectorCard({
         </p>
       )}
     </div>
-  );
-}
-
-function AddNewSectorCard({
-  onAdd,
-  theme,
-  colors,
-}: {
-  onAdd: (data: any) => Promise<void>;
-  theme: "light" | "dark";
-  colors: ReturnType<typeof getThemedClasses>;
-}) {
-  const [isAdding, setIsAdding] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
-
-  const handleAdd = async () => {
-    if (!title.trim()) return;
-    setIsSaving(true);
-    await onAdd({ title: title.trim(), description: description.trim() });
-    setIsSaving(false);
-    setTitle("");
-    setDescription("");
-    setIsAdding(false);
-  };
-
-  if (isAdding) {
-    return (
-      <div
-        className="border border-dashed rounded-2xl p-4 space-y-3"
-        style={{
-          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
-          borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#e2e8f0",
-        }}
-      >
-        <input
-          autoFocus
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Sector title..."
-          className="w-full rounded-lg px-3 py-2 font-bold focus:outline-none"
-          style={{
-            backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
-            color: theme === "dark" ? "#ffffff" : "#1e293b",
-          }}
-        />
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={2}
-          placeholder="Description..."
-          className="w-full rounded-lg px-3 py-2 text-sm resize-none focus:outline-none"
-          style={{
-            backgroundColor: theme === "dark" ? "rgba(0,0,0,0.3)" : "#f1f5f9",
-            borderWidth: "1px",
-            borderStyle: "solid",
-            borderColor: theme === "dark" ? "rgba(255,255,255,0.15)" : "#cbd5e1",
-            color: theme === "dark" ? "#ffffff" : "#1e293b",
-          }}
-        />
-        <div className="flex gap-2">
-          <button
-            onClick={handleAdd}
-            disabled={isSaving}
-            className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm"
-          >
-            {isSaving ? <Loader2 className="h-4 w-4 mx-auto animate-spin" /> : "Add"}
-          </button>
-          <button
-            onClick={() => setIsAdding(false)}
-            className="px-4 py-2 rounded-lg text-sm transition-all"
-            style={{
-              backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-              color: colors.text.secondary,
-            }}
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      onClick={() => setIsAdding(true)}
-      className="border border-dashed rounded-2xl p-6 flex flex-col items-center justify-center gap-3 transition-all"
-      style={{
-        backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
-        borderColor: theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0",
-      }}
-    >
-      <Plus className="h-6 w-6" style={{ color: colors.text.muted }} />
-      <span className="text-sm" style={{ color: colors.text.muted }}>
-        Add Service Sector
-      </span>
-    </button>
   );
 }
 
@@ -670,37 +439,24 @@ export default function ServicesManagementPage() {
               <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
             </div>
           ) : (
-            <>
-              {sortedCategories.map((cat: any) => (
-                <ExpertiseCategoryCard
-                  key={cat.id}
-                  category={cat}
-                  onEdit={(cat) => setEditingCategory(cat)}
-                  onDelete={async (id) => {
-                    await deleteCategory.mutateAsync(id);
-                    refetchCategories();
-                  }}
-                  onDragStart={handleDragStart}
-                  onDragOver={handleDragOver}
-                  onDrop={handleDrop}
-                  isDragging={draggedId === cat.id}
-                  isDragOver={dragOverId === cat.id}
-                  theme={theme}
-                  colors={colors}
-                />
-              ))}
-              <AddNewCategoryCard
-                onAdd={async (data) => {
-                  await createCategory.mutateAsync({
-                    ...data,
-                    order: (categories?.length || 0) + 1,
-                  });
+            sortedCategories.map((cat: any) => (
+              <ExpertiseCategoryCard
+                key={cat.id}
+                category={cat}
+                onEdit={(cat) => setEditingCategory(cat)}
+                onDelete={async (id) => {
+                  await deleteCategory.mutateAsync(id);
                   refetchCategories();
                 }}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                isDragging={draggedId === cat.id}
+                isDragOver={dragOverId === cat.id}
                 theme={theme}
                 colors={colors}
               />
-            </>
+            ))
           )}
         </div>
       </div>
@@ -726,60 +482,51 @@ export default function ServicesManagementPage() {
               <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
             </div>
           ) : (
-            <>
-              {sortedSectors.map((sector: any) => (
-                <div
-                  key={sector.id}
-                  draggable
-                  onDragStart={(e) => handleSectorDragStart(e, sector.id)}
-                  onDragOver={(e) => handleSectorDragOver(e, sector.id)}
-                  onDrop={(e) => handleSectorDrop(e, sector.id)}
-                  onClick={() => setEditingSector(sector)}
-                  className="rounded-2xl p-6 cursor-pointer transition-all"
-                  style={{
-                    backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderColor:
-                      sectorDragOverId === sector.id
-                        ? "#3b82f6"
-                        : theme === "dark"
-                          ? "rgba(255,255,255,0.08)"
-                          : "#e2e8f0",
-                    opacity: sectorDraggedId === sector.id ? 0.5 : 1,
-                  }}
-                >
-                  <div className="flex items-start justify-end mb-3">
-                    <GripVertical
-                      className="h-4 w-4 cursor-grab"
-                      style={{ color: theme === "dark" ? "#555" : "#94a3b8" }}
-                    />
-                  </div>
-                  <h3 className="font-bold text-lg mb-2" style={colors.text.primary}>
-                    {sector.title}
-                  </h3>
-                  {sector.description && (
-                    <p className="text-sm line-clamp-2" style={colors.text.muted}>
-                      {sector.description}
-                    </p>
-                  )}
-                  {sector.image && (
-                    <img
-                      src={sector.image}
-                      alt={sector.title}
-                      className="mt-3 w-full h-32 object-cover rounded-lg"
-                    />
-                  )}
-                </div>
-              ))}
-              <AddNewSectorCard
-                onAdd={async (data) => {
-                  await createSector.mutateAsync(data);
+            sortedSectors.map((sector: any) => (
+              <div
+                key={sector.id}
+                draggable
+                onDragStart={(e) => handleSectorDragStart(e, sector.id)}
+                onDragOver={(e) => handleSectorDragOver(e, sector.id)}
+                onDrop={(e) => handleSectorDrop(e, sector.id)}
+                onClick={() => setEditingSector(sector)}
+                className="rounded-2xl p-6 cursor-pointer transition-all"
+                style={{
+                  backgroundColor: theme === "dark" ? "rgba(255,255,255,0.03)" : "#ffffff",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderColor:
+                    sectorDragOverId === sector.id
+                      ? "#3b82f6"
+                      : theme === "dark"
+                        ? "rgba(255,255,255,0.08)"
+                        : "#e2e8f0",
+                  opacity: sectorDraggedId === sector.id ? 0.5 : 1,
                 }}
-                theme={theme}
-                colors={colors}
-              />
-            </>
+              >
+                <div className="flex items-start justify-end mb-3">
+                  <GripVertical
+                    className="h-4 w-4 cursor-grab"
+                    style={{ color: theme === "dark" ? "#555" : "#94a3b8" }}
+                  />
+                </div>
+                <h3 className="font-bold text-lg mb-2" style={colors.text.primary}>
+                  {sector.title}
+                </h3>
+                {sector.description && (
+                  <p className="text-sm line-clamp-2" style={colors.text.muted}>
+                    {sector.description}
+                  </p>
+                )}
+                {sector.image && (
+                  <img
+                    src={sector.image}
+                    alt={sector.title}
+                    className="mt-3 w-full h-32 object-cover rounded-lg"
+                  />
+                )}
+              </div>
+            ))
           )}
         </div>
       </div>

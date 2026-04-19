@@ -17,6 +17,7 @@ import {
   GripVertical,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNewsItems, useNewsCategories, useNewsCounts } from "../../../src/hooks/useNews";
 import { useModalContext } from "../layout";
 import { useNewsMutations, useNewsCategoryMutations } from "../../../src/hooks/useAdminMutations";
@@ -151,6 +152,7 @@ function CategoryRow({
 }
 
 export default function NewsManagementPage() {
+  const queryClient = useQueryClient();
   const { theme, colors, mounted } = useAdminTheme();
   const { data: categories, isLoading: catsLoading } = useNewsCategories();
   const { createNews, updateNews, deleteNews } = useNewsMutations();
@@ -239,54 +241,51 @@ export default function NewsManagementPage() {
     let newsId = editingItem?.id;
 
     if (editingItem) {
-      const changedData: Partial<NewsItem> = {};
-      Object.keys(cleanedFormData).forEach((k) => {
-        const key = k as keyof NewsItem;
-        if (cleanedFormData[key] !== editingItem[key]) {
-          changedData[key] = cleanedFormData[key];
-        }
-      });
-      if (Object.keys(changedData).length > 0) {
-        const res = await updateNews.mutateAsync({ id: editingItem.id, data: changedData });
-        newsId = res.id;
-      }
-
       if (selectedImage) {
-        const fileData = new FormData();
-        fileData.append("file", selectedImage);
-        const token = document.cookie.replace(
-          /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
-          "$1",
-        );
-        await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/news/${editingItem.id}/image_upload/`,
-          {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-            body: fileData,
-          },
-        );
+        const formDataToSend = new FormData();
+        formDataToSend.append("title", cleanedFormData.title || "");
+        formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
+        formDataToSend.append("news_date", cleanedFormData.news_date || "");
+        formDataToSend.append("summary", cleanedFormData.summary || "");
+        formDataToSend.append("content_html", cleanedFormData.content_html || "");
+        formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
+        formDataToSend.append("image", selectedImage);
+        const res = await apiFetch<NewsItem>(`/api/home/news/${editingItem.id}/`, {
+          method: "PATCH",
+          body: formDataToSend,
+        });
+        newsId = res.id;
+      } else {
+        const changedData: Partial<NewsItem> = {};
+        Object.keys(cleanedFormData).forEach((k) => {
+          const key = k as keyof NewsItem;
+          if (cleanedFormData[key] !== editingItem[key]) {
+            changedData[key] = cleanedFormData[key];
+          }
+        });
+        if (Object.keys(changedData).length > 0) {
+          const res = await updateNews.mutateAsync({ id: editingItem.id, data: changedData });
+          newsId = res.id;
+        }
       }
     } else {
-      const res = await createNews.mutateAsync(cleanedFormData);
-      newsId = res.id;
-
-      if (selectedImage && newsId) {
-        const fileData = new FormData();
-        fileData.append("file", selectedImage);
-        const token = document.cookie.replace(
-          /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
-          "$1",
-        );
-        await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/news/${newsId}/image_upload/`,
-          {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-            body: fileData,
-          },
-        );
+      if (selectedImage) {
+        const formDataToSend = new FormData();
+        formDataToSend.append("title", cleanedFormData.title || "");
+        formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
+        formDataToSend.append("news_date", cleanedFormData.news_date || "");
+        formDataToSend.append("summary", cleanedFormData.summary || "");
+        formDataToSend.append("content_html", cleanedFormData.content_html || "");
+        formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
+        formDataToSend.append("image", selectedImage);
+        await apiFetch<NewsItem>("/api/home/news/", {
+          method: "POST",
+          body: formDataToSend,
+        });
+      } else {
+        await createNews.mutateAsync(cleanedFormData);
       }
+      queryClient.invalidateQueries({ queryKey: ["news"] });
     }
     closeModal();
   };
@@ -1044,21 +1043,7 @@ export default function NewsManagementPage() {
               </div>
             </div>
 
-            <div
-              className="p-8 flex gap-4 shrink-0"
-              style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
-            >
-              <button
-                onClick={() => setIsCatModalOpen(false)}
-                className="flex-1 font-bold py-3 rounded-2xl transition-all"
-                style={{
-                  backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-                  color: colors.text as string,
-                }}
-              >
-                Done
-              </button>
-            </div>
+            
           </div>
         </div>
       )}
