@@ -415,14 +415,14 @@ export default function ProjectsManagementPage() {
                   className="p-2.5 rounded-lg transition-all"
                   style={classes.card.hover}
                 >
-                  <Edit2 className="h-5 w-5" style={{ color: colors.textSecondary }} />
+                  <Edit2 className="h-4 w-4" style={{ color: colors.textSecondary }} />
                 </button>
                 <button
                   onClick={() => handleDelete(project.id)}
                   className="p-2.5 rounded-lg transition-all"
                   style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
                 >
-                  <Trash2 className="h-5 w-5 text-red-400" />
+                  <Trash2 className="h-4 w-4 text-red-400" />
                 </button>
               </div>
             </div>
@@ -1003,7 +1003,7 @@ export default function ProjectsManagementPage() {
                                       onClick={() => deleteScopeImage.mutateAsync(image.id)}
                                       className="p-1 rounded bg-black/60 text-white"
                                     >
-                                      <Trash2 className="h-3 w-3" />
+                                      <Trash2 className="h-4 w-4" />
                                     </button>
                                   </div>
                                   <div className="absolute bottom-1 left-1 text-[10px] text-white bg-black/50 px-1 rounded">

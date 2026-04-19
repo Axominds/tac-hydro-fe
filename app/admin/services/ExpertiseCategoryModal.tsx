@@ -334,10 +334,10 @@ export function ExpertiseCategoryModal({
                             </select>
                             <button
                               onClick={() => handleUpdateItem(item.id)}
-                              className="p-1 rounded transition-all"
+                              className="p-2.5 rounded-lg transition-all"
                               style={{ backgroundColor: "rgba(34,197,94,0.1)" }}
                             >
-                              <Edit2 className="h-3 w-3 text-green-500" />
+                              <Edit2 className="h-4 w-4 text-green-500" />
                             </button>
                             <button
                               onClick={() => {
@@ -378,13 +378,13 @@ export function ExpertiseCategoryModal({
                                   `Scope #${item.project_scope_id}`}
                               </span>
                             )}
-                            <button
+<button
                               onClick={() => {
-                                setEditingItemId(item.id);
-                                setEditingItemTitle(item.title);
-                                setEditingItemScopeId(item.project_scope_id || "");
+                                setEditingItemId(null);
+                                setEditingItemTitle("");
+                                setEditingItemScopeId("");
                               }}
-                              className="p-1 rounded transition-all"
+                              className="p-2.5 rounded-lg transition-all"
                               style={{
                                 backgroundColor: isDark
                                   ? "rgba(255,255,255,0.05)"
@@ -392,16 +392,16 @@ export function ExpertiseCategoryModal({
                               }}
                             >
                               <Edit2
-                                className="h-3 w-3"
+                                className="h-4 w-4"
                                 style={{ color: colors.textMuted as string }}
                               />
                             </button>
                             <button
                               onClick={() => handleDeleteItem(item.id)}
-                              className="p-1 rounded transition-all"
+                              className="p-2.5 rounded-lg transition-all"
                               style={{ backgroundColor: "rgba(239,68,68,0.1)" }}
                             >
-                              <Trash2 className="h-3 w-3 text-red-500" />
+                              <Trash2 className="h-4 w-4 text-red-500" />
                             </button>
                           </>
                         )}

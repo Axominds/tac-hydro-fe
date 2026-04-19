@@ -159,14 +159,14 @@ export default function AboutManagementPage() {
                           color: colors.textSecondary as string,
                         }}
                       >
-                        <Edit2 className="h-5 w-5" />
+                        <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(section.id)}
                         className="p-2.5 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                         style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
                       >
-                        <Trash2 className="h-5 w-5" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </>
                   ) : (
@@ -242,42 +242,20 @@ export default function AboutManagementPage() {
                   >
                     Image
                   </label>
-                  {formData.image && (
-                    <div className="mb-3 rounded-lg overflow-hidden border border-gray-200">
-                      <img src={formData.image} alt="Current" className="h-20 w-32 object-contain" />
+                  <div className="flex flex-col gap-3">
+                  {(selectedFile || formData.image) && (
+                    <div className="rounded-lg overflow-hidden border border-gray-200">
+                      <img src={selectedFile ? URL.createObjectURL(selectedFile) : formData.image || ""} alt="Current" className="h-20 w-32 object-contain" />
                     </div>
                   )}
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer flex-1">
-                      <span
-                        className="text-[10px] font-bold tracking-widest uppercase"
-                        style={{ color: colors.textMuted as string }}
-                      >
-                        {selectedFile ? "New file selected" : "Choose image"}
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
-                        className="block w-full text-sm file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-xl"
-                        style={inputStyle}
-                      />
-                    </label>
-                    {selectedFile && (
-                      <button
-                        type="button"
-                        onClick={() => setSelectedFile(null)}
-                        className="text-xs font-bold border px-3 py-2 rounded-lg transition-all normal-case"
-                        style={{
-                          color: "#ef4444",
-                          backgroundColor: "rgba(239,68,68,0.1)",
-                          borderColor: "rgba(239,68,68,0.2)",
-                        }}
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+                    className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
+                    style={inputStyle}
+                  />
+                </div>
                   <p
                     className="text-[10px] normal-case px-1"
                     style={{ color: colors.textMuted as string }}

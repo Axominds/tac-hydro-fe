@@ -171,24 +171,15 @@ export function ServiceSectorModal({
                   </span>
                 )}
               </div>
-              <div>
+              <div className="flex flex-col gap-3">
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="hidden"
+                  className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
+                  style={inputStyle}
                 />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="px-3 py-1.5 text-sm rounded-lg transition-all"
-                  style={{
-                    backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-                    color: colors.text as string,
-                  }}
-                >
-                  Choose Image
-                </button>
                 {imagePreview && (
                   <button
                     onClick={() => {

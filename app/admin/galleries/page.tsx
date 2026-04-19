@@ -144,11 +144,11 @@ function EditableRow({
               e.stopPropagation();
               setIsEditing(true);
             }}
-            className="p-1 rounded transition-all"
+            className="p-2.5 rounded-lg transition-all"
             style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }}
           >
-            <Pencil
-              className="h-3 w-3"
+            <Edit2
+              className="h-4 w-4"
               style={{ color: isActive ? "#ffffff" : isDark ? "#888" : "#64748b" }}
             />
           </button>
@@ -158,10 +158,10 @@ function EditableRow({
             e.stopPropagation();
             window.confirm("Delete this item?") && onDelete(id);
           }}
-          className="p-1 rounded transition-all"
+          className="p-2.5 rounded-lg transition-all"
           style={{ backgroundColor: "rgba(239,68,68,0.1)" }}
         >
-          <Trash2 className="h-3 w-3" style={{ color: "#ef4444" }} />
+          <Trash2 className="h-4 w-4" style={{ color: "#ef4444" }} />
         </button>
       </div>
     </div>

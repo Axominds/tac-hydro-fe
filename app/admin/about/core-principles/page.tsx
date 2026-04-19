@@ -246,7 +246,7 @@ export default function CorePrinciplesPage() {
                   className="p-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
                   style={{ backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)", color: colors.textSecondary as string }}
                 >
-                  <Edit2 className="h-5 w-5" />
+                  <Edit2 className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => {
@@ -257,7 +257,7 @@ export default function CorePrinciplesPage() {
                   className="p-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
                   style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -327,14 +327,14 @@ export default function CorePrinciplesPage() {
                   className="p-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
                   style={{ backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)", color: colors.textSecondary as string }}
                 >
-                  <Edit2 className="h-5 w-5" />
+                  <Edit2 className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handlePrincipleDelete(principle.id)}
                   className="p-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
                   style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             );
@@ -389,25 +389,21 @@ export default function CorePrinciplesPage() {
               </div>
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Image</label>
-                <div className="flex items-center gap-4">
-                  {(introFormData.image || intro?.image) && (
+                <div className="flex flex-col gap-3">
+                  {(selectedIntroFile || introFormData.image || intro?.image) && (
                     <img
-                      src={introFormData.image || intro?.image || ""}
+                      src={selectedIntroFile ? URL.createObjectURL(selectedIntroFile) : introFormData.image || intro?.image || ""}
                       alt="Preview"
                       className="h-24 w-32 object-cover rounded-lg"
                     />
                   )}
-                  <label className="cursor-pointer">
-                    <span className="text-sm font-medium text-blue-500">
-                      {selectedIntroFile ? "Change" : "Choose"} Image
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => e.target.files?.[0] && setSelectedIntroFile(e.target.files[0])}
-                    />
-                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => e.target.files?.[0] && setSelectedIntroFile(e.target.files[0])}
+                    className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
+                    style={classes.input.bg}
+                  />
                 </div>
               </div>
               <div>

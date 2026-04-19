@@ -136,7 +136,7 @@ function CategoryRow({
               color: isDark ? "#888" : "#64748b",
             }}
           >
-            <Pencil className="h-3 w-3" />
+            <Edit2 className="h-4 w-4" />
           </button>
         )}
         <button
@@ -144,7 +144,7 @@ function CategoryRow({
           className="p-1.5 rounded-lg transition-all"
           style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
         >
-          <Trash2 className="h-3 w-3" />
+          <Trash2 className="h-4 w-4" />
         </button>
       </div>
     </div>
@@ -812,49 +812,29 @@ export default function NewsManagementPage() {
                   >
                     Featured Image
                   </label>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-3">
                     {(selectedImage || formData.image) && (
                       <div
-                        className="h-24 w-32 rounded-xl overflow-hidden border"
+                        className="h-48 w-full rounded-xl overflow-hidden"
                         style={{
-                          backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
-                          borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
+                          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+                          border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
                         }}
                       >
                         <img
-                          src={
-                            selectedImage
-                              ? URL.createObjectURL(selectedImage)
-                              : formData.image!
-                          }
+                          src={selectedImage ? URL.createObjectURL(selectedImage) : formData.image || ""}
                           alt="News"
                           className="w-full h-full object-cover"
                         />
                       </div>
                     )}
-                    <label className="cursor-pointer">
-                      <span
-                        className="text-[10px] font-bold tracking-widest uppercase"
-                        style={{ color: colors.textMuted as string }}
-                      >
-                        {selectedImage ? "Change image" : "Choose image"}
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => e.target.files?.[0] && setSelectedImage(e.target.files[0])}
-                        className="hidden"
-                      />
-                    </label>
-                    {selectedImage && (
-                      <button
-                        type="button"
-                        onClick={() => setSelectedImage(null)}
-                        className="text-xs font-bold text-red-500"
-                      >
-                        Remove
-                      </button>
-                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => e.target.files?.[0] && setSelectedImage(e.target.files[0])}
+                      className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
+                      style={inputStyle}
+                    />
                   </div>
                 </div>
 

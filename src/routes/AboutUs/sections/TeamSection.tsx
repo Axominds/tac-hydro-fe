@@ -14,12 +14,21 @@ export const TeamSection: FC = () => {
 
   const sections = useMemo(() => {
     if (!grouped) return [];
-    return Object.entries(grouped).map(([categoryName, members]) => ({
+    const sectionsMap = Object.entries(grouped).map(([categoryName, members]) => ({
       title: categoryName.toUpperCase(),
       categoryName,
-      items: members,
+      items: members.sort((a, b) => {
+        const aCat = a.categories.find(c => c.categoryName === categoryName);
+        const bCat = b.categories.find(c => c.categoryName === categoryName);
+        return (aCat?.order ?? 0) - (bCat?.order ?? 0);
+      }),
     }));
-  }, [grouped]);
+    return sectionsMap.sort((a, b) => {
+      const aOrder = membersWithCategories?.find(m => m.categories.some(c => c.categoryName === a.categoryName))?.categories[0]?.categoryOrder ?? 0;
+      const bOrder = membersWithCategories?.find(m => m.categories.some(c => c.categoryName === b.categoryName))?.categories[0]?.categoryOrder ?? 0;
+      return aOrder - bOrder;
+    });
+  }, [grouped, membersWithCategories]);
 
   useEffect(() => {
     if (isModalOpen) {

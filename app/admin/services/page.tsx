@@ -122,21 +122,19 @@ function ExpertiseCategoryCard({
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(category)}
-            className="p-1 rounded transition-all"
+            className="p-2.5 rounded-lg transition-all"
             style={{
               backgroundColor: theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
             }}
           >
-            <Edit2 className="h-3 w-3" style={{ color: colors.text.secondary as string }} />
+            <Edit2 className="h-4 w-4" style={{ color: colors.text.secondary as string }} />
           </button>
           <button
             onClick={() => window.confirm("Delete this category?") && onDelete(category.id)}
-            className="p-1 rounded transition-all"
-            style={{
-              backgroundColor: theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-            }}
+            className="p-2.5 rounded-lg transition-all"
+            style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
           >
-            <Trash2 className="h-3 w-3 text-red-400" />
+            <Trash2 className="h-4 w-4 text-red-500" />
           </button>
         </div>
       </div>
@@ -259,7 +257,7 @@ function EditableServiceSectorCard({
               e.stopPropagation();
               setIsEditing(true);
             }}
-            className="p-2 rounded transition-all"
+            className="p-2.5 rounded-lg transition-all"
             style={{
               backgroundColor: theme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
             }}
@@ -271,10 +269,10 @@ function EditableServiceSectorCard({
               e.stopPropagation();
               window.confirm("Delete?") && onDelete(id);
             }}
-            className="p-2 rounded transition-all"
+            className="p-2.5 rounded-lg transition-all"
             style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
           >
-            <Trash2 className="h-4 w-4 text-red-400" />
+            <Trash2 className="h-4 w-4 text-red-500" />
           </button>
         </div>
       </div>

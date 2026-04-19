@@ -35,7 +35,7 @@ export const ProjectSection = () => {
   const [selectedProject, setSelectedProject] = useState<ProjectFromAPI | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeScope, setActiveScope] = useState<string>("Detailed Feasibility Study");
+  const [activeScope, setActiveScope] = useState<string>("");
   const [viewerImageIndex, setViewerImageIndex] = useState<number | null>(null);
 
   const { data: scopes, isLoading: scopesLoading } = useProjectScopes();
@@ -45,6 +45,12 @@ export const ProjectSection = () => {
   );
 
   const scopeNames = useMemo(() => scopes?.map((s) => s.name) || [], [scopes]);
+
+  useEffect(() => {
+    if (scopes && scopes.length > 0 && !activeScope) {
+      setActiveScope(scopes[0].name);
+    }
+  }, [scopes, activeScope]);
 
   // Merge list data with detail data
   const modalData = useMemo(() => {
@@ -64,11 +70,13 @@ export const ProjectSection = () => {
   const effectiveScope = urlScope ?? activeScope;
 
   useEffect(() => {
-    const section = document.getElementById("projects-section");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (urlScope) {
+      const section = document.getElementById("projects-section");
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
-  }, [effectiveScope]);
+  }, [effectiveScope, urlScope]);
 
   const handleProjectClick = (project: ProjectFromAPI) => {
     setSelectedProject(project);

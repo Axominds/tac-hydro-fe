@@ -30,20 +30,26 @@ export interface TeamMemberWithCategories extends TeamMember {
     technical_expertise: string;
     role: string;
     order: number;
+    categoryOrder: number;
   }[];
 }
 
 export function useTeamMembersWithCategories() {
   const { data: members, ...rest } = useTeamMembers();
   const { data: memberCategories } = useTeamMemberCategories();
-  const { data: categories } = useTeamCategories();
+  const { data: teamCategories } = useTeamCategories();
 
   const membersWithCategories = useMemo(() => {
-    if (!members || !memberCategories || !categories) return [];
+    if (!members || !memberCategories || !teamCategories) return [];
 
     const categoryMap: Record<number, string> = {};
-    categories.forEach((c) => {
+    teamCategories.forEach((c) => {
       categoryMap[c.id] = c.name;
+    });
+
+    const categoryOrderMap: Record<number, number> = {};
+    teamCategories.forEach((c, idx) => {
+      categoryOrderMap[c.id] = idx;
     });
 
     const memberCategoryMap: Record<number, TeamMemberCategory[]> = {};
@@ -67,11 +73,12 @@ export function useTeamMembersWithCategories() {
               technical_expertise: mc.technical_expertise,
               role: mc.role,
               order: mc.order,
+              categoryOrder: categoryOrderMap[mc.category_id] ?? 0,
             }))
-            .sort((a, b) => a.order - b.order),
+            .sort((a, b) => a.categoryOrder - b.categoryOrder || a.order - b.order),
         };
       });
-  }, [members, memberCategories, categories]);
+  }, [members, memberCategories, teamCategories]);
 
   const groupedMembers = useMemo(() => {
     if (!membersWithCategories.length) return {};

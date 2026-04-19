@@ -264,55 +264,31 @@ export default function BannerManagementPage() {
               <AlignLeft className="h-5 w-5 text-blue-500" />
               Background Image
             </h2>
-            <div className="flex flex-col gap-4">
-              {(selectedFile || formData.background_image) && (
-                <div
-                  className="h-32 w-48 rounded-2xl overflow-hidden border"
-                  style={{
-                    backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
-                    borderColor: isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0",
-                  }}
-                >
-                  <img
-                    src={
-                      selectedFile ? URL.createObjectURL(selectedFile) : formData.background_image!
-                    }
-                    alt="Banner background"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              )}
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 cursor-pointer flex-1">
-                  <span
-                    className="text-[10px] font-bold tracking-widest uppercase"
-                    style={{ color: colors.textMuted as string }}
-                  >
-                    {selectedFile ? "New file selected" : "Choose image"}
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => e.target.files && setSelectedFile(e.target.files[0])}
-                    className="block w-full text-sm file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-xl"
-                    style={inputStyle}
-                  />
-                </label>
-                {selectedFile && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedFile(null)}
-                    className="text-xs font-bold border px-3 py-2 rounded-lg transition-all normal-case"
-                    style={{
-                      color: "#ef4444",
-                      backgroundColor: "rgba(239,68,68,0.1)",
-                      borderColor: "rgba(239,68,68,0.2)",
-                    }}
-                  >
-                    Clear
-                  </button>
-                )}
-              </div>
+            <div className="flex flex-col gap-3">
+                  {(selectedFile || formData.background_image) && (
+                    <div
+                      className="h-48 w-full rounded-xl overflow-hidden"
+                      style={{
+                        backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+                        border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                      }}
+                    >
+                      <img
+                        src={
+                          selectedFile ? URL.createObjectURL(selectedFile) : formData.background_image!
+                        }
+                        alt="Banner background"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => e.target.files && setSelectedFile(e.target.files[0])}
+                className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
+                style={inputStyle}
+              />
               <p
                 className="text-[10px] normal-case px-1"
                 style={{ color: colors.textMuted as string }}
