@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage, ExpertiseCategory, ServiceSector, AboutPageSection, ProjectScopeMembership, ProjectScopeImage, CorePrinciple, TeamCategory, TeamMember, TeamMemberCategory } from "../lib/api";
+import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage, ExpertiseCategory, ServiceSector, AboutPageSection, ProjectScopeMembership, ProjectScopeImage, CorePrinciple, TeamCategory, TeamMember, TeamMemberCategory, ValuedPartner } from "../lib/api";
 
 // --- PROJECTS ---
 // ... (omitting projects for brevity in replacement, but I will target the right lines)
@@ -234,6 +234,42 @@ export function useBannerMutations() {
   });
 
   return { createBanner, updateBanner, deleteBanner };
+}
+
+// --- VALUED PARTNERS ---
+
+export function useValuedPartnerMutations() {
+  const queryClient = useQueryClient();
+
+  const createPartner = useMutation({
+    mutationFn: (data: Partial<ValuedPartner>) =>
+      apiFetch<ValuedPartner>("/api/home/valued-partners/", { method: "POST", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["valued-partners"] }),
+  });
+
+  const updatePartner = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<ValuedPartner> }) =>
+      apiFetch<ValuedPartner>(`/api/home/valued-partners/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["valued-partners"] }),
+  });
+
+  const deletePartner = useMutation({
+    mutationFn: (id: number) =>
+      apiFetch(`/api/home/valued-partners/${id}/`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["valued-partners"] }),
+  });
+
+  const reorderPartners = useMutation({
+    mutationFn: (items: { id: number; order: number }[]) =>
+      Promise.all(
+        items.map((item) =>
+          apiFetch(`/api/home/valued-partners/${item.id}/`, { method: "PATCH", body: { order: item.order } })
+        )
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["valued-partners"] }),
+  });
+
+  return { createPartner, updatePartner, deletePartner, reorderPartners };
 }
 
 // --- SETTINGS ---
