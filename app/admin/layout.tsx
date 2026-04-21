@@ -1,10 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { AdminSidebar } from "../../components/admin/AdminSidebar";
 import { getTheme } from "../../src/components/admin/ThemeToggle";
+import { validateToken } from "../../src/lib/api";
 
 const THEME_KEY = "admin-theme";
 const DEFAULT_THEME = "light";
@@ -133,6 +134,7 @@ export function AdminInput({ style = {}, ...props }: React.InputHTMLAttributes<H
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -151,6 +153,20 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       setSidebarCollapsed(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (mounted && !isLoginPage) {
+      const checkToken = async () => {
+        const isValid = await validateToken();
+        if (!isValid) {
+          Cookies.remove("access_token");
+          Cookies.remove("refresh_token");
+          router.push("/admin/login");
+        }
+      };
+      checkToken();
+    }
+  }, [mounted, isLoginPage, router]);
 
   useEffect(() => {
     const handleThemeChange = (e: Event) => {
