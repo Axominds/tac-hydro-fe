@@ -48,6 +48,32 @@ function clearAuthAndRedirect() {
   }
 }
 
+export async function validateToken(): Promise<boolean> {
+  const token = Cookies.get("access_token");
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/auth/validate/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const data = await response.json();
+    return data.is_valid === true;
+  } catch {
+    return false;
+  }
+}
+
 interface FetchOptions {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: any;

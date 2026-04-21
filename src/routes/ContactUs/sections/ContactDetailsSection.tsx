@@ -1,8 +1,64 @@
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { useSiteSettings } from "../../../hooks/useSiteSettings";
+import { useProjectScopes } from "../../../hooks/useProjectScopes";
+import { Button } from "../../../components/ui/button";
+import { apiFetch } from "../../../lib/api";
 
 export const ContactDetailsSection = () => {
   const { data: settings } = useSiteSettings();
+  const { data: projectScopes } = useProjectScopes();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    project_scope_id: "" as string,
+    message: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setStatus("idle");
+    setErrorMessage("");
+
+    try {
+      await apiFetch<{ message: string }>("/api/contact-us/inquiry/", {
+        method: "POST",
+        body: {
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          project_scope_id: formData.project_scope_id ? parseInt(formData.project_scope_id) : null,
+          message: formData.message,
+        },
+      });
+      setStatus("success");
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        project_scope_id: "",
+        message: "",
+      });
+    } catch (error) {
+      setStatus("error");
+      setErrorMessage("Failed to send message. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <section id="contact-details" className="relative w-full py-16 lg:py-24 bg-[#f8f9fa]">
@@ -94,30 +150,116 @@ export const ContactDetailsSection = () => {
 
           {/* Right Form Area */}
           <div className="flex-1 p-8 sm:p-12 bg-white">
-            <div className="h-full flex flex-col justify-center">
-              <div className="max-w-xl">
-                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
-                  Please email us directly
-                </h3>
-                <p className="text-slate-600 text-base leading-relaxed mb-6">
-                  Please send your inquiry to our team by email and we will respond within one
-                  business day.
-                </p>
-                {settings?.contact_email && (
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    <a
-                      href={`mailto:${settings.contact_email}`}
-                      className="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold shadow-[0_12px_24px_rgba(37,99,235,0.25)] hover:bg-blue-700 hover:shadow-[0_18px_32px_rgba(37,99,235,0.3)] transition-all"
-                    >
-                      Email {settings.contact_email}
-                    </a>
-                    <p className="text-sm text-slate-500">
-                      Prefer a call? Use the direct line on the left.
-                    </p>
-                  </div>
-                )}
+            {status === "success" && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl flex items-center gap-3 text-green-700">
+                <CheckCircle className="w-5 h-5 shrink-0" />
+                <p className="font-medium">Thank you! Your message has been sent successfully.</p>
               </div>
-            </div>
+            )}
+            {status === "error" && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-700">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <p className="font-medium">{errorMessage}</p>
+              </div>
+            )}
+            <form className="space-y-8" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="flex flex-col gap-2.5">
+                  <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter your name*"
+                    required
+                    className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400"
+                  />
+                </div>
+                <div className="flex flex-col gap-2.5">
+                  <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Enter your phone*"
+                    required
+                    className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="flex flex-col gap-2.5">
+                  <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email*"
+                    required
+                    className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400"
+                  />
+                </div>
+                <div className="flex flex-col gap-2.5">
+                  <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                    Desired Service
+                  </label>
+                  <select
+                    name="project_scope_id"
+                    value={formData.project_scope_id}
+                    onChange={handleChange}
+                    className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="">Select a service</option>
+                    {projectScopes?.map((scope) => (
+                      <option key={scope.id} value={scope.id}>
+                        {scope.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                  Message
+                </label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="min-h-[160px] rounded-2xl bg-slate-50 border border-slate-100 px-6 py-5 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400 resize-none"
+                  placeholder="Tell us about your project or inquiry..."
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="h-14 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-[0_15px_30px_rgba(37,99,235,0.25)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.35)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-3 group w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                >
+                  {isLoading ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <span>Send</span>
+                      <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+
           </div>
         </div>
       </div>
