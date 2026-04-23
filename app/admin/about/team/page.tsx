@@ -43,7 +43,7 @@ export default function TeamPage() {
   const [memberFormData, setMemberFormData] = useState({
     name: "",
     education: "",
-    bio: "",
+profile: "",
     is_active: true,
     role: "",
     technical_expertise: "",
@@ -273,14 +273,14 @@ export default function TeamPage() {
       setMemberFormData({
         name: member.name,
         education: member.education || "",
-        bio: member.bio || "",
+        profile: member.profile || "",
         is_active: member.is_active,
         role: firstCat?.role || "",
         technical_expertise: firstCat?.technical_expertise || "",
       });
     } else {
       setEditingMember(null);
-      setMemberFormData({ name: "", education: "", bio: "", is_active: true, role: "", technical_expertise: "" });
+      setMemberFormData({ name: "", education: "", profile: "", is_active: true, role: "", technical_expertise: "" });
     }
     setSelectedPhoto(null);
     setSelectedProfilePhoto(null);
@@ -293,10 +293,10 @@ export default function TeamPage() {
     setIsSavingMember(true);
     try {
       if (editingMember) {
-        const data: { name: string; education: string; bio: string; is_active: boolean; photo?: File; profile_photo?: File } = {
+        const data: { name: string; education: string; profile: string; is_active: boolean; photo?: File; profile_photo?: File } = {
           name: memberFormData.name,
           education: memberFormData.education,
-          bio: memberFormData.bio,
+          profile: memberFormData.profile,
           is_active: memberFormData.is_active,
         };
         if (selectedPhoto) data.photo = selectedPhoto;
@@ -310,10 +310,10 @@ export default function TeamPage() {
           });
         }
       } else {
-        const data: { name: string; education: string; bio: string; is_active: boolean; photo?: File; profile_photo?: File } = {
+        const data: { name: string; education: string; profile: string; is_active: boolean; photo?: File; profile_photo?: File } = {
           name: memberFormData.name,
           education: memberFormData.education,
-          bio: memberFormData.bio,
+          profile: memberFormData.profile,
           is_active: memberFormData.is_active,
         };
         if (selectedPhoto) data.photo = selectedPhoto;
@@ -610,11 +610,11 @@ export default function TeamPage() {
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Bio</label>
                 <textarea
-                  value={memberFormData.bio}
-                  onChange={(e) => setMemberFormData({ ...memberFormData, bio: e.target.value })}
+                  value={memberFormData.profile}
+                  onChange={(e) => setMemberFormData({ ...memberFormData, profile: e.target.value })}
                   className="w-full rounded-lg px-3 py-2 text-sm"
                   style={classes.input.bg}
-                  placeholder="Short bio"
+                  placeholder="Short profile"
                   rows={3}
                 />
               </div>

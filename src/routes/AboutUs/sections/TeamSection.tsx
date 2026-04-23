@@ -232,14 +232,14 @@ export const TeamSection: FC = () => {
                 )}
 
                 {/* Bio Section */}
-                {selectedMember.bio && selectedMember.categories[0]?.categoryName !== "Independent Consultants" && (
+                {selectedMember.profile && selectedMember.categories[0]?.categoryName !== "Independent Consultants" && (
                   <div className="animate-in slide-in-from-bottom-4 fade-in duration-500 delay-200">
                     <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-3">
                       <span className="w-6 h-[2px] bg-blue-500"></span>
-                      Biography
+                      Profile
                     </h4>
                     <div className="text-slate-600 leading-relaxed space-y-4 text-justify pl-9 text-base">
-                      {selectedMember.bio.split("\n\n").map((paragraph, idx) => (
+                      {selectedMember.profile.split("\n\n").map((paragraph, idx) => (
                         <p key={idx}>{paragraph}</p>
                       ))}
                     </div>

@@ -10,6 +10,7 @@ import { Projects } from "./routes/Projects/Projects";
 import { Services } from "./routes/Services/Services";
 import { ContactUs } from "./routes/ContactUs/ContactUs";
 import { Collaboration } from "./routes/ContactUs/Collaboration";
+import { Career } from "./routes/ContactUs/Career";
 import { NewsDetail } from "./routes/News/NewsDetail";
 
 const ScrollManager = (): null => {
@@ -57,6 +58,7 @@ export const App = () => {
 
         <Route path="/contact-us" element={<ContactUs />} />
         <Route path="/contact-us/collaboration" element={<Collaboration />} />
+        <Route path="/contact-us/career" element={<Career />} />
         <Route path="/news/:id" element={<NewsDetail />} />
       </Routes>
     </Router>
