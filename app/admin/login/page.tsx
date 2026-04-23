@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Montserrat } from "next/font/google";
-import { Lock, User, Loader2 } from "lucide-react";
+import { Lock, Mail, Loader2 } from "lucide-react";
 import Cookies from "js-cookie";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 
@@ -11,7 +11,7 @@ const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
 export default function AdminLoginPage() {
   const { theme, colors, mounted } = useAdminTheme();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
       const response = await fetch("http://localhost:8000/api/auth/token/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
@@ -81,15 +81,15 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="relative">
-            <User
+            <Mail
               className="absolute left-3 top-3.5 h-4 w-4"
               style={{ color: colors.textMuted as string }}
             />
             <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               style={{
                 backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",

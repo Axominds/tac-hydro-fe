@@ -330,7 +330,7 @@ export interface TeamMember {
   id: number;
   name: string;
   education: string | null;
-  bio: string | null;
+  profile: string | null;
   photo: string | null;
   profile_photo?: string | null;
   is_active: boolean;

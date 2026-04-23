@@ -247,7 +247,7 @@ export const TeamSection: FC = () => {
                 )}
 
                 {/* Fallback if no content */}
-                {!selectedMember.education && !selectedMember.bio && (
+                {!selectedMember.education && !selectedMember.profile && (
                   <div className="text-center py-12 text-slate-400 italic">
                     No additional information available for this team member.
                   </div>
