@@ -7,18 +7,42 @@ import {
   Scale,
   DollarSign,
   Trophy,
+  Briefcase,
+  Settings,
+  Users,
 } from "lucide-react";
 import type { CorePrinciplesIntro, CorePrinciple } from "../../../lib/api";
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  Scale,
-  Leaf,
-  Lightbulb,
-  Cpu,
-  Target,
-  ShieldCheck,
-  DollarSign,
-  Trophy,
+  briefcase: Briefcase,
+  settings: Settings,
+  users: Users,
+  lightbulb: Lightbulb,
+  scale: Scale,
+  leaf: Leaf,
+  cpu: Cpu,
+  target: Target,
+  "shield-check": ShieldCheck,
+  "dollar-sign": DollarSign,
+  trophy: Trophy,
+};
+
+const getColorClass = (colorClass: string) => {
+  const colorMap: Record<string, string> = {
+    blue: "bg-blue-500",
+    emerald: "bg-emerald-500",
+    amber: "bg-amber-500",
+    purple: "bg-purple-500",
+    red: "bg-red-500",
+    yellow: "bg-yellow-500",
+    indigo: "bg-indigo-500",
+    slate: "bg-slate-700",
+    green: "bg-green-500",
+    orange: "bg-orange-500",
+    cyan: "bg-cyan-500",
+    pink: "bg-pink-500",
+  };
+  return colorMap[colorClass] || "bg-blue-500";
 };
 
 interface Props {
@@ -63,9 +87,7 @@ export const CorePrinciplesSection = ({ intro, principles }: Props) => {
                     {intro?.image_caption_title ?? "Engineering Excellence"}
                   </div>
                   {intro?.image_caption_subtitle && (
-                    <div className="text-white/80 text-sm">
-                      {intro.image_caption_subtitle}
-                    </div>
+                    <div className="text-white/80 text-sm">{intro.image_caption_subtitle}</div>
                   )}
                 </div>
               </div>
@@ -94,7 +116,8 @@ export const CorePrinciplesSection = ({ intro, principles }: Props) => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
             {principles.map((item) => {
-              const Icon = ICON_MAP[item.icon_key] ?? Scale;
+              const Icon = ICON_MAP[item.icon_key] || Scale;
+              const bgColor = getColorClass(item.color_class);
               return (
                 <div
                   key={item.id}
@@ -103,16 +126,14 @@ export const CorePrinciplesSection = ({ intro, principles }: Props) => {
                   <div className="relative mb-8 flex items-center justify-center">
                     <div className="absolute inset-0 scale-150 rounded-full border border-slate-100 group-hover:border-blue-100 transition-colors duration-300" />
                     <div
-                      className={`w-16 h-16 rounded-2xl ${item.color_class} flex items-center justify-center text-white shadow-lg transition-transform duration-500 group-hover:rotate-[360deg]`}
+                      className={`w-16 h-16 rounded-2xl ${bgColor} flex items-center justify-center text-white shadow-lg transition-transform duration-500 group-hover:rotate-[360deg]`}
                     >
                       <Icon className="w-8 h-8" />
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-xl font-bold text-slate-900 leading-tight">
-                      {item.title}
-                    </h3>
+                    <h3 className="text-xl font-bold text-slate-900 leading-tight">{item.title}</h3>
                     <p className="text-slate-600 text-sm leading-relaxed mt-2">
                       {item.description}
                     </p>

@@ -1,14 +1,35 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Plus, Edit2, Trash2, Loader2, X, Save, GripVertical, Check, Tag, Users } from "lucide-react";
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  Loader2,
+  X,
+  Save,
+  GripVertical,
+  Check,
+  Tag,
+  Users,
+} from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useAdminTheme, getThemedClasses } from "../../../../src/hooks/useAdminTheme";
 import { useModalContext } from "../../layout";
-import { useTeamMembers, useTeamCategories, useTeamMemberCategories } from "../../../../src/hooks/useTeam";
-import { useTeamMemberMutations, useTeamCategoryMutations, useTeamMemberCategoryMutations } from "../../../../src/hooks/useAdminMutations";
+import {
+  useTeamMembers,
+  useTeamCategories,
+  useTeamMemberCategories,
+} from "../../../../src/hooks/useTeam";
+import {
+  useTeamMemberMutations,
+  useTeamCategoryMutations,
+  useTeamMemberCategoryMutations,
+} from "../../../../src/hooks/useAdminMutations";
 import { useQueryClient } from "@tanstack/react-query";
 import { TeamMember, TeamCategory, TeamMemberCategory, apiFetch } from "../../../../src/lib/api";
+import { Toast, useToast } from "../../../../src/components/ui/toast";
+import { ConfirmDialog } from "../../../../src/components/ui/confirm-dialog";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -23,7 +44,8 @@ export default function TeamPage() {
   const { data: memberCategories, isLoading: loadingMemberCategories } = useTeamMemberCategories();
 
   const { createTeamMember, updateTeamMember, deleteTeamMember } = useTeamMemberMutations();
-  const { createTeamCategory, updateTeamCategory, deleteTeamCategory, reorderTeamCategories } = useTeamCategoryMutations();
+  const { createTeamCategory, updateTeamCategory, deleteTeamCategory, reorderTeamCategories } =
+    useTeamCategoryMutations();
   const { addMemberCategory, removeMemberCategory } = useTeamMemberCategoryMutations();
 
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -43,7 +65,7 @@ export default function TeamPage() {
   const [memberFormData, setMemberFormData] = useState({
     name: "",
     education: "",
-profile: "",
+    profile: "",
     is_active: true,
     role: "",
     technical_expertise: "",
@@ -51,6 +73,10 @@ profile: "",
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [selectedProfilePhoto, setSelectedProfilePhoto] = useState<File | null>(null);
   const [isSavingMember, setIsSavingMember] = useState(false);
+  const { toast, showToast, hideToast } = useToast();
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteType, setDeleteType] = useState<"member" | "category" | null>(null);
 
   const [orderedCategories, setOrderedCategories] = useState<TeamCategory[]>([]);
   const [reordering, setReordering] = useState(false);
@@ -58,7 +84,18 @@ profile: "",
   const dragItemId = useRef<number | null>(null);
 
   // For grouping members by category
-  const [membersByCategory, setMembersByCategory] = useState<Record<number, { member: TeamMember; order: number; memberCatId: number; role: string; technical_expertise: string }[]>>({});
+  const [membersByCategory, setMembersByCategory] = useState<
+    Record<
+      number,
+      {
+        member: TeamMember;
+        order: number;
+        memberCatId: number;
+        role: string;
+        technical_expertise: string;
+      }[]
+    >
+  >({});
   const [uncategorizedMembers, setUncategorizedMembers] = useState<TeamMember[]>([]);
   const [dragOverMemberId, setDragOverMemberId] = useState<number | null>(null);
   const dragMemberItem = useRef<{ memberId: number; categoryId: number } | null>(null);
@@ -124,14 +161,29 @@ profile: "",
       setMemberCategoryMap(map);
 
       // Build members grouped by category with order and role/expertise
-      const byCategory: Record<number, { member: TeamMember; order: number; memberCatId: number; role: string; technical_expertise: string }[]> = {};
+      const byCategory: Record<
+        number,
+        {
+          member: TeamMember;
+          order: number;
+          memberCatId: number;
+          role: string;
+          technical_expertise: string;
+        }[]
+      > = {};
       memberCategories.forEach((mc) => {
         if (!byCategory[mc.category_id]) {
           byCategory[mc.category_id] = [];
         }
-        const member = members?.find(m => m.id === mc.team_member_id);
+        const member = members?.find((m) => m.id === mc.team_member_id);
         if (member) {
-          byCategory[mc.category_id].push({ member, order: mc.order, memberCatId: mc.id, role: mc.role || "", technical_expertise: mc.technical_expertise || "" });
+          byCategory[mc.category_id].push({
+            member,
+            order: mc.order,
+            memberCatId: mc.id,
+            role: mc.role || "",
+            technical_expertise: mc.technical_expertise || "",
+          });
         }
       });
       // Sort each category's members by order
@@ -141,8 +193,8 @@ profile: "",
       setMembersByCategory(byCategory);
 
       // Find members without any category
-      const memberIdsWithCategory = new Set(memberCategories.map(mc => mc.team_member_id));
-      const uncategorized = members?.filter(m => !memberIdsWithCategory.has(m.id)) || [];
+      const memberIdsWithCategory = new Set(memberCategories.map((mc) => mc.team_member_id));
+      const uncategorized = members?.filter((m) => !memberIdsWithCategory.has(m.id)) || [];
       setUncategorizedMembers(uncategorized);
     }
   }, [members, memberCategories]);
@@ -164,18 +216,38 @@ profile: "",
     await createTeamCategory.mutateAsync({ name: newCategoryName.trim() });
     setNewCategoryName("");
     setAddingCategory(false);
+    showToast("Category added successfully!");
   };
 
   const handleUpdateCategory = async (id: number, name: string) => {
     await updateTeamCategory.mutateAsync({ id, data: { name } });
     setEditingCategoryId(null);
     setEditingCategoryName("");
+    showToast("Category updated successfully!");
   };
 
-  const handleDeleteCategory = async (id: number) => {
-    if (window.confirm("Delete this category?")) {
-      await deleteTeamCategory.mutateAsync(id);
+  const handleDeleteCategory = (id: number) => {
+    setDeleteId(id);
+    setDeleteType("category");
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleMemberDelete = (id: number) => {
+    setDeleteId(id);
+    setDeleteType("member");
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteType === "category" && deleteId) {
+      await deleteTeamCategory.mutateAsync(deleteId);
+      showToast("Category deleted successfully!", "error");
+    } else if (deleteType === "member" && deleteId) {
+      await deleteTeamMember.mutateAsync(deleteId);
+      showToast("Team member deleted successfully!", "error");
     }
+    setDeleteId(null);
+    setDeleteType(null);
   };
 
   const handleCategoryDragStart = (id: number) => {
@@ -196,8 +268,8 @@ profile: "",
     }
 
     const newOrder = [...orderedCategories];
-    const fromIdx = newOrder.findIndex(c => c.id === sourceId);
-    const toIdx = newOrder.findIndex(c => c.id === targetId);
+    const fromIdx = newOrder.findIndex((c) => c.id === sourceId);
+    const toIdx = newOrder.findIndex((c) => c.id === targetId);
     const [moved] = newOrder.splice(fromIdx, 1);
     newOrder.splice(toIdx, 0, moved);
 
@@ -208,7 +280,7 @@ profile: "",
     setReordering(true);
     try {
       await reorderTeamCategories.mutateAsync(
-        newOrder.map((c, idx) => ({ id: c.id, order: idx + 1 }))
+        newOrder.map((c, idx) => ({ id: c.id, order: idx + 1 })),
       );
     } finally {
       setReordering(false);
@@ -235,9 +307,9 @@ profile: "",
 
     const currentMembers = membersByCategory[categoryId] || [];
     const newOrder = [...currentMembers];
-    const fromIdx = newOrder.findIndex(m => m.member.id === source.memberId);
-    const toIdx = newOrder.findIndex(m => m.member.id === targetMemberId);
-    
+    const fromIdx = newOrder.findIndex((m) => m.member.id === source.memberId);
+    const toIdx = newOrder.findIndex((m) => m.member.id === targetMemberId);
+
     if (fromIdx === -1 || toIdx === -1) {
       setDragOverMemberId(null);
       dragMemberItem.current = null;
@@ -247,18 +319,18 @@ profile: "",
     const [moved] = newOrder.splice(fromIdx, 1);
     newOrder.splice(toIdx, 0, moved);
 
-    setMembersByCategory(prev => ({ ...prev, [categoryId]: newOrder }));
+    setMembersByCategory((prev) => ({ ...prev, [categoryId]: newOrder }));
     dragMemberItem.current = null;
     setDragOverMemberId(null);
 
     try {
       await Promise.all(
         newOrder.map((m, idx) =>
-          apiFetch(`/api/about-us/team-member-categories/${m.memberCatId}/`, { 
-            method: "PATCH", 
-            body: { order: idx + 1 } 
-          })
-        )
+          apiFetch(`/api/about-us/team-member-categories/${m.memberCatId}/`, {
+            method: "PATCH",
+            body: { order: idx + 1 },
+          }),
+        ),
       );
     } catch (e) {
       console.error(e);
@@ -269,7 +341,7 @@ profile: "",
   const openMemberModal = (member?: TeamMember) => {
     if (member) {
       setEditingMember(member);
-      const firstCat = memberCategories?.find(mc => mc.team_member_id === member.id);
+      const firstCat = memberCategories?.find((mc) => mc.team_member_id === member.id);
       setMemberFormData({
         name: member.name,
         education: member.education || "",
@@ -280,7 +352,14 @@ profile: "",
       });
     } else {
       setEditingMember(null);
-      setMemberFormData({ name: "", education: "", profile: "", is_active: true, role: "", technical_expertise: "" });
+      setMemberFormData({
+        name: "",
+        education: "",
+        profile: "",
+        is_active: true,
+        role: "",
+        technical_expertise: "",
+      });
     }
     setSelectedPhoto(null);
     setSelectedProfilePhoto(null);
@@ -293,7 +372,14 @@ profile: "",
     setIsSavingMember(true);
     try {
       if (editingMember) {
-        const data: { name: string; education: string; profile: string; is_active: boolean; photo?: File; profile_photo?: File } = {
+        const data: {
+          name: string;
+          education: string;
+          profile: string;
+          is_active: boolean;
+          photo?: File;
+          profile_photo?: File;
+        } = {
           name: memberFormData.name,
           education: memberFormData.education,
           profile: memberFormData.profile,
@@ -302,15 +388,25 @@ profile: "",
         if (selectedPhoto) data.photo = selectedPhoto;
         if (selectedProfilePhoto) data.profile_photo = selectedProfilePhoto;
         await updateTeamMember.mutateAsync({ id: editingMember.id, data });
-        const existingCat = memberCategories?.find(mc => mc.team_member_id === editingMember.id);
+        const existingCat = memberCategories?.find((mc) => mc.team_member_id === editingMember.id);
         if (existingCat) {
           await apiFetch(`/api/about-us/team-member-categories/${existingCat.id}/`, {
             method: "PATCH",
-            body: { role: memberFormData.role || "", technical_expertise: memberFormData.technical_expertise || "" },
+            body: {
+              role: memberFormData.role || "",
+              technical_expertise: memberFormData.technical_expertise || "",
+            },
           });
         }
       } else {
-        const data: { name: string; education: string; profile: string; is_active: boolean; photo?: File; profile_photo?: File } = {
+        const data: {
+          name: string;
+          education: string;
+          profile: string;
+          is_active: boolean;
+          photo?: File;
+          profile_photo?: File;
+        } = {
           name: memberFormData.name,
           education: memberFormData.education,
           profile: memberFormData.profile,
@@ -321,14 +417,9 @@ profile: "",
         await createTeamMember.mutateAsync(data);
       }
       setIsMemberModal(false);
+      showToast("Team member saved successfully!");
     } finally {
       setIsSavingMember(false);
-    }
-  };
-
-  const handleMemberDelete = async (id: number) => {
-    if (window.confirm("Delete this team member?")) {
-      await deleteTeamMember.mutateAsync(id);
     }
   };
 
@@ -341,7 +432,7 @@ profile: "",
       await addMemberCategory.mutateAsync({ team_member_id: memberId, category_id: categoryId });
     } else {
       const mc = memberCategories?.find(
-        m => m.team_member_id === memberId && m.category_id === categoryId
+        (m) => m.team_member_id === memberId && m.category_id === categoryId,
       );
       if (mc) {
         await removeMemberCategory.mutateAsync(mc.id);
@@ -353,7 +444,10 @@ profile: "",
     <div className="p-8 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className={`${montserrat.className} text-3xl font-bold mb-2`} style={classes.text.primary}>
+          <h1
+            className={`${montserrat.className} text-3xl font-bold mb-2`}
+            style={classes.text.primary}
+          >
             Team <span className="text-blue-500">Members</span>
           </h1>
           <p style={classes.text.secondary}>Manage team members and their categories.</p>
@@ -387,7 +481,10 @@ profile: "",
           {/* Uncategorized section */}
           {uncategorizedMembers.length > 0 && (
             <div>
-              <h2 className={`${montserrat.className} text-lg font-semibold mb-3`} style={classes.text.primary}>
+              <h2
+                className={`${montserrat.className} text-lg font-semibold mb-3`}
+                style={classes.text.primary}
+              >
                 Uncategorized
                 <span className="text-sm font-normal ml-2" style={classes.text.muted}>
                   ({uncategorizedMembers.length})
@@ -398,24 +495,48 @@ profile: "",
                   <div key={member.id} className="rounded-2xl p-4" style={classes.card.default}>
                     <div className="flex gap-3">
                       {member.profile_photo ? (
-                        <img src={member.profile_photo} alt={member.name} className="w-16 h-16 object-cover rounded-xl" />
+                        <img
+                          src={member.profile_photo}
+                          alt={member.name}
+                          className="w-16 h-16 object-cover rounded-xl"
+                        />
                       ) : member.photo ? (
-                        <img src={member.photo} alt={member.name} className="w-16 h-16 object-cover rounded-xl" />
+                        <img
+                          src={member.photo}
+                          alt={member.name}
+                          className="w-16 h-16 object-cover rounded-xl"
+                        />
                       ) : (
                         <div className="w-16 h-16 rounded-xl bg-blue-500/20 flex items-center justify-center">
                           <Users className="h-6 w-6 text-blue-500" />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold truncate" style={classes.text.primary}>{member.name}</h3>
-                        {member.education && <p className="text-sm truncate" style={classes.text.secondary}>{member.education}</p>}
+                        <h3 className="font-bold truncate" style={classes.text.primary}>
+                          {member.name}
+                        </h3>
+                        {member.education && (
+                          <p className="text-sm truncate" style={classes.text.secondary}>
+                            {member.education}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-2 mt-4">
-                      <button onClick={() => openMemberModal(member)} className="p-2.5 rounded-lg transition-all" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }}>
+                      <button
+                        onClick={() => openMemberModal(member)}
+                        className="p-2.5 rounded-lg transition-all"
+                        style={{
+                          backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                        }}
+                      >
                         <Edit2 className="h-4 w-4" />
                       </button>
-                      <button onClick={() => handleMemberDelete(member.id)} className="p-2.5 rounded-lg transition-all" style={{ backgroundColor: "rgba(239,68,68,0.1)" }}>
+                      <button
+                        onClick={() => handleMemberDelete(member.id)}
+                        className="p-2.5 rounded-lg transition-all"
+                        style={{ backgroundColor: "rgba(239,68,68,0.1)" }}
+                      >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </button>
                     </div>
@@ -432,12 +553,23 @@ profile: "",
             return (
               <div key={category.id}>
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className={`${montserrat.className} text-lg font-semibold`} style={classes.text.primary}>
+                  <h2
+                    className={`${montserrat.className} text-lg font-semibold`}
+                    style={classes.text.primary}
+                  >
                     {category.name}
-                    <span className="text-sm font-normal ml-2" style={classes.text.muted}>({categoryMembers.length})</span>
+                    <span className="text-sm font-normal ml-2" style={classes.text.muted}>
+                      ({categoryMembers.length})
+                    </span>
                   </h2>
                   <button
-                    onClick={() => { setAddingToCategoryId(category.id); setSelectedMemberId(null); setAddMemberRole(""); setAddMemberExpertise(""); setIsAddToCategoryModalOpen(true); }}
+                    onClick={() => {
+                      setAddingToCategoryId(category.id);
+                      setSelectedMemberId(null);
+                      setAddMemberRole("");
+                      setAddMemberExpertise("");
+                      setIsAddToCategoryModalOpen(true);
+                    }}
                     className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-all"
                   >
                     <Plus className="h-3.5 w-3.5" /> Add
@@ -445,27 +577,69 @@ profile: "",
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {categoryMembers.map(({ member, memberCatId, role, technical_expertise }) => (
-                    <div key={member.id} draggable onDragStart={() => handleMemberDragStart(member.id, category.id)} onDragOver={(e) => handleMemberDragOver(e, member.id)} onDrop={() => handleMemberDrop(member.id, category.id)} className="rounded-2xl p-4 transition-all cursor-grab" style={{ ...classes.card.default, backgroundColor: dragOverMemberId === member.id ? "rgba(59,130,246,0.15)" : classes.card.default.backgroundColor }}>
+                    <div
+                      key={member.id}
+                      draggable
+                      onDragStart={() => handleMemberDragStart(member.id, category.id)}
+                      onDragOver={(e) => handleMemberDragOver(e, member.id)}
+                      onDrop={() => handleMemberDrop(member.id, category.id)}
+                      className="rounded-2xl p-4 transition-all cursor-grab"
+                      style={{
+                        ...classes.card.default,
+                        backgroundColor:
+                          dragOverMemberId === member.id
+                            ? "rgba(59,130,246,0.15)"
+                            : classes.card.default.backgroundColor,
+                      }}
+                    >
                       <div className="flex gap-4">
                         {member.profile_photo || member.photo ? (
-                          <img src={member.profile_photo || member.photo || ""} alt={member.name} className="w-20 h-20 object-cover rounded-xl" />
+                          <img
+                            src={member.profile_photo || member.photo || ""}
+                            alt={member.name}
+                            className="w-20 h-20 object-cover rounded-xl"
+                          />
                         ) : (
                           <div className="w-20 h-20 rounded-xl bg-blue-500/20 flex items-center justify-center">
                             <Users className="h-8 w-8 text-blue-500" />
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-bold truncate" style={classes.text.primary}>{member.name}</h3>
-                          {member.education && <p className="text-sm truncate" style={classes.text.secondary}>{member.education}</p>}
-                          {role && <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-500">{role}</span>}
-                          {technical_expertise && <p className="text-xs mt-1" style={{ color: colors.textMuted }}>{technical_expertise}</p>}
+                          <h3 className="font-bold truncate" style={classes.text.primary}>
+                            {member.name}
+                          </h3>
+                          {member.education && (
+                            <p className="text-sm truncate" style={classes.text.secondary}>
+                              {member.education}
+                            </p>
+                          )}
+                          {role && (
+                            <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-500">
+                              {role}
+                            </span>
+                          )}
+                          {technical_expertise && (
+                            <p className="text-xs mt-1" style={{ color: colors.textMuted }}>
+                              {technical_expertise}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="flex gap-2 mt-4">
-                        <button onClick={() => openMemberModal(member)} className="p-2.5 rounded-lg transition-all" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }}>
+                        <button
+                          onClick={() => openMemberModal(member)}
+                          className="p-2.5 rounded-lg transition-all"
+                          style={{
+                            backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                          }}
+                        >
                           <Edit2 className="h-4 w-4" />
                         </button>
-                        <button onClick={() => handleMemberDelete(member.id)} className="p-2.5 rounded-lg transition-all" style={{ backgroundColor: "rgba(239,68,68,0.1)" }}>
+                        <button
+                          onClick={() => handleMemberDelete(member.id)}
+                          className="p-2.5 rounded-lg transition-all"
+                          style={{ backgroundColor: "rgba(239,68,68,0.1)" }}
+                        >
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </button>
                       </div>
@@ -481,15 +655,24 @@ profile: "",
       {/* Category Modal */}
       {isCategoryModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsCategoryModal(false)} />
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsCategoryModal(false)}
+          />
           <div
             className="relative z-10 w-full max-w-md rounded-3xl overflow-hidden flex flex-col max-h-[80vh]"
             style={{ backgroundColor: colors.modalBg, border: `1px solid ${colors.border}` }}
           >
-            <div className="p-6 flex items-center justify-between" style={{ borderBottom: `1px solid ${colors.border}` }}>
+            <div
+              className="p-6 flex items-center justify-between"
+              style={{ borderBottom: `1px solid ${colors.border}` }}
+            >
               <div className="flex items-center gap-3">
                 <Tag className="h-5 w-5 text-blue-500" />
-                <h2 className={`${montserrat.className} text-xl font-bold`} style={{ color: colors.text }}>
+                <h2
+                  className={`${montserrat.className} text-xl font-bold`}
+                  style={{ color: colors.text }}
+                >
                   Manage Categories
                 </h2>
               </div>
@@ -498,7 +681,9 @@ profile: "",
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              <p className="text-xs" style={{ color: colors.textMuted }}>Drag to reorder</p>
+              <p className="text-xs" style={{ color: colors.textMuted }}>
+                Drag to reorder
+              </p>
               <div className="space-y-2">
                 {orderedCategories.map((category) => (
                   <div
@@ -509,9 +694,12 @@ profile: "",
                     onDrop={() => handleCategoryDrop(category.id)}
                     className="flex items-center gap-3 p-3 rounded-xl transition-all"
                     style={{
-                      backgroundColor: dragOverId === category.id
-                        ? "rgba(59,130,246,0.2)"
-                        : isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                      backgroundColor:
+                        dragOverId === category.id
+                          ? "rgba(59,130,246,0.2)"
+                          : isDark
+                            ? "rgba(255,255,255,0.05)"
+                            : "rgba(0,0,0,0.03)",
                     }}
                   >
                     <GripVertical className="h-4 w-4 text-gray-400 cursor-grab" />
@@ -520,18 +708,25 @@ profile: "",
                         <input
                           value={editingCategoryName}
                           onChange={(e) => setEditingCategoryName(e.target.value)}
-                          onKeyDown={(e) => e.key === "Enter" && handleUpdateCategory(category.id, editingCategoryName)}
+                          onKeyDown={(e) =>
+                            e.key === "Enter" &&
+                            handleUpdateCategory(category.id, editingCategoryName)
+                          }
                           className="flex-1 rounded-lg px-3 py-2 text-sm"
                           style={classes.input.bg}
                           autoFocus
                         />
-                        <button onClick={() => handleUpdateCategory(category.id, editingCategoryName)}>
+                        <button
+                          onClick={() => handleUpdateCategory(category.id, editingCategoryName)}
+                        >
                           <Check className="h-4 w-4 text-green-500" />
                         </button>
                       </>
                     ) : (
                       <>
-                        <span className="flex-1 font-medium" style={{ color: colors.text }}>{category.name}</span>
+                        <span className="flex-1 font-medium" style={{ color: colors.text }}>
+                          {category.name}
+                        </span>
                         <button
                           onClick={() => {
                             setEditingCategoryId(category.id);
@@ -573,13 +768,22 @@ profile: "",
       {/* Member Modal */}
       {isMemberModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMemberModal(false)} />
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsMemberModal(false)}
+          />
           <div
             className="relative z-10 w-full max-w-lg rounded-3xl overflow-hidden flex flex-col max-h-[90vh]"
             style={{ backgroundColor: colors.modalBg, border: `1px solid ${colors.border}` }}
           >
-            <div className="p-6 flex items-center justify-between" style={{ borderBottom: `1px solid ${colors.border}` }}>
-              <h2 className={`${montserrat.className} text-xl font-bold`} style={{ color: colors.text }}>
+            <div
+              className="p-6 flex items-center justify-between"
+              style={{ borderBottom: `1px solid ${colors.border}` }}
+            >
+              <h2
+                className={`${montserrat.className} text-xl font-bold`}
+                style={{ color: colors.text }}
+              >
                 {editingMember ? "Edit" : "Add"} Member
               </h2>
               <button onClick={() => setIsMemberModal(false)}>
@@ -588,7 +792,9 @@ profile: "",
             </div>
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               <div>
-                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Name</label>
+                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                  Name
+                </label>
                 <input
                   value={memberFormData.name}
                   onChange={(e) => setMemberFormData({ ...memberFormData, name: e.target.value })}
@@ -598,20 +804,28 @@ profile: "",
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Education</label>
+                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                  Education
+                </label>
                 <input
                   value={memberFormData.education}
-                  onChange={(e) => setMemberFormData({ ...memberFormData, education: e.target.value })}
+                  onChange={(e) =>
+                    setMemberFormData({ ...memberFormData, education: e.target.value })
+                  }
                   className="w-full rounded-lg px-3 py-2 text-sm"
                   style={classes.input.bg}
                   placeholder="Education/Qualifications"
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Bio</label>
+                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                  Bio
+                </label>
                 <textarea
                   value={memberFormData.profile}
-                  onChange={(e) => setMemberFormData({ ...memberFormData, profile: e.target.value })}
+                  onChange={(e) =>
+                    setMemberFormData({ ...memberFormData, profile: e.target.value })
+                  }
                   className="w-full rounded-lg px-3 py-2 text-sm"
                   style={classes.input.bg}
                   placeholder="Short profile"
@@ -623,18 +837,26 @@ profile: "",
                   <input
                     type="checkbox"
                     checked={memberFormData.is_active}
-                    onChange={(e) => setMemberFormData({ ...memberFormData, is_active: e.target.checked })}
+                    onChange={(e) =>
+                      setMemberFormData({ ...memberFormData, is_active: e.target.checked })
+                    }
                     className="w-4 h-4 rounded"
                   />
                   <span style={{ color: colors.text }}>Active</span>
                 </label>
               </div>
               <div>
-                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Photo</label>
+                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                  Photo
+                </label>
                 <div className="flex items-center gap-4">
                   {(selectedPhoto || editingMember?.photo) && (
                     <img
-                      src={selectedPhoto ? URL.createObjectURL(selectedPhoto) : editingMember?.photo || ""}
+                      src={
+                        selectedPhoto
+                          ? URL.createObjectURL(selectedPhoto)
+                          : editingMember?.photo || ""
+                      }
                       alt="Current"
                       className="h-20 w-20 object-cover rounded-lg"
                     />
@@ -649,11 +871,17 @@ profile: "",
                 </div>
               </div>
               <div>
-                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Profile Photo</label>
+                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                  Profile Photo
+                </label>
                 <div className="flex items-center gap-4">
                   {(selectedProfilePhoto || editingMember?.profile_photo) && (
                     <img
-                      src={selectedProfilePhoto ? URL.createObjectURL(selectedProfilePhoto) : editingMember?.profile_photo || ""}
+                      src={
+                        selectedProfilePhoto
+                          ? URL.createObjectURL(selectedProfilePhoto)
+                          : editingMember?.profile_photo || ""
+                      }
                       alt="Current"
                       className="h-20 w-20 object-cover rounded-lg"
                     />
@@ -661,36 +889,50 @@ profile: "",
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => e.target.files?.[0] && setSelectedProfilePhoto(e.target.files[0])}
+                    onChange={(e) =>
+                      e.target.files?.[0] && setSelectedProfilePhoto(e.target.files[0])
+                    }
                     className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
                     style={classes.input.bg}
                   />
                 </div>
               </div>
-              {editingMember && memberCategories?.some(mc => mc.team_member_id === editingMember.id) && (
-                <>
-                  <div>
-                    <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Role</label>
-                    <input
-                      value={memberFormData.role}
-                      onChange={(e) => setMemberFormData({ ...memberFormData, role: e.target.value })}
-                      className="w-full rounded-lg px-3 py-2 text-sm"
-                      style={classes.input.bg}
-                      placeholder="e.g. Chairman, CEO, Director"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Technical Expertise</label>
-                    <input
-                      value={memberFormData.technical_expertise}
-                      onChange={(e) => setMemberFormData({ ...memberFormData, technical_expertise: e.target.value })}
-                      className="w-full rounded-lg px-3 py-2 text-sm"
-                      style={classes.input.bg}
-                      placeholder="e.g. Hydropower, Water Resources"
-                    />
-                  </div>
-                </>
-              )}
+              {editingMember &&
+                memberCategories?.some((mc) => mc.team_member_id === editingMember.id) && (
+                  <>
+                    <div>
+                      <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                        Role
+                      </label>
+                      <input
+                        value={memberFormData.role}
+                        onChange={(e) =>
+                          setMemberFormData({ ...memberFormData, role: e.target.value })
+                        }
+                        className="w-full rounded-lg px-3 py-2 text-sm"
+                        style={classes.input.bg}
+                        placeholder="e.g. Chairman, CEO, Director"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                        Technical Expertise
+                      </label>
+                      <input
+                        value={memberFormData.technical_expertise}
+                        onChange={(e) =>
+                          setMemberFormData({
+                            ...memberFormData,
+                            technical_expertise: e.target.value,
+                          })
+                        }
+                        className="w-full rounded-lg px-3 py-2 text-sm"
+                        style={classes.input.bg}
+                        placeholder="e.g. Hydropower, Water Resources"
+                      />
+                    </div>
+                  </>
+                )}
             </div>
             <div className="p-6 flex justify-end gap-3">
               <button
@@ -717,14 +959,23 @@ profile: "",
       {/* AddToCategory Modal */}
       {isAddToCategoryModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsAddToCategoryModalOpen(false)} />
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsAddToCategoryModalOpen(false)}
+          />
           <div
             className="relative z-10 w-full max-w-md rounded-3xl overflow-hidden flex flex-col max-h-[80vh]"
             style={{ backgroundColor: colors.modalBg, border: `1px solid ${colors.border}` }}
           >
-            <div className="p-6 flex items-center justify-between" style={{ borderBottom: `1px solid ${colors.border}` }}>
-              <h2 className={`${montserrat.className} text-xl font-bold`} style={{ color: colors.text }}>
-                Add Member to {orderedCategories.find(c => c.id === addingToCategoryId)?.name}
+            <div
+              className="p-6 flex items-center justify-between"
+              style={{ borderBottom: `1px solid ${colors.border}` }}
+            >
+              <h2
+                className={`${montserrat.className} text-xl font-bold`}
+                style={{ color: colors.text }}
+              >
+                Add Member to {orderedCategories.find((c) => c.id === addingToCategoryId)?.name}
               </h2>
               <button onClick={() => setIsAddToCategoryModalOpen(false)}>
                 <X className="h-5 w-5" style={{ color: colors.textMuted }} />
@@ -732,27 +983,45 @@ profile: "",
             </div>
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               <div>
-                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Select Member</label>
+                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                  Select Member
+                </label>
                 <select
                   value={selectedMemberId || ""}
                   onChange={(e) => setSelectedMemberId(Number(e.target.value) || null)}
                   className="w-full rounded-lg px-3 py-2 text-sm"
-                  style={classes.input.bg}
+                  style={{
+                    backgroundColor: colors.inputBg,
+                    color: colors.text,
+                    border: `1px solid ${colors.border}`,
+                  }}
                 >
-                  <option value="">Choose a member...</option>
+                  <option value="" style={{ backgroundColor: colors.modalBg, color: colors.text }}>
+                    Choose a member...
+                  </option>
                   {members
-                    ?.filter(m => {
-                      const inThisCategory = membersByCategory[addingToCategoryId || 0]?.some(cm => cm.member.id === m.id);
+                    ?.filter((m) => {
+                      const inThisCategory = membersByCategory[addingToCategoryId || 0]?.some(
+                        (cm) => cm.member.id === m.id,
+                      );
                       return !inThisCategory;
                     })
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((m) => (
-                      <option key={m.id} value={m.id}>{m.name}</option>
+                      <option
+                        key={m.id}
+                        value={m.id}
+                        style={{ backgroundColor: colors.modalBg, color: colors.text }}
+                      >
+                        {m.name}
+                      </option>
                     ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Role</label>
+                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                  Role
+                </label>
                 <input
                   value={addMemberRole}
                   onChange={(e) => setAddMemberRole(e.target.value)}
@@ -762,7 +1031,9 @@ profile: "",
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>Technical Expertise</label>
+                <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
+                  Technical Expertise
+                </label>
                 <input
                   value={addMemberExpertise}
                   onChange={(e) => setAddMemberExpertise(e.target.value)}
@@ -793,6 +1064,20 @@ profile: "",
           </div>
         </div>
       )}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        title="Confirm Delete"
+        description={
+          deleteType === "category"
+            ? "Are you sure you want to delete this category?"
+            : "Are you sure you want to delete this team member?"
+        }
+        confirmText="Yes"
+        cancelText="No"
+      />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }

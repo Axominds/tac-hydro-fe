@@ -6,6 +6,7 @@ import { useExpertiseItems } from "../../../src/hooks/useExpertiseCategories";
 import { useProjectScopes } from "../../../src/hooks/useProjectScopes";
 import { useExpertiseItemMutations } from "../../../src/hooks/useAdminMutations";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
+import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 
 const colorStylesMap: Record<string, { bg: string; text: string }> = {
   blue: { bg: "bg-blue-600/10", text: "text-blue-500" },
@@ -42,6 +43,9 @@ export function ExpertiseCategoryModal({
   const [themeColor, setThemeColor] = useState(category?.theme_color || "blue");
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [itemDeleteConfirmOpen, setItemDeleteConfirmOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
   const [newItemTitle, setNewItemTitle] = useState("");
   const [newItemScopeId, setNewItemScopeId] = useState<number | "">("");
@@ -85,12 +89,26 @@ export function ExpertiseCategoryModal({
 
   const handleDelete = async () => {
     if (!category?.id || !onDelete) return;
-    if (window.confirm("Delete this category and all its items?")) {
-      setIsDeleting(true);
-      await onDelete(category.id);
-      setIsDeleting(false);
-      onClose();
-    }
+    setIsDeleting(true);
+    await onDelete(category.id);
+    setIsDeleting(false);
+    onClose();
+  };
+
+  const handleDeleteClick = () => {
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteItemClick = (itemId: number) => {
+    setItemToDelete(itemId);
+    setItemDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteItem = async () => {
+    if (!itemToDelete || !category?.id) return;
+    await deleteItem.mutateAsync({ categoryId: category.id, id: itemToDelete });
+    refetchItems();
+    setItemToDelete(null);
   };
 
   const handleAddItem = async () => {
@@ -378,7 +396,7 @@ export function ExpertiseCategoryModal({
                                   `Scope #${item.project_scope_id}`}
                               </span>
                             )}
-<button
+                            <button
                               onClick={() => {
                                 setEditingItemId(null);
                                 setEditingItemTitle("");
@@ -397,7 +415,7 @@ export function ExpertiseCategoryModal({
                               />
                             </button>
                             <button
-                              onClick={() => handleDeleteItem(item.id)}
+                              onClick={() => handleDeleteItemClick(item.id)}
                               className="p-2.5 rounded-lg transition-all"
                               style={{ backgroundColor: "rgba(239,68,68,0.1)" }}
                             >
@@ -445,49 +463,25 @@ export function ExpertiseCategoryModal({
             </div>
           )}
         </div>
-
-        <div
-          className="p-6 flex items-center justify-between"
-          style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
-        >
-          {isEditing && onDelete && (
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="px-4 py-2 rounded-lg text-sm flex items-center gap-2"
-              style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
-            >
-              {isDeleting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Trash2 className="h-4 w-4" />
-              )}
-              Delete
-            </button>
-          )}
-          {!isEditing && <div />}
-          <div className="flex gap-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 rounded-lg text-sm"
-              style={{
-                backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-                color: colors.textSecondary as string,
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2"
-            >
-              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              Save
-            </button>
-          </div>
-        </div>
       </div>
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={handleDelete}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this category and all its items?"
+        confirmText="Yes"
+        cancelText="No"
+      />
+      <ConfirmDialog
+        open={itemDeleteConfirmOpen}
+        onOpenChange={setItemDeleteConfirmOpen}
+        onConfirm={confirmDeleteItem}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this item?"
+        confirmText="Yes"
+        cancelText="No"
+      />
     </div>
   );
 }

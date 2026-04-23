@@ -25,6 +25,7 @@ import { ExpertiseCategoryModal } from "./ExpertiseCategoryModal";
 import { ServiceSectorModal } from "./ServiceSectorModal";
 import { useAdminTheme, getThemedClasses } from "../../../src/hooks/useAdminTheme";
 import { useModalContext } from "../layout";
+import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -60,7 +61,7 @@ interface CategoryWithItems {
 function ExpertiseCategoryCard({
   category,
   onEdit,
-  onDelete,
+  onDeleteClick,
   onDragStart,
   onDragOver,
   onDrop,
@@ -71,7 +72,7 @@ function ExpertiseCategoryCard({
 }: {
   category: CategoryWithItems;
   onEdit: (category: CategoryWithItems) => void;
-  onDelete: (id: number) => Promise<void>;
+  onDeleteClick: (id: number) => void;
   onDragStart: (e: React.DragEvent, id: number) => void;
   onDragOver: (e: React.DragEvent, id: number) => void;
   onDrop: (e: React.DragEvent, id: number) => void;
@@ -130,7 +131,7 @@ function ExpertiseCategoryCard({
             <Edit2 className="h-4 w-4" style={{ color: colors.text.secondary as string }} />
           </button>
           <button
-            onClick={() => window.confirm("Delete this category?") && onDelete(category.id)}
+            onClick={() => onDeleteClick(category.id)}
             className="p-2.5 rounded-lg transition-all"
             style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
           >
@@ -148,7 +149,7 @@ function EditableServiceSectorCard({
   title,
   description,
   onUpdate,
-  onDelete,
+  onDeleteClick,
   theme,
   colors,
 }: {
@@ -156,7 +157,7 @@ function EditableServiceSectorCard({
   title: string;
   description?: string;
   onUpdate: (id: number, data: any) => Promise<void>;
-  onDelete: (id: number) => Promise<void>;
+  onDeleteClick: (id: number) => void;
   theme: "light" | "dark";
   colors: ReturnType<typeof getThemedClasses>;
 }) {
@@ -267,7 +268,7 @@ function EditableServiceSectorCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              window.confirm("Delete?") && onDelete(id);
+              onDeleteClick(id);
             }}
             className="p-2.5 rounded-lg transition-all"
             style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
@@ -309,6 +310,9 @@ export default function ServicesManagementPage() {
   };
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteType, setDeleteType] = useState<"category" | "sector" | null>(null);
 
   const sortedCategories = [...(categories || [])].sort((a: any, b: any) => a.order - b.order);
 
@@ -401,6 +405,17 @@ export default function ServicesManagementPage() {
 
   const isLoading = catLoading || sectorLoading;
 
+  const handleDeleteConfirm = async () => {
+    if (deleteType === "category" && deleteId) {
+      await deleteCategory.mutateAsync(deleteId);
+      refetchCategories();
+    } else if (deleteType === "sector" && deleteId) {
+      await deleteSector.mutateAsync(deleteId);
+    }
+    setDeleteId(null);
+    setDeleteType(null);
+  };
+
   if (!mounted) return null;
 
   return (
@@ -442,9 +457,10 @@ export default function ServicesManagementPage() {
                 key={cat.id}
                 category={cat}
                 onEdit={(cat) => setEditingCategory(cat)}
-                onDelete={async (id) => {
-                  await deleteCategory.mutateAsync(id);
-                  refetchCategories();
+                onDeleteClick={(id) => {
+                  setDeleteId(id);
+                  setDeleteType("category");
+                  setDeleteConfirmOpen(true);
                 }}
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
@@ -580,6 +596,15 @@ export default function ServicesManagementPage() {
           }
         />
       )}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={handleDeleteConfirm}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this category?"
+        confirmText="Yes"
+        cancelText="No"
+      />
     </div>
   );
 }

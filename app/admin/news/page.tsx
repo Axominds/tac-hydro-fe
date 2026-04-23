@@ -24,13 +24,14 @@ import { useNewsMutations, useNewsCategoryMutations } from "../../../src/hooks/u
 import { NewsItem, NewsCategory, apiFetch, NewsDetail } from "../../../src/lib/api";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { QuillEditor } from "../../../src/components/admin/QuillEditor";
+import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
 function CategoryRow({
   category,
   onUpdate,
-  onDelete,
+  onDeleteClick,
   isDragOver,
   onDragStart,
   onDragOver,
@@ -39,7 +40,7 @@ function CategoryRow({
 }: {
   category: NewsCategory;
   onUpdate: (id: number, name: string) => Promise<void>;
-  onDelete: (id: number) => Promise<void>;
+  onDeleteClick: (id: number) => void;
   isDragOver: boolean;
   onDragStart: () => void;
   onDragOver: (e: React.DragEvent) => void;
@@ -140,7 +141,7 @@ function CategoryRow({
           </button>
         )}
         <button
-          onClick={() => window.confirm(`Delete "${category.name}"?`) && onDelete(category.id)}
+          onClick={() => onDeleteClick(category.id)}
           className="p-1.5 rounded-lg transition-all"
           style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
         >
@@ -185,6 +186,9 @@ export default function NewsManagementPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
   const [categoryFilter, setCategoryFilter] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteType, setDeleteType] = useState<"article" | "category" | null>(null);
 
   const statusFilterValue = statusFilter === "all" ? null : statusFilter === "published";
 
@@ -192,7 +196,7 @@ export default function NewsManagementPage() {
     categoryFilter,
     currentPage,
     4,
-    statusFilterValue
+    statusFilterValue,
   );
   const { data: counts } = useNewsCounts();
 
@@ -297,10 +301,27 @@ export default function NewsManagementPage() {
     setSelectedImage(null);
   };
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Delete this article permanently?")) {
-      await deleteNews.mutateAsync(id);
+  const handleDelete = (id: number) => {
+    setDeleteId(id);
+    setDeleteType("article");
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteCategory = (id: number) => {
+    setDeleteId(id);
+    setDeleteType("category");
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteType === "article" && deleteId) {
+      await deleteNews.mutateAsync(deleteId);
+    } else if (deleteType === "category" && deleteId) {
+      await deleteCategory.mutateAsync(deleteId);
+      setOrderedCategories((prev) => prev.filter((c) => c.id !== deleteId));
     }
+    setDeleteId(null);
+    setDeleteType(null);
   };
 
   const handleAddCategory = async () => {
@@ -313,11 +334,6 @@ export default function NewsManagementPage() {
 
   const handleUpdateCategory = async (id: number, name: string) => {
     await updateCategory.mutateAsync({ id, data: { name } });
-  };
-
-  const handleDeleteCategory = async (id: number) => {
-    await deleteCategory.mutateAsync(id);
-    setOrderedCategories((prev) => prev.filter((c) => c.id !== id));
   };
 
   const handleDragStart = (id: number) => {
@@ -448,86 +464,86 @@ export default function NewsManagementPage() {
             <>
               <div className="grid grid-cols-1 gap-4">
                 {newsItems.map((item: NewsItem) => (
-                <div
-                  key={item.id}
-                  className="rounded-2xl p-6 flex items-center gap-6 group transition-all"
-                  style={{
-                    ...cardStyle,
-                    backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
-                  }}
-                >
-                  <div className="w-20 h-20 bg-blue-600/10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Newspaper className="h-7 w-7 text-blue-500/40" />
-                    )}
-                  </div>
-
-                  <div className="flex-1 min-w-0 space-y-1.5">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {item.news_category_id && (
-                        <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
-                          {categories?.find((c) => c.id === item.news_category_id)?.name ||
-                            "Uncategorized"}
-                        </span>
-                      )}
-                      <span
-                        className="text-[10px] flex items-center gap-1"
-                        style={{ color: colors.textMuted as string }}
-                      >
-                        <Calendar className="h-3 w-3" />
-                        {new Date(item.news_date).toLocaleDateString()}
-                      </span>
-                      {item.is_published ? (
-                        <span className="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
-                          Published
-                        </span>
+                  <div
+                    key={item.id}
+                    className="rounded-2xl p-6 flex items-center gap-6 group transition-all"
+                    style={{
+                      ...cardStyle,
+                      backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
+                    }}
+                  >
+                    <div className="w-20 h-20 bg-blue-600/10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
-                        <span className="text-[10px] font-bold text-yellow-500/60 bg-yellow-500/5 px-2 py-0.5 rounded border border-yellow-500/10">
-                          Draft
-                        </span>
+                        <Newspaper className="h-7 w-7 text-blue-500/40" />
                       )}
                     </div>
-                    <h3
-                      className="text-sm font-bold leading-tight line-clamp-1 group-hover:text-blue-400 transition-colors"
-                      style={{ color: colors.text as string }}
-                    >
-                      {item.title}
-                    </h3>
-                    <p
-                      className="text-xs line-clamp-1 normal-case"
-                      style={{ color: colors.textMuted as string }}
-                    >
-                      {item.summary}
-                    </p>
-                  </div>
 
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all shrink-0">
-                    <button
-                      onClick={() => openEditModal(item)}
-                      className="p-2.5 rounded-xl transition-all"
-                      style={{
-                        backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-                        color: isDark ? "#888" : "#64748b",
-                      }}
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="p-2.5 rounded-xl transition-all"
-                      style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {item.news_category_id && (
+                          <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                            {categories?.find((c) => c.id === item.news_category_id)?.name ||
+                              "Uncategorized"}
+                          </span>
+                        )}
+                        <span
+                          className="text-[10px] flex items-center gap-1"
+                          style={{ color: colors.textMuted as string }}
+                        >
+                          <Calendar className="h-3 w-3" />
+                          {new Date(item.news_date).toLocaleDateString()}
+                        </span>
+                        {item.is_published ? (
+                          <span className="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
+                            Published
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold text-yellow-500/60 bg-yellow-500/5 px-2 py-0.5 rounded border border-yellow-500/10">
+                            Draft
+                          </span>
+                        )}
+                      </div>
+                      <h3
+                        className="text-sm font-bold leading-tight line-clamp-1 group-hover:text-blue-400 transition-colors"
+                        style={{ color: colors.text as string }}
+                      >
+                        {item.title}
+                      </h3>
+                      <p
+                        className="text-xs line-clamp-1 normal-case"
+                        style={{ color: colors.textMuted as string }}
+                      >
+                        {item.summary}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all shrink-0">
+                      <button
+                        onClick={() => openEditModal(item)}
+                        className="p-2.5 rounded-xl transition-all"
+                        style={{
+                          backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                          color: isDark ? "#888" : "#64748b",
+                        }}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="p-2.5 rounded-xl transition-all"
+                        style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
               </div>
 
               {totalPages > 1 && (
@@ -555,7 +571,9 @@ export default function NewsManagementPage() {
                           ? { backgroundColor: "#3b82f6", color: "#ffffff" }
                           : {
                               color: colors.textSecondary as string,
-                              backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                              backgroundColor: isDark
+                                ? "rgba(255,255,255,0.05)"
+                                : "rgba(0,0,0,0.05)",
                             }
                       }
                     >
@@ -730,12 +748,10 @@ export default function NewsManagementPage() {
                 className={`${montserrat.className} text-2xl`}
                 style={{ color: colors.text as string }}
               >
-                {editingItem ? "Edit" : "New"} <span className="text-blue-500">News and Events</span>
+                {editingItem ? "Edit" : "New"}{" "}
+                <span className="text-blue-500">News and Events</span>
               </h2>
-              <button
-                onClick={() => closeModal()}
-                style={{ color: colors.textMuted as string }}
-              >
+              <button onClick={() => closeModal()} style={{ color: colors.textMuted as string }}>
                 <X className="h-6 w-6" />
               </button>
             </div>
@@ -747,178 +763,185 @@ export default function NewsManagementPage() {
                 </div>
               ) : (
                 <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2 col-span-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={{ color: colors.textMuted as string }}
-                  >
-                    News Title
-                  </label>
-                  <input
-                    required
-                    value={formData.title || ""}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={inputStyle}
-                    placeholder="Headline goes here..."
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={{ color: colors.textMuted as string }}
-                  >
-                    Category
-                  </label>
-                  <select
-                    value={formData.news_category_id}
-                    onChange={(e) =>
-                      setFormData({ ...formData, news_category_id: parseInt(e.target.value) })
-                    }
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={inputStyle}
-                  >
-                    {categories?.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={{ color: colors.textMuted as string }}
-                  >
-                    News Date
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={formData.news_date || ""}
-                    onChange={(e) => setFormData({ ...formData, news_date: e.target.value })}
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={inputStyle}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={{ color: colors.textMuted as string }}
-                  >
-                    Featured Image
-                  </label>
-                  <div className="flex flex-col gap-3">
-                    {(selectedImage || formData.image) && (
-                      <div
-                        className="h-48 w-full rounded-xl overflow-hidden"
-                        style={{
-                          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "#f1f5f9",
-                          border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
-                        }}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2 col-span-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={{ color: colors.textMuted as string }}
                       >
-                        <img
-                          src={selectedImage ? URL.createObjectURL(selectedImage) : formData.image || ""}
-                          alt="News"
-                          className="w-full h-full object-cover"
+                        News Title
+                      </label>
+                      <input
+                        required
+                        value={formData.title || ""}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        style={inputStyle}
+                        placeholder="Headline goes here..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={{ color: colors.textMuted as string }}
+                      >
+                        Category
+                      </label>
+                      <select
+                        value={formData.news_category_id}
+                        onChange={(e) =>
+                          setFormData({ ...formData, news_category_id: parseInt(e.target.value) })
+                        }
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        style={inputStyle}
+                      >
+                        {categories?.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={{ color: colors.textMuted as string }}
+                      >
+                        News Date
+                      </label>
+                      <input
+                        type="date"
+                        required
+                        value={formData.news_date || ""}
+                        onChange={(e) => setFormData({ ...formData, news_date: e.target.value })}
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        style={inputStyle}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={{ color: colors.textMuted as string }}
+                      >
+                        Featured Image
+                      </label>
+                      <div className="flex flex-col gap-3">
+                        {(selectedImage || formData.image) && (
+                          <div
+                            className="h-48 w-full rounded-xl overflow-hidden"
+                            style={{
+                              backgroundColor:
+                                theme === "dark" ? "rgba(255,255,255,0.05)" : "#f1f5f9",
+                              border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                            }}
+                          >
+                            <img
+                              src={
+                                selectedImage
+                                  ? URL.createObjectURL(selectedImage)
+                                  : formData.image || ""
+                              }
+                              alt="News"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            e.target.files?.[0] && setSelectedImage(e.target.files[0])
+                          }
+                          className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
+                          style={inputStyle}
                         />
                       </div>
-                    )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => e.target.files?.[0] && setSelectedImage(e.target.files[0])}
-                      className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
-                      style={inputStyle}
-                    />
+                    </div>
+
+                    <div className="space-y-2 col-span-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={{ color: colors.textMuted as string }}
+                      >
+                        Short Summary
+                      </label>
+                      <textarea
+                        value={formData.summary || ""}
+                        onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
+                        rows={2}
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none normal-case"
+                        style={inputStyle}
+                        placeholder="Brief overview for the card view..."
+                      />
+                    </div>
+
+                    <div className="space-y-2 col-span-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={{ color: colors.textMuted as string }}
+                      >
+                        Content
+                      </label>
+                      <QuillEditor
+                        key={editingItem?.id}
+                        value={formData.content_html || ""}
+                        onChange={(value) => setFormData({ ...formData, content_html: value })}
+                        isDark={isDark}
+                        placeholder="Enter article content..."
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-3 col-span-2">
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={!!formData.is_published}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              is_published: e.target.checked,
+                            })
+                          }
+                          className="sr-only peer"
+                        />
+                        <div
+                          className="w-11 h-6 rounded-full peer peer-focus:outline-none peer-focus:ring-4 transition-all"
+                          style={{ backgroundColor: formData.is_published ? "#3b82f6" : "#374151" }}
+                        />
+                        <span
+                          className="ml-3 text-sm font-semibold normal-case"
+                          style={{ color: colors.textSecondary as string }}
+                        >
+                          Publish to live site
+                        </span>
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2 col-span-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={{ color: colors.textMuted as string }}
-                  >
-                    Short Summary
-                  </label>
-                  <textarea
-                    value={formData.summary || ""}
-                    onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                    rows={2}
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none normal-case"
-                    style={inputStyle}
-                    placeholder="Brief overview for the card view..."
-                  />
-                </div>
-
-                <div className="space-y-2 col-span-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={{ color: colors.textMuted as string }}
-                  >
-                    Content
-                  </label>
-                  <QuillEditor
-                    key={editingItem?.id}
-                    value={formData.content_html || ""}
-                    onChange={(value) => setFormData({ ...formData, content_html: value })}
-                    isDark={isDark}
-                    placeholder="Enter article content..."
-                  />
-                </div>
-
-                <div className="flex items-center gap-3 col-span-2">
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={!!formData.is_published}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          is_published: e.target.checked,
-                        })
-                      }
-                      className="sr-only peer"
-                    />
-                    <div
-                      className="w-11 h-6 rounded-full peer peer-focus:outline-none peer-focus:ring-4 transition-all"
-                      style={{ backgroundColor: formData.is_published ? "#3b82f6" : "#374151" }}
-                    />
-                    <span
-                      className="ml-3 text-sm font-semibold normal-case"
-                      style={{ color: colors.textSecondary as string }}
+                  <div className="pt-4 flex gap-4 shrink-0">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95"
                     >
-                      Publish to live site
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="pt-4 flex gap-4 shrink-0">
-                <button
-                  type="submit"
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95"
-                >
-                  <Save className="h-5 w-5" />
-                  Save
-                </button>
-                <button
-                  type="button"
-                  onClick={() => closeModal()}
-                  className="px-8 font-bold rounded-2xl transition-all"
-                  style={{
-                    border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,
-                    color: colors.textSecondary as string,
-                    backgroundColor: "transparent",
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
+                      <Save className="h-5 w-5" />
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => closeModal()}
+                      className="px-8 font-bold rounded-2xl transition-all"
+                      style={{
+                        border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,
+                        color: colors.textSecondary as string,
+                        backgroundColor: "transparent",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </>
               )}
             </form>
@@ -1022,11 +1045,22 @@ export default function NewsManagementPage() {
                 </div>
               </div>
             </div>
-
-            
           </div>
         </div>
       )}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        title="Confirm Delete"
+        description={
+          deleteType === "category"
+            ? "Are you sure you want to delete this category? All articles in this category will be uncategorized."
+            : "Are you sure you want to delete this article permanently?"
+        }
+        confirmText="Yes"
+        cancelText="No"
+      />
     </div>
   );
 }

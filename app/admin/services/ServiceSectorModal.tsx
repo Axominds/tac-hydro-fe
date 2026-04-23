@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Plus, Edit2, Trash2, Loader2, X, Save } from "lucide-react";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
+import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 
 interface SectorData {
   id: number;
@@ -33,6 +34,7 @@ export function ServiceSectorModal({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -70,12 +72,19 @@ export function ServiceSectorModal({
 
   const handleDelete = async () => {
     if (!sector || !onDelete) return;
-    if (window.confirm("Delete this sector?")) {
-      setIsDeleting(true);
-      await onDelete(sector.id);
-      setIsDeleting(false);
-      onClose();
-    }
+    setIsDeleting(true);
+    await onDelete(sector.id);
+    setIsDeleting(false);
+    onClose();
+  };
+
+  const handleDeleteClick = () => {
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    await handleDelete();
+    setDeleteConfirmOpen(false);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,7 +212,7 @@ export function ServiceSectorModal({
         >
           {sector && onDelete ? (
             <button
-              onClick={handleDelete}
+              onClick={handleDeleteClick}
               disabled={isDeleting}
               className="px-4 py-2 rounded-lg text-sm flex items-center gap-2"
               style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
@@ -234,12 +243,25 @@ export function ServiceSectorModal({
               disabled={isSaving || !title.trim()}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2 disabled:opacity-50"
             >
-              {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
               Save
             </button>
           </div>
         </div>
       </div>
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={handleConfirmDelete}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this sector?"
+        confirmText="Yes"
+        cancelText="No"
+      />
     </div>
   );
 }

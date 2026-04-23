@@ -8,19 +8,43 @@ import {
   Scale,
   DollarSign,
   Trophy,
+  Briefcase,
+  Settings,
+  Users,
 } from "lucide-react";
 import { useCorePrinciples } from "../../../hooks/useCorePrinciples";
 import { apiFetch, CorePrinciplesIntroList } from "../../../lib/api";
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  Scale,
-  Leaf,
-  Lightbulb,
-  Cpu,
-  Target,
-  ShieldCheck,
-  DollarSign,
-  Trophy,
+  briefcase: Briefcase,
+  settings: Settings,
+  users: Users,
+  lightbulb: Lightbulb,
+  scale: Scale,
+  leaf: Leaf,
+  cpu: Cpu,
+  target: Target,
+  "shield-check": ShieldCheck,
+  "dollar-sign": DollarSign,
+  trophy: Trophy,
+};
+
+const getColorClass = (colorClass: string) => {
+  const colorMap: Record<string, string> = {
+    blue: "bg-blue-500",
+    emerald: "bg-emerald-500",
+    amber: "bg-amber-500",
+    purple: "bg-purple-500",
+    red: "bg-red-500",
+    yellow: "bg-yellow-500",
+    indigo: "bg-indigo-500",
+    slate: "bg-slate-700",
+    green: "bg-green-500",
+    orange: "bg-orange-500",
+    cyan: "bg-cyan-500",
+    pink: "bg-pink-500",
+  };
+  return colorMap[colorClass] || "bg-blue-500";
 };
 
 export const CorePrinciplesSection = () => {
@@ -33,10 +57,7 @@ export const CorePrinciplesSection = () => {
 
   if (isLoading) {
     return (
-      <section
-        id="core-principles"
-        className="flex-1 bg-white flex items-center justify-center"
-      >
+      <section id="core-principles" className="flex-1 bg-white flex items-center justify-center">
         <div className="w-full max-w-[1400px] px-6 sm:px-10 lg:px-20 py-8">
           <div className="flex gap-6 py-2 justify-between flex-wrap sm:flex-nowrap">
             {[...Array(8)].map((_, idx) => (
@@ -60,11 +81,19 @@ export const CorePrinciplesSection = () => {
 
   if (!principles || principles.length === 0) {
     return (
-      <section id="core-principles" className="flex-1 bg-white flex items-center justify-center py-16 lg:py-24">
+      <section
+        id="core-principles"
+        className="flex-1 bg-white flex items-center justify-center py-16 lg:py-24"
+      >
         <div className="flex flex-col items-center justify-center py-32 px-4 bg-white rounded-[40px] border border-dashed border-slate-200 animate-fade-in max-w-lg mx-4">
           <div className="w-16 h-16 mb-6 flex items-center justify-center rounded-3xl bg-slate-50 text-blue-600">
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+              />
             </svg>
           </div>
           <h3 className="text-xl font-bold text-slate-900 mb-2">No Core Principles Found</h3>
@@ -77,10 +106,7 @@ export const CorePrinciplesSection = () => {
   }
 
   return (
-    <section
-      id="core-principles"
-      className="flex-1 bg-white flex items-center justify-center"
-    >
+    <section id="core-principles" className="flex-1 bg-white flex items-center justify-center">
       <div className="w-full max-w-[1400px] px-6 sm:px-10 lg:px-20 py-8">
         <div className="mb-8 sm:mb-20 text-center max-w-3xl mx-auto">
           <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-slate-900 mb-6">
@@ -89,7 +115,8 @@ export const CorePrinciplesSection = () => {
         </div>
         <div className="flex gap-6 py-2 justify-between flex-wrap sm:flex-nowrap">
           {principles.map((item) => {
-            const Icon = ICON_MAP[item.icon_key] ?? Scale;
+            const Icon = ICON_MAP[item.icon_key] || Scale;
+            const bgColor = getColorClass(item.color_class);
             return (
               <div
                 key={item.id}
@@ -98,7 +125,7 @@ export const CorePrinciplesSection = () => {
                 <div className="relative mb-3 flex items-center justify-center">
                   <div className="absolute inset-0 scale-125 rounded-full border border-slate-100 group-hover:border-blue-100 transition-colors duration-300" />
                   <div
-                    className={`w-12 h-12 rounded-full ${item.color_class} flex items-center justify-center text-white shadow-lg transition-transform duration-700 group-hover:rotate-[360deg]`}
+                    className={`w-12 h-12 rounded-full ${bgColor} flex items-center justify-center text-white shadow-lg transition-transform duration-700 group-hover:rotate-[360deg]`}
                   >
                     <Icon className="w-6 h-6" />
                   </div>

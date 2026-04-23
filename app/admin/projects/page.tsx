@@ -1,9 +1,26 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { BarChart3, Plus, Edit2, Trash2, Loader2, X, Save, Tag, Check, GripVertical, Pencil, Image as ImageIcon } from "lucide-react";
+import {
+  BarChart3,
+  Plus,
+  Edit2,
+  Trash2,
+  Loader2,
+  X,
+  Save,
+  Tag,
+  Check,
+  GripVertical,
+  Pencil,
+  Image as ImageIcon,
+} from "lucide-react";
 import { Montserrat } from "next/font/google";
-import { useProjectsWithScopes, useProjectScopeMemberships, useProjectScopeImages } from "../../../src/hooks/useProjects";
+import {
+  useProjectsWithScopes,
+  useProjectScopeMemberships,
+  useProjectScopeImages,
+} from "../../../src/hooks/useProjects";
 import { useProjectScopes } from "../../../src/hooks/useProjectScopes";
 import {
   useProjectMutations,
@@ -11,9 +28,16 @@ import {
   useProjectScopeMembershipMutations,
   useProjectScopeImageMutations,
 } from "../../../src/hooks/useAdminMutations";
-import { Project, ProjectScope, ProjectScopeMembership, ProjectScopeImage, apiFetch } from "../../../src/lib/api";
+import {
+  Project,
+  ProjectScope,
+  ProjectScopeMembership,
+  ProjectScopeImage,
+  apiFetch,
+} from "../../../src/lib/api";
 import { useAdminTheme, getThemedClasses } from "../../../src/hooks/useAdminTheme";
 import { useModalContext } from "../layout";
+import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -44,8 +68,10 @@ export default function ProjectsManagementPage() {
   const { createProject, updateProject, deleteProject } = useProjectMutations();
   const { data: scopes } = useProjectScopes();
   const { createScope, updateScope, reorderScopes, deleteScope } = useProjectScopeMutations();
-  const { createMembership, updateMembership, deleteMembership } = useProjectScopeMembershipMutations();
-  const { createScopeImage, deleteScopeImage, reorderScopeImages } = useProjectScopeImageMutations();
+  const { createMembership, updateMembership, deleteMembership } =
+    useProjectScopeMembershipMutations();
+  const { createScopeImage, deleteScopeImage, reorderScopeImages } =
+    useProjectScopeImageMutations();
 
   const [isModalOpen, setIsModalOpenLocal] = useState(false);
   const [isMembershipModalOpen, setIsMembershipModalOpen] = useState(false);
@@ -79,6 +105,9 @@ export default function ProjectsManagementPage() {
   const [roleDrafts, setRoleDrafts] = useState<Record<number, string>>({});
   const [isSavingMembership, setIsSavingMembership] = useState(false);
   const [uploadingMembershipId, setUploadingMembershipId] = useState<number | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteType, setDeleteType] = useState<"project" | "scope" | null>(null);
 
   useEffect(() => {
     if (isModalOpen || isScopeModalOpen || isMembershipModalOpen) {
@@ -149,12 +178,20 @@ export default function ProjectsManagementPage() {
     setIsModalOpen(false);
   };
 
-  const handleDelete = async (id: number) => {
-    if (
-      window.confirm("Are you sure you want to delete this project? This action cannot be undone.")
-    ) {
-      await deleteProject.mutateAsync(id);
+  const handleDelete = (id: number) => {
+    setDeleteId(id);
+    setDeleteType("project");
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteType === "project" && deleteId) {
+      await deleteProject.mutateAsync(deleteId);
+    } else if (deleteType === "scope" && deleteId) {
+      await deleteScope.mutateAsync(deleteId);
     }
+    setDeleteId(null);
+    setDeleteType(null);
   };
 
   if (scopes && (!syncedRef.current || orderedScopes.length !== scopes.length)) {
@@ -177,10 +214,10 @@ export default function ProjectsManagementPage() {
     setEditingScopeName("");
   };
 
-  const handleDeleteScope = async (id: number) => {
-    if (window.confirm("Delete this scope?")) {
-      await deleteScope.mutateAsync(id);
-    }
+  const handleDeleteScope = (id: number) => {
+    setDeleteId(id);
+    setDeleteType("scope");
+    setDeleteConfirmOpen(true);
   };
 
   const handleDragStart = (id: number) => {
@@ -273,7 +310,8 @@ export default function ProjectsManagementPage() {
     (scope) => !projectMemberships.some((membership) => membership.project_scope_id === scope.id),
   );
 
-  const getScopeName = (scopeId: number) => scopes?.find((scope) => scope.id === scopeId)?.name || "Unknown Scope";
+  const getScopeName = (scopeId: number) =>
+    scopes?.find((scope) => scope.id === scopeId)?.name || "Unknown Scope";
 
   const getMembershipImages = (membershipId: number) =>
     (scopeImages || [])
@@ -303,9 +341,10 @@ export default function ProjectsManagementPage() {
     });
   };
 
-  const handleDeleteMembership = async (membershipId: number) => {
-    if (!window.confirm("Remove this scope from the project?")) return;
-    await deleteMembership.mutateAsync(membershipId);
+  const handleDeleteMembership = (membershipId: number) => {
+    setDeleteId(membershipId);
+    setDeleteType("scope");
+    setDeleteConfirmOpen(true);
   };
 
   const handleUploadScopeImages = async (membershipId: number, files: FileList | null) => {
@@ -467,246 +506,254 @@ export default function ProjectsManagementPage() {
                   <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
                 </div>
               ) : (
-              <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2 col-span-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={classes.text.muted}
-                  >
-                    Project Title
-                  </label>
-                  <input
-                    required
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={{
-                      ...classes.input.bg,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                    }}
-                    placeholder="e.g. Maduwa Hydropower"
-                  />
-                </div>
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2 col-span-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={classes.text.muted}
+                      >
+                        Project Title
+                      </label>
+                      <input
+                        required
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        style={{
+                          ...classes.input.bg,
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                        }}
+                        placeholder="e.g. Maduwa Hydropower"
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={classes.text.muted}
-                  >
-                    Status
-                  </label>
-                  <select
-                    value={formData.status || "Ongoing"}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={{
-                      ...classes.input.bg,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                    }}
-                  >
-                    <option value="Ongoing">Ongoing</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
+                    <div className="space-y-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={classes.text.muted}
+                      >
+                        Status
+                      </label>
+                      <select
+                        value={formData.status || "Ongoing"}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        style={{
+                          ...classes.input.bg,
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                        }}
+                      >
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+                    </div>
 
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={classes.text.muted}
-                  >
-                    Capacity (MW)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    required
-                    value={formData.installed_capacity}
-                    onChange={(e) =>
-                      setFormData({ ...formData, installed_capacity: parseFloat(e.target.value) })
-                    }
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={{
-                      ...classes.input.bg,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                    }}
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={classes.text.muted}
+                      >
+                        Capacity (MW)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        required
+                        value={formData.installed_capacity}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            installed_capacity: parseFloat(e.target.value),
+                          })
+                        }
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        style={{
+                          ...classes.input.bg,
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                        }}
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={classes.text.muted}
-                  >
-                    Capacity Unit
-                  </label>
-                  <select
-                    value={formData.installed_capacity_unit || "MW"}
-                    onChange={(e) => setFormData({ ...formData, installed_capacity_unit: e.target.value })}
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={{
-                      ...classes.input.bg,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                    }}
-                  >
-                    <option value="MW">MW</option>
-                    <option value="kW">kW</option>
-                    <option value="GW">GW</option>
-                  </select>
-                </div>
+                    <div className="space-y-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={classes.text.muted}
+                      >
+                        Capacity Unit
+                      </label>
+                      <select
+                        value={formData.installed_capacity_unit || "MW"}
+                        onChange={(e) =>
+                          setFormData({ ...formData, installed_capacity_unit: e.target.value })
+                        }
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        style={{
+                          ...classes.input.bg,
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                        }}
+                      >
+                        <option value="MW">MW</option>
+                        <option value="kW">kW</option>
+                        <option value="GW">GW</option>
+                      </select>
+                    </div>
 
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={classes.text.muted}
-                  >
-                    Latitude
-                  </label>
-                  <input
-                    type="number"
-                    step="0.0001"
-                    required
-                    value={formData.latitude}
-                    onChange={(e) =>
-                      setFormData({ ...formData, latitude: parseFloat(e.target.value) })
-                    }
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={{
-                      ...classes.input.bg,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                    }}
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={classes.text.muted}
+                      >
+                        Latitude
+                      </label>
+                      <input
+                        type="number"
+                        step="0.0001"
+                        required
+                        value={formData.latitude}
+                        onChange={(e) =>
+                          setFormData({ ...formData, latitude: parseFloat(e.target.value) })
+                        }
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        style={{
+                          ...classes.input.bg,
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                        }}
+                      />
+                    </div>
 
-                <div className="space-y-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={classes.text.muted}
-                  >
-                    Longitude
-                  </label>
-                  <input
-                    type="number"
-                    step="0.0001"
-                    required
-                    value={formData.longitude}
-                    onChange={(e) =>
-                      setFormData({ ...formData, longitude: parseFloat(e.target.value) })
-                    }
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={{
-                      ...classes.input.bg,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                    }}
-                  />
-                </div>
+                    <div className="space-y-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={classes.text.muted}
+                      >
+                        Longitude
+                      </label>
+                      <input
+                        type="number"
+                        step="0.0001"
+                        required
+                        value={formData.longitude}
+                        onChange={(e) =>
+                          setFormData({ ...formData, longitude: parseFloat(e.target.value) })
+                        }
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        style={{
+                          ...classes.input.bg,
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                        }}
+                      />
+                    </div>
 
-                <div className="space-y-2 col-span-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={classes.text.muted}
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    value={formData.description || ""}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={4}
-                    className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
-                    style={{
-                      ...classes.input.bg,
-                      borderWidth: "1px",
-                      borderStyle: "solid",
-                    }}
-                    placeholder="Project technical details..."
-                  />
-                </div>
+                    <div className="space-y-2 col-span-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={classes.text.muted}
+                      >
+                        Description
+                      </label>
+                      <textarea
+                        value={formData.description || ""}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        rows={4}
+                        className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                        style={{
+                          ...classes.input.bg,
+                          borderWidth: "1px",
+                          borderStyle: "solid",
+                        }}
+                        placeholder="Project technical details..."
+                      />
+                    </div>
 
-                <div className="space-y-2 col-span-2">
-                  <label
-                    className="text-[10px] font-bold tracking-widest uppercase ml-1"
-                    style={classes.text.muted}
-                  >
-                    Technical Highlights
-                  </label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {TECHNICAL_HIGHLIGHT_FIELDS.map((field) => (
-                      <div key={field} className="space-y-1">
+                    <div className="space-y-2 col-span-2">
+                      <label
+                        className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                        style={classes.text.muted}
+                      >
+                        Technical Highlights
+                      </label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {TECHNICAL_HIGHLIGHT_FIELDS.map((field) => (
+                          <div key={field} className="space-y-1">
+                            <label
+                              className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                              style={classes.text.muted}
+                            >
+                              {field}
+                            </label>
+                            <input
+                              value={getTechnicalHighlightValue(field)}
+                              onChange={(e) => setTechnicalHighlightValue(field, e.target.value)}
+                              className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all normal-case"
+                              style={{
+                                ...classes.input.bg,
+                                borderWidth: "1px",
+                                borderStyle: "solid",
+                              }}
+                              placeholder={`Enter ${field.toLowerCase()}...`}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 col-span-2">
+                      <div className="flex items-center justify-between">
                         <label
                           className="text-[10px] font-bold tracking-widest uppercase ml-1"
                           style={classes.text.muted}
                         >
-                          {field}
+                          Scope Memberships
                         </label>
-                        <input
-                          value={getTechnicalHighlightValue(field)}
-                          onChange={(e) => setTechnicalHighlightValue(field, e.target.value)}
-                          className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all normal-case"
-                          style={{
-                            ...classes.input.bg,
-                            borderWidth: "1px",
-                            borderStyle: "solid",
-                          }}
-                          placeholder={`Enter ${field.toLowerCase()}...`}
-                        />
+                        <button
+                          type="button"
+                          onClick={() => setIsMembershipModalOpen(true)}
+                          disabled={!editingProject?.id}
+                          className="bg-blue-600/10 hover:bg-blue-600/20 disabled:opacity-50 text-blue-500 px-3 py-2 rounded-lg flex items-center gap-2 font-semibold transition-all border border-blue-500/20 text-xs"
+                        >
+                          <Tag className="h-3.5 w-3.5" />
+                          Manage Memberships
+                        </button>
                       </div>
-                    ))}
+                      <div className="text-xs normal-case" style={classes.text.secondary}>
+                        {editingProject
+                          ? `${projectMemberships.length} scope membership${projectMemberships.length === 1 ? "" : "s"} assigned`
+                          : "Save project first, then add scope memberships and images."}
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-3 col-span-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold tracking-widest uppercase ml-1" style={classes.text.muted}>
-                      Scope Memberships
-                    </label>
+                  <div className="pt-4 flex gap-4">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95"
+                    >
+                      <Save className="h-5 w-5" />
+                      {editingProject ? "Save" : "Add"}
+                    </button>
                     <button
                       type="button"
-                      onClick={() => setIsMembershipModalOpen(true)}
-                      disabled={!editingProject?.id}
-                      className="bg-blue-600/10 hover:bg-blue-600/20 disabled:opacity-50 text-blue-500 px-3 py-2 rounded-lg flex items-center gap-2 font-semibold transition-all border border-blue-500/20 text-xs"
+                      onClick={() => setIsModalOpen(false)}
+                      className="px-8 font-bold rounded-2xl transition-all"
+                      style={{
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderColor: colors.border,
+                        color: colors.textSecondary,
+                        backgroundColor: "transparent",
+                      }}
                     >
-                      <Tag className="h-3.5 w-3.5" />
-                      Manage Memberships
+                      Cancel
                     </button>
                   </div>
-                  <div className="text-xs normal-case" style={classes.text.secondary}>
-                    {editingProject
-                      ? `${projectMemberships.length} scope membership${projectMemberships.length === 1 ? "" : "s"} assigned`
-                      : "Save project first, then add scope memberships and images."}
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 flex gap-4">
-                <button
-                  type="submit"
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95"
-                >
-                  <Save className="h-5 w-5" />
-                  {editingProject ? "Save" : "Add"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-8 font-bold rounded-2xl transition-all"
-                  style={{
-                    borderWidth: "1px",
-                    borderStyle: "solid",
-                    borderColor: colors.border,
-                    color: colors.textSecondary,
-                    backgroundColor: "transparent",
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-              </>
+                </>
               )}
             </form>
           </div>
@@ -728,7 +775,9 @@ export default function ProjectsManagementPage() {
           >
             <div
               className="p-8 flex items-center justify-between shrink-0"
-              style={{ borderBottom: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
+              style={{
+                borderBottom: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+              }}
             >
               <div className="flex items-center gap-3">
                 <Tag className="h-6 w-6 text-blue-500" />
@@ -744,7 +793,10 @@ export default function ProjectsManagementPage() {
             <div className="p-8 space-y-6 overflow-y-auto">
               <div className="space-y-4">
                 <div className="flex items-center justify-between px-1">
-                  <p className="text-[10px] font-bold tracking-widest uppercase" style={classes.text.muted}>
+                  <p
+                    className="text-[10px] font-bold tracking-widest uppercase"
+                    style={classes.text.muted}
+                  >
                     Drag to Reorder
                   </p>
                   {reordering && <Loader2 className="h-3.5 w-3.5 text-blue-500 animate-spin" />}
@@ -760,9 +812,12 @@ export default function ProjectsManagementPage() {
                       onDrop={() => handleDrop(scope.id)}
                       className="flex items-center gap-3 p-3 rounded-xl transition-all"
                       style={{
-                        backgroundColor: dragOverId === scope.id
-                          ? "rgba(59,130,246,0.2)"
-                          : theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
+                        backgroundColor:
+                          dragOverId === scope.id
+                            ? "rgba(59,130,246,0.2)"
+                            : theme === "dark"
+                              ? "rgba(255,255,255,0.05)"
+                              : "rgba(0,0,0,0.03)",
                         border: `1px solid ${dragOverId === scope.id ? "rgba(59,130,246,0.5)" : "transparent"}`,
                       }}
                     >
@@ -772,7 +827,9 @@ export default function ProjectsManagementPage() {
                           <input
                             value={editingScopeName}
                             onChange={(e) => setEditingScopeName(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleUpdateScope(scope.id, editingScopeName)}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" && handleUpdateScope(scope.id, editingScopeName)
+                            }
                             className="flex-1 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                             style={classes.input.bg}
                             autoFocus
@@ -783,8 +840,15 @@ export default function ProjectsManagementPage() {
                         </>
                       ) : (
                         <>
-                          <span className="flex-1 font-semibold" style={classes.text.primary}>{scope.name}</span>
-                          <button onClick={() => { setEditingScopeId(scope.id); setEditingScopeName(scope.name); }}>
+                          <span className="flex-1 font-semibold" style={classes.text.primary}>
+                            {scope.name}
+                          </span>
+                          <button
+                            onClick={() => {
+                              setEditingScopeId(scope.id);
+                              setEditingScopeName(scope.name);
+                            }}
+                          >
                             <Pencil className="h-4 w-4 text-gray-400 hover:text-blue-500" />
                           </button>
                           <button onClick={() => handleDeleteScope(scope.id)}>
@@ -797,8 +861,16 @@ export default function ProjectsManagementPage() {
                 </div>
               </div>
 
-              <div className="pt-6" style={{ borderTop: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}>
-                <p className="text-[10px] font-bold tracking-widest uppercase mb-4 ml-1" style={classes.text.muted}>
+              <div
+                className="pt-6"
+                style={{
+                  borderTop: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                }}
+              >
+                <p
+                  className="text-[10px] font-bold tracking-widest uppercase mb-4 ml-1"
+                  style={classes.text.muted}
+                >
                   Add New Scope
                 </p>
                 <div className="flex items-center gap-3">
@@ -815,7 +887,11 @@ export default function ProjectsManagementPage() {
                     disabled={!newScopeName.trim() || addingScope}
                     className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-900 text-white p-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-600/20"
                   >
-                    {addingScope ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5" />}
+                    {addingScope ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Plus className="h-5 w-5" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -839,7 +915,9 @@ export default function ProjectsManagementPage() {
           >
             <div
               className="p-8 flex items-center justify-between shrink-0"
-              style={{ borderBottom: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
+              style={{
+                borderBottom: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+              }}
             >
               <div className="flex items-center gap-3">
                 <Tag className="h-6 w-6 text-blue-500" />
@@ -854,13 +932,18 @@ export default function ProjectsManagementPage() {
 
             <div className="p-8 space-y-6 overflow-y-auto">
               <div className="space-y-3">
-                <p className="text-[10px] font-bold tracking-widest uppercase" style={classes.text.muted}>
+                <p
+                  className="text-[10px] font-bold tracking-widest uppercase"
+                  style={classes.text.muted}
+                >
                   Add Scope Membership
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <select
                     value={membershipScopeId || ""}
-                    onChange={(e) => setMembershipScopeId(e.target.value ? Number(e.target.value) : null)}
+                    onChange={(e) =>
+                      setMembershipScopeId(e.target.value ? Number(e.target.value) : null)
+                    }
                     className="rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     style={classes.input.bg}
                   >
@@ -890,7 +973,10 @@ export default function ProjectsManagementPage() {
               </div>
 
               <div className="space-y-4">
-                <p className="text-[10px] font-bold tracking-widest uppercase" style={classes.text.muted}>
+                <p
+                  className="text-[10px] font-bold tracking-widest uppercase"
+                  style={classes.text.muted}
+                >
                   Assigned Memberships
                 </p>
                 {projectMemberships.length === 0 ? (
@@ -907,7 +993,8 @@ export default function ProjectsManagementPage() {
                         key={membership.id}
                         className="p-4 rounded-2xl space-y-3"
                         style={{
-                          backgroundColor: theme === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)",
+                          backgroundColor:
+                            theme === "dark" ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)",
                           border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
                         }}
                       >
@@ -934,7 +1021,10 @@ export default function ProjectsManagementPage() {
                           <input
                             value={roleDrafts[membership.id] ?? ""}
                             onChange={(e) =>
-                              setRoleDrafts((prev) => ({ ...prev, [membership.id]: e.target.value }))
+                              setRoleDrafts((prev) => ({
+                                ...prev,
+                                [membership.id]: e.target.value,
+                              }))
                             }
                             placeholder="Role for this scope"
                             className="flex-1 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 normal-case"
@@ -952,7 +1042,10 @@ export default function ProjectsManagementPage() {
 
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <p className="text-[10px] font-bold tracking-widest uppercase" style={classes.text.muted}>
+                            <p
+                              className="text-[10px] font-bold tracking-widest uppercase"
+                              style={classes.text.muted}
+                            >
                               Scope Images ({membershipImages.length}/4)
                             </p>
                             {canUploadMore && (
@@ -965,9 +1058,11 @@ export default function ProjectsManagementPage() {
                                   multiple
                                   className="hidden"
                                   onChange={(e) =>
-                                    handleUploadScopeImages(membership.id, e.target.files).finally(() => {
-                                      e.currentTarget.value = "";
-                                    })
+                                    handleUploadScopeImages(membership.id, e.target.files).finally(
+                                      () => {
+                                        e.currentTarget.value = "";
+                                      },
+                                    )
                                   }
                                 />
                               </label>
@@ -989,13 +1084,24 @@ export default function ProjectsManagementPage() {
                                   onDrop={() => handleImageDrop(image.id, membership.id)}
                                   className="relative rounded-lg overflow-hidden border cursor-move transition-all"
                                   style={{
-                                    borderColor: dragOverImageId === image.id ? "#3b82f6" : theme === "dark" ? "rgba(255,255,255,0.12)" : "#e2e8f0",
-                                    transform: dragOverImageId === image.id ? "scale(1.02)" : "scale(1)",
-                                    boxShadow: dragOverImageId === image.id ? "0 0 0 2px #3b82f6" : "none",
+                                    borderColor:
+                                      dragOverImageId === image.id
+                                        ? "#3b82f6"
+                                        : theme === "dark"
+                                          ? "rgba(255,255,255,0.12)"
+                                          : "#e2e8f0",
+                                    transform:
+                                      dragOverImageId === image.id ? "scale(1.02)" : "scale(1)",
+                                    boxShadow:
+                                      dragOverImageId === image.id ? "0 0 0 2px #3b82f6" : "none",
                                   }}
                                 >
                                   {image.image && (
-                                    <img src={image.image} alt="Scope" className="h-24 w-full object-cover pointer-events-none" />
+                                    <img
+                                      src={image.image}
+                                      alt="Scope"
+                                      className="h-24 w-full object-cover pointer-events-none"
+                                    />
                                   )}
                                   <div className="absolute top-1 right-1 flex gap-1">
                                     <button
@@ -1027,6 +1133,19 @@ export default function ProjectsManagementPage() {
           </div>
         </div>
       )}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        title="Confirm Delete"
+        description={
+          deleteType === "project"
+            ? "Are you sure you want to delete this project? This action cannot be undone."
+            : "Are you sure you want to delete this scope?"
+        }
+        confirmText="Yes"
+        cancelText="No"
+      />
     </div>
   );
 }

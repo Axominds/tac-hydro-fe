@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Montserrat } from "next/font/google";
-import { Lock, Mail, Loader2 } from "lucide-react";
+import { Lock, Mail, Loader2, Eye, EyeOff } from "lucide-react";
 import Cookies from "js-cookie";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 
@@ -15,6 +15,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -106,11 +107,11 @@ export default function AdminLoginPage() {
               style={{ color: colors.textMuted as string }}
             />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               style={{
                 backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
                 border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#cbd5e1"}`,
@@ -118,6 +119,14 @@ export default function AdminLoginPage() {
               }}
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-3.5 focus:outline-none"
+              style={{ color: colors.textMuted as string }}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
 
           {error && (
@@ -129,7 +138,7 @@ export default function AdminLoginPage() {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] disabled:opacity-50"
           >
-            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Authorize Access"}
+            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Login"}
           </button>
         </form>
 

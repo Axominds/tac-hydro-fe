@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Users, Plus, Edit2, Trash2, Loader2, X, Save } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
@@ -8,6 +9,8 @@ import { useAboutSections } from "../../../src/hooks/useAboutSections";
 import { useAboutSectionMutations } from "../../../src/hooks/useAdminMutations";
 import { AboutPageSection } from "../../../src/lib/api";
 import { QuillEditor } from "../../../src/components/admin/QuillEditor";
+import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
+import { Toast, useToast } from "../../../src/components/ui/toast";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -19,6 +22,7 @@ const SECTION_TYPES = [
 
 export default function AboutManagementPage() {
   const { theme, colors, mounted } = useAdminTheme();
+  const queryClient = useQueryClient();
   const { data: sections, isLoading } = useAboutSections();
   const { createSection, updateSection, uploadImage, deleteSection } = useAboutSectionMutations();
 
@@ -27,6 +31,9 @@ export default function AboutManagementPage() {
   const [selectedSectionType, setSelectedSectionType] = useState<string>("");
   const [formData, setFormData] = useState<Partial<AboutPageSection>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { toast, showToast, hideToast } = useToast();
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   if (!mounted) return null;
 
@@ -94,13 +101,27 @@ export default function AboutManagementPage() {
     if (selectedFile) {
       await uploadImage.mutateAsync({ id: sectionId, file: selectedFile });
     }
-    setIsModalOpen(false);
+    await queryClient.invalidateQueries({ queryKey: ["about-sections"] });
+    const freshSections = queryClient.getQueryData<AboutPageSection[]>(["about-sections"]);
+    const updatedSection = freshSections?.find((s) => s.id === sectionId);
+    if (updatedSection) {
+      setFormData({ ...updatedSection });
+    }
+    setSelectedFile(null);
+    showToast("Changes saved successfully!");
   };
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Delete this section permanently?")) {
-      await deleteSection.mutateAsync(id);
+  const handleDelete = (id: number) => {
+    setDeleteId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (deleteId) {
+      await deleteSection.mutateAsync(deleteId);
+      showToast("Deleted successfully!", "error");
     }
+    setDeleteId(null);
   };
 
   return (
@@ -211,7 +232,10 @@ export default function AboutManagementPage() {
                   {SECTION_TYPES.find((s) => s.key === selectedSectionType)?.title}
                 </span>
               </h2>
-              <button onClick={() => setIsModalOpen(false)} style={{ color: colors.textMuted as string }}>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                style={{ color: colors.textMuted as string }}
+              >
                 <X className="h-6 w-6" />
               </button>
             </div>
@@ -243,19 +267,28 @@ export default function AboutManagementPage() {
                     Image
                   </label>
                   <div className="flex flex-col gap-3">
-                  {(selectedFile || formData.image) && (
-                    <div className="rounded-lg overflow-hidden border border-gray-200">
-                      <img src={selectedFile ? URL.createObjectURL(selectedFile) : formData.image || ""} alt="Current" className="h-20 w-32 object-contain" />
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
-                    className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
-                    style={inputStyle}
-                  />
-                </div>
+                    {(selectedFile || formData.image) && (
+                      <div className="rounded-lg overflow-hidden border border-gray-200">
+                        <img
+                          src={selectedFile ? "" : formData.image || ""}
+                          alt="Current"
+                          className="h-20 w-32 object-contain"
+                        />
+                      </div>
+                    )}
+                    {selectedFile && (
+                      <p className="text-xs text-blue-600">
+                        New file selected: {selectedFile.name}
+                      </p>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+                      className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
+                      style={inputStyle}
+                    />
+                  </div>
                   <p
                     className="text-[10px] normal-case px-1"
                     style={{ color: colors.textMuted as string }}
@@ -281,23 +314,11 @@ export default function AboutManagementPage() {
                 </div>
               </div>
 
-              <div className="pt-4 flex gap-4 shrink-0">
-                <button
-                  type="submit"
-                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95"
-                  disabled={createSection.isPending || updateSection.isPending}
-                >
-                  {(createSection.isPending || updateSection.isPending) ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Save className="h-5 w-5" />
-                  )}
-                  Save
-                </button>
+              <div className="pt-4 flex justify-end gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-8 font-bold rounded-2xl transition-all"
+                  className="px-4 py-2 rounded-lg transition-all"
                   style={{
                     border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,
                     color: colors.textSecondary as string,
@@ -306,11 +327,33 @@ export default function AboutManagementPage() {
                 >
                   Cancel
                 </button>
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95"
+                  disabled={createSection.isPending || updateSection.isPending}
+                >
+                  {createSection.isPending || updateSection.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                  Save
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this section permanently?"
+        confirmText="Yes"
+        cancelText="No"
+      />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }
