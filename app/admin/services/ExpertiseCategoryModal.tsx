@@ -7,6 +7,7 @@ import { useProjectScopes } from "../../../src/hooks/useProjectScopes";
 import { useExpertiseItemMutations } from "../../../src/hooks/useAdminMutations";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
+import { Toast, useToast } from "../../../src/components/ui/toast";
 
 const colorStylesMap: Record<string, { bg: string; text: string }> = {
   blue: { bg: "bg-blue-600/10", text: "text-blue-500" },
@@ -46,6 +47,7 @@ export function ExpertiseCategoryModal({
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemDeleteConfirmOpen, setItemDeleteConfirmOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+  const { toast, showToast, hideToast } = useToast();
 
   const [newItemTitle, setNewItemTitle] = useState("");
   const [newItemScopeId, setNewItemScopeId] = useState<number | "">("");
@@ -93,6 +95,7 @@ export function ExpertiseCategoryModal({
     await onDelete(category.id);
     setIsDeleting(false);
     onClose();
+    showToast("Category deleted successfully!", "error");
   };
 
   const handleDeleteClick = () => {
@@ -109,6 +112,7 @@ export function ExpertiseCategoryModal({
     await deleteItem.mutateAsync({ categoryId: category.id, id: itemToDelete });
     refetchItems();
     setItemToDelete(null);
+    showToast("Item deleted successfully!", "error");
   };
 
   const handleAddItem = async () => {
@@ -433,7 +437,7 @@ export function ExpertiseCategoryModal({
                     onChange={(e) => setNewItemTitle(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleAddItem()}
                     placeholder="Add new item..."
-                    className="flex-1 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="flex-1 min-w-[120px] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     style={inputStyle}
                   />
                   <select
@@ -441,7 +445,7 @@ export function ExpertiseCategoryModal({
                     onChange={(e) =>
                       setNewItemScopeId(e.target.value === "" ? "" : Number(e.target.value))
                     }
-                    className="rounded-lg px-2 py-2 text-xs max-w-[100px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="rounded-lg px-2 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-blue-500"
                     style={inputStyle}
                   >
                     <option value="">Scope</option>
@@ -463,6 +467,44 @@ export function ExpertiseCategoryModal({
             </div>
           )}
         </div>
+        <div
+          className="p-6 flex items-center justify-end gap-2"
+          style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
+        >
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg text-sm"
+            style={{
+              border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,
+              color: colors.textSecondary as string,
+              backgroundColor: "transparent",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={async () => {
+              if (!title.trim()) return;
+              setIsSaving(true);
+              try {
+                await onSave({
+                  title: title.trim(),
+                  icon_key: iconKey,
+                  theme_color: themeColor,
+                });
+                onClose();
+                showToast("Category saved successfully!");
+              } finally {
+                setIsSaving(false);
+              }
+            }}
+            disabled={isSaving || !title.trim()}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2 disabled:opacity-50"
+          >
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            Save
+          </button>
+        </div>
       </div>
       <ConfirmDialog
         open={deleteConfirmOpen}
@@ -482,6 +524,7 @@ export function ExpertiseCategoryModal({
         confirmText="Yes"
         cancelText="No"
       />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }

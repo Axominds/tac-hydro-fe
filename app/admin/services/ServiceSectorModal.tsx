@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Plus, Edit2, Trash2, Loader2, X, Save } from "lucide-react";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
+import { Toast, useToast } from "../../../src/components/ui/toast";
 
 interface SectorData {
   id: number;
@@ -32,10 +33,12 @@ export function ServiceSectorModal({
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageRemoved, setImageRemoved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast, showToast, hideToast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
@@ -43,10 +46,12 @@ export function ServiceSectorModal({
         setTitle(sector.title);
         setDescription(sector.description || "");
         setImagePreview(sector.image || null);
+        setImageRemoved(false);
       } else {
         setTitle("");
         setDescription("");
         setImagePreview(null);
+        setImageRemoved(false);
       }
       setImage(null);
     }
@@ -65,9 +70,14 @@ export function ServiceSectorModal({
     if (image) {
       formData.append("image", image);
     }
+    if (imageRemoved) {
+      formData.append("image", "");
+    }
     await onSave(formData);
+    setImageRemoved(false);
     setIsSaving(false);
     onClose();
+    showToast("Sector saved successfully!");
   };
 
   const handleDelete = async () => {
@@ -85,6 +95,7 @@ export function ServiceSectorModal({
   const handleConfirmDelete = async () => {
     await handleDelete();
     setDeleteConfirmOpen(false);
+    showToast("Sector deleted successfully!", "error");
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,7 +183,13 @@ export function ServiceSectorModal({
                   border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
                 }}
               >
-                {imagePreview ? (
+                {image ? (
+                  <img
+                    src={URL.createObjectURL(image)}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : imagePreview ? (
                   <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-xs" style={{ color: colors.textMuted as string }}>
@@ -189,18 +206,7 @@ export function ServiceSectorModal({
                   className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
                   style={inputStyle}
                 />
-                {imagePreview && (
-                  <button
-                    onClick={() => {
-                      setImage(null);
-                      setImagePreview(null);
-                    }}
-                    className="ml-2 px-3 py-1.5 text-sm"
-                    style={{ color: "#ef4444" }}
-                  >
-                    Remove
-                  </button>
-                )}
+                {image && <p className="text-xs mt-1 text-blue-500">New file selected</p>}
               </div>
             </div>
           </div>
@@ -262,6 +268,7 @@ export function ServiceSectorModal({
         confirmText="Yes"
         cancelText="No"
       />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }

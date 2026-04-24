@@ -14,6 +14,7 @@ import {
   GripVertical,
   Pencil,
   Image as ImageIcon,
+  Search,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import {
@@ -91,6 +92,7 @@ export default function ProjectsManagementPage() {
   const [addingScope, setAddingScope] = useState(false);
   const [editingScopeId, setEditingScopeId] = useState<number | null>(null);
   const [editingScopeName, setEditingScopeName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const syncedRef = useRef(false);
 
   const setIsModalOpen = (open: boolean) => {
@@ -130,6 +132,14 @@ export default function ProjectsManagementPage() {
       });
     setRoleDrafts(drafts);
   }, [scopeMemberships, editingProject?.id]);
+
+  const filteredProjects = projects?.filter((project) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const matchesTitle = project.title.toLowerCase().includes(query);
+    const matchesCapacity = project.installed_capacity.toString().includes(query);
+    return matchesTitle || matchesCapacity;
+  });
 
   if (!mounted) return null;
 
@@ -189,6 +199,7 @@ export default function ProjectsManagementPage() {
       await deleteProject.mutateAsync(deleteId);
     } else if (deleteType === "scope" && deleteId) {
       await deleteScope.mutateAsync(deleteId);
+      setOrderedScopes((prev) => prev.filter((s) => s.id !== deleteId));
     }
     setDeleteId(null);
     setDeleteType(null);
@@ -203,13 +214,15 @@ export default function ProjectsManagementPage() {
   const handleAddScope = async () => {
     if (!newScopeName.trim()) return;
     setAddingScope(true);
-    await createScope.mutateAsync({ name: newScopeName.trim() });
+    const newScope = await createScope.mutateAsync({ name: newScopeName.trim() });
+    setOrderedScopes((prev) => [...prev, { ...newScope, order: prev.length + 1 }]);
     setNewScopeName("");
     setAddingScope(false);
   };
 
   const handleUpdateScope = async (id: number, name: string) => {
     await updateScope.mutateAsync({ id, data: { name } });
+    setOrderedScopes((prev) => prev.map((s) => (s.id === id ? { ...s, name } : s)));
     setEditingScopeId(null);
     setEditingScopeName("");
   };
@@ -217,7 +230,6 @@ export default function ProjectsManagementPage() {
   const handleDeleteScope = (id: number) => {
     setDeleteId(id);
     setDeleteType("scope");
-    setDeleteConfirmOpen(true);
   };
 
   const handleDragStart = (id: number) => {
@@ -393,6 +405,16 @@ export default function ProjectsManagementPage() {
             <Tag className="h-4 w-4" />
             Manage Scopes
           </button>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by project or MW..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2.5 w-64 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            />
+          </div>
           <button
             onClick={openCreateModal}
             className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
@@ -409,63 +431,69 @@ export default function ProjectsManagementPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 pb-40">
-          {projects?.map((project) => (
-            <div
-              key={project.id}
-              className="flex items-center gap-6 p-6 rounded-2xl group transition-all"
-              style={{
-                ...classes.card.base,
-                borderWidth: "1px",
-                borderStyle: "solid",
-              }}
-            >
-              <div className="w-24 h-16 bg-blue-600/10 rounded-xl relative overflow-hidden flex-shrink-0">
-                {project.image_urls && project.image_urls[0] ? (
-                  <img
-                    src={project.image_urls[0]}
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                    <BarChart3 className="h-8 w-8 text-blue-500" />
+          {filteredProjects?.length === 0 && searchQuery ? (
+            <div className="text-center py-20">
+              <p style={classes.text.secondary}>No projects found matching "{searchQuery}"</p>
+            </div>
+          ) : (
+            filteredProjects?.map((project) => (
+              <div
+                key={project.id}
+                className="flex items-center gap-6 p-6 rounded-2xl group transition-all"
+                style={{
+                  ...classes.card.base,
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                }}
+              >
+                <div className="w-24 h-16 bg-blue-600/10 rounded-xl relative overflow-hidden flex-shrink-0">
+                  {project.image_urls && project.image_urls[0] ? (
+                    <img
+                      src={project.image_urls[0]}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center opacity-30">
+                      <BarChart3 className="h-8 w-8 text-blue-500" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg leading-tight mb-1" style={classes.text.primary}>
+                    {project.title}
+                  </h3>
+                  <div className="flex gap-4">
+                    <span
+                      className="text-xs font-medium px-2 py-1 rounded-full uppercase tracking-widest"
+                      style={{ color: "#60a5fa", backgroundColor: "rgba(96, 165, 250, 0.1)" }}
+                    >
+                      {project.status || "Active"}
+                    </span>
+                    <span className="text-xs font-medium" style={classes.text.muted}>
+                      {project.installed_capacity} {project.installed_capacity_unit} Capacity
+                    </span>
                   </div>
-                )}
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-lg leading-tight mb-1" style={classes.text.primary}>
-                  {project.title}
-                </h3>
-                <div className="flex gap-4">
-                  <span
-                    className="text-xs font-medium px-2 py-1 rounded-full uppercase tracking-widest"
-                    style={{ color: "#60a5fa", backgroundColor: "rgba(96, 165, 250, 0.1)" }}
+                </div>
+                <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all">
+                  <button
+                    onClick={() => openEditModal(project)}
+                    className="p-2.5 rounded-lg transition-all"
+                    style={classes.card.hover}
                   >
-                    {project.status || "Active"}
-                  </span>
-                  <span className="text-xs font-medium" style={classes.text.muted}>
-                    {project.installed_capacity} {project.installed_capacity_unit} Capacity
-                  </span>
+                    <Edit2 className="h-4 w-4" style={{ color: colors.textSecondary }} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(project.id)}
+                    className="p-2.5 rounded-lg transition-all"
+                    style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
+                  >
+                    <Trash2 className="h-4 w-4 text-red-400" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all">
-                <button
-                  onClick={() => openEditModal(project)}
-                  className="p-2.5 rounded-lg transition-all"
-                  style={classes.card.hover}
-                >
-                  <Edit2 className="h-4 w-4" style={{ color: colors.textSecondary }} />
-                </button>
-                <button
-                  onClick={() => handleDelete(project.id)}
-                  className="p-2.5 rounded-lg transition-all"
-                  style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
-                >
-                  <Trash2 className="h-4 w-4 text-red-400" />
-                </button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
 
@@ -730,18 +758,11 @@ export default function ProjectsManagementPage() {
                     </div>
                   </div>
 
-                  <div className="pt-4 flex gap-4">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95"
-                    >
-                      <Save className="h-5 w-5" />
-                      {editingProject ? "Save" : "Add"}
-                    </button>
+                  <div className="pt-4 flex gap-4 justify-end">
                     <button
                       type="button"
                       onClick={() => setIsModalOpen(false)}
-                      className="px-8 font-bold rounded-2xl transition-all"
+                      className="px-6 py-2.5 font-bold rounded-2xl transition-all"
                       style={{
                         borderWidth: "1px",
                         borderStyle: "solid",
@@ -751,6 +772,13 @@ export default function ProjectsManagementPage() {
                       }}
                     >
                       Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95"
+                    >
+                      <Save className="h-4 w-4" />
+                      {editingProject ? "Save" : "Add"}
                     </button>
                   </div>
                 </>

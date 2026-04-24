@@ -16,8 +16,8 @@ export function Toast({ message, type = "success", onClose }: ToastProps) {
   }, [onClose]);
 
   const bgColor = {
-    success: "bg-green-600",
-    error: "bg-red-600",
+    success: "bg-blue-500",
+    error: "bg-blue-500",
     info: "bg-blue-600",
   }[type];
 

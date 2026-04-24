@@ -26,6 +26,7 @@ import { ServiceSectorModal } from "./ServiceSectorModal";
 import { useAdminTheme, getThemedClasses } from "../../../src/hooks/useAdminTheme";
 import { useModalContext } from "../layout";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
+import { Toast, useToast } from "../../../src/components/ui/toast";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -313,6 +314,7 @@ export default function ServicesManagementPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleteType, setDeleteType] = useState<"category" | "sector" | null>(null);
+  const { toast, showToast, hideToast } = useToast();
 
   const sortedCategories = [...(categories || [])].sort((a: any, b: any) => a.order - b.order);
 
@@ -409,8 +411,10 @@ export default function ServicesManagementPage() {
     if (deleteType === "category" && deleteId) {
       await deleteCategory.mutateAsync(deleteId);
       refetchCategories();
+      showToast("Category deleted successfully!", "error");
     } else if (deleteType === "sector" && deleteId) {
       await deleteSector.mutateAsync(deleteId);
+      showToast("Sector deleted successfully!", "error");
     }
     setDeleteId(null);
     setDeleteType(null);
@@ -553,8 +557,10 @@ export default function ServicesManagementPage() {
           onSave={async (data) => {
             if (editingCategory.id) {
               await updateCategory.mutateAsync({ id: editingCategory.id, data });
+              showToast("Category saved successfully!");
             } else {
               await createCategory.mutateAsync({ ...data, order: (categories?.length || 0) + 1 });
+              showToast("Category saved successfully!");
             }
             refetchCategories();
           }}
@@ -563,6 +569,7 @@ export default function ServicesManagementPage() {
               ? async (id) => {
                   await deleteCategory.mutateAsync(id);
                   refetchCategories();
+                  showToast("Category deleted successfully!", "error");
                 }
               : undefined
           }
@@ -586,11 +593,13 @@ export default function ServicesManagementPage() {
               data.append("order", String((sectors?.length || 0) + 1));
               await createSector.mutateAsync(data);
             }
+            showToast("Sector saved successfully!");
           }}
           onDelete={
             editingSector
               ? async (id) => {
                   await deleteSector.mutateAsync(id);
+                  showToast("Sector deleted successfully!", "error");
                 }
               : undefined
           }
@@ -605,6 +614,7 @@ export default function ServicesManagementPage() {
         confirmText="Yes"
         cancelText="No"
       />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }
