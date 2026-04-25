@@ -289,7 +289,7 @@ function PartnerModal({
             <button
               onClick={handleSave}
               disabled={isSaving || !name.trim() || (!isEditing && !logoFile)}
-              className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white px-6 py-2 rounded-lg flex items-center gap-2 font-medium transition-all"
+              className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg flex items-center gap-2 font-medium transition-all"
             >
               {isSaving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

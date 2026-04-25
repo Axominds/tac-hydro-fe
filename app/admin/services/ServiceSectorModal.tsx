@@ -246,7 +246,7 @@ export function ServiceSectorModal({
             <button
               onClick={handleSave}
               disabled={isSaving || !title.trim()}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2 disabled:opacity-50"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {isSaving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

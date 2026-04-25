@@ -96,6 +96,8 @@ export default function ProjectsManagementPage() {
   const [editingScopeName, setEditingScopeName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const syncedRef = useRef(false);
+  const addingScopeRef = useRef(false);
+  const updatingScopeRef = useRef(false);
 
   const setIsModalOpen = (open: boolean) => {
     setIsModalOpenLocal(open);
@@ -111,7 +113,7 @@ export default function ProjectsManagementPage() {
   const [uploadingMembershipId, setUploadingMembershipId] = useState<number | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [deleteType, setDeleteType] = useState<"project" | "scope" | null>(null);
+  const [deleteType, setDeleteType] = useState<"project" | "scope" | "membership" | null>(null);
 
   useEffect(() => {
     if (isModalOpen || isScopeModalOpen || isMembershipModalOpen) {
@@ -201,17 +203,29 @@ export default function ProjectsManagementPage() {
   const confirmDelete = async () => {
     if (deleteType === "project" && deleteId) {
       await deleteProject.mutateAsync(deleteId);
-      showToast("Project deleted successfully!", "error");
+      showToast("Project deleted successfully!", "success");
     } else if (deleteType === "scope" && deleteId) {
+      const isInUse = (scopeMemberships || []).some(
+        (membership) => membership.project_scope_id === deleteId,
+      );
+      if (isInUse) {
+        showToast("Scope in use, cannot be deleted", "error");
+        setDeleteId(null);
+        setDeleteType(null);
+        return;
+      }
       await deleteScope.mutateAsync(deleteId);
       setOrderedScopes((prev) => prev.filter((s) => s.id !== deleteId));
-      showToast("Scope deleted successfully!", "error");
+      showToast("Scope deleted successfully!", "success");
+    } else if (deleteType === "membership" && deleteId) {
+      await deleteMembership.mutateAsync(deleteId);
+      showToast("Membership deleted successfully!", "success");
     }
     setDeleteId(null);
     setDeleteType(null);
   };
 
-  if (scopes && (!syncedRef.current || orderedScopes.length !== scopes.length)) {
+  if (scopes && (!syncedRef.current || orderedScopes.length !== scopes.length) && !addingScopeRef.current && !updatingScopeRef.current) {
     const sorted = [...scopes].sort((a, b) => a.order - b.order);
     setOrderedScopes(sorted);
     syncedRef.current = true;
@@ -219,23 +233,32 @@ export default function ProjectsManagementPage() {
 
   const handleAddScope = async () => {
     if (!newScopeName.trim()) return;
+    addingScopeRef.current = true;
+    syncedRef.current = false;
     setAddingScope(true);
     const newScope = await createScope.mutateAsync({ name: newScopeName.trim() });
     setOrderedScopes((prev) => [...prev, { ...newScope, order: prev.length + 1 }]);
     setNewScopeName("");
     setAddingScope(false);
+    addingScopeRef.current = false;
+    showToast("Scope added successfully!", "success");
   };
 
   const handleUpdateScope = async (id: number, name: string) => {
+    if (!id || id === undefined) return;
+    updatingScopeRef.current = true;
     await updateScope.mutateAsync({ id, data: { name } });
     setOrderedScopes((prev) => prev.map((s) => (s.id === id ? { ...s, name } : s)));
     setEditingScopeId(null);
     setEditingScopeName("");
+    updatingScopeRef.current = false;
+    showToast("Scope updated successfully!", "success");
   };
 
   const handleDeleteScope = (id: number) => {
     setDeleteId(id);
     setDeleteType("scope");
+    setDeleteConfirmOpen(true);
   };
 
   const handleDragStart = (id: number) => {
@@ -345,6 +368,7 @@ export default function ProjectsManagementPage() {
         project_scope_id: membershipScopeId,
         role: membershipRole.trim() || null,
       });
+      showToast("Membership added successfully!", "success");
       setMembershipScopeId(null);
       setMembershipRole("");
     } finally {
@@ -357,11 +381,12 @@ export default function ProjectsManagementPage() {
       id: membershipId,
       data: { role: (roleDrafts[membershipId] || "").trim() || null },
     });
+    showToast("Role saved successfully!", "success");
   };
 
   const handleDeleteMembership = (membershipId: number) => {
     setDeleteId(membershipId);
-    setDeleteType("scope");
+    setDeleteType("membership");
     setDeleteConfirmOpen(true);
   };
 
@@ -421,7 +446,7 @@ export default function ProjectsManagementPage() {
               className="pl-10 pr-4 py-2.5 w-64 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             />
           </div>
-          <button
+<button
             onClick={openCreateModal}
             className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
           >
@@ -837,10 +862,10 @@ export default function ProjectsManagementPage() {
                   {reordering && <Loader2 className="h-3.5 w-3.5 text-blue-500 animate-spin" />}
                 </div>
 
-                <div className="space-y-2">
-                  {orderedScopes.map((scope) => (
+                <div className="space-y-2 max-h-80 overflow-y-auto pr-2 -mr-2">
+                  {orderedScopes.map((scope, index) => (
                     <div
-                      key={scope.id}
+                      key={`${scope.id}-${index}`}
                       draggable
                       onDragStart={() => handleDragStart(scope.id)}
                       onDragOver={(e) => handleDragOver(e, scope.id)}
@@ -973,38 +998,47 @@ export default function ProjectsManagementPage() {
                 >
                   Add Scope Membership
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <select
-                    value={membershipScopeId || ""}
-                    onChange={(e) =>
-                      setMembershipScopeId(e.target.value ? Number(e.target.value) : null)
-                    }
-                    className="rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                    style={classes.input.bg}
-                  >
-                    <option value="">Select scope</option>
-                    {availableScopeOptions.map((scope) => (
-                      <option key={scope.id} value={scope.id}>
-                        {scope.name}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    value={membershipRole}
-                    onChange={(e) => setMembershipRole(e.target.value)}
-                    placeholder="Role for this scope"
-                    className="rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 normal-case"
-                    style={classes.input.bg}
-                  />
+                {availableScopeOptions.length === 0 ? (
+                  <p className="text-sm" style={classes.text.secondary}>
+                    No scope available.
+                  </p>
+                ) : (
+                  <div className="flex flex-col md:flex-row gap-3 items-start md:items-center">
+                    <select
+                      value={membershipScopeId || ""}
+                      onChange={(e) =>
+                        setMembershipScopeId(e.target.value ? Number(e.target.value) : null)
+                      }
+                      className="rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      style={classes.input.bg}
+                    >
+                      <option value="">Select scope</option>
+                      {availableScopeOptions.map((scope) => (
+                        <option key={scope.id} value={scope.id}>
+                          {scope.name}
+                        </option>
+                      ))}
+                    </select>
+                  <div className="flex-1 w-full">
+                    <textarea
+                      value={membershipRole}
+                      onChange={(e) => setMembershipRole(e.target.value)}
+                      placeholder="Role for this scope"
+                      className="w-full rounded-lg px-3 py-2 text-sm"
+                      style={classes.input.bg}
+                      rows={3}
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={handleAddMembership}
-                    disabled={!membershipScopeId || isSavingMembership}
-                    className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-900 text-white px-4 py-3 rounded-xl transition-all text-sm font-semibold"
+                    disabled={!membershipScopeId || !membershipRole.trim() || isSavingMembership}
+                    className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 text-white px-4 py-3 rounded-xl transition-all text-sm font-semibold"
                   >
                     {isSavingMembership ? "Adding..." : "Add Membership"}
                   </button>
                 </div>
+                )}
               </div>
 
               <div className="space-y-4">
@@ -1053,7 +1087,7 @@ export default function ProjectsManagementPage() {
                         </div>
 
                         <div className="flex items-center gap-3">
-                          <input
+                          <textarea
                             value={roleDrafts[membership.id] ?? ""}
                             onChange={(e) =>
                               setRoleDrafts((prev) => ({
@@ -1062,8 +1096,9 @@ export default function ProjectsManagementPage() {
                               }))
                             }
                             placeholder="Role for this scope"
-                            className="flex-1 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 normal-case"
+                            className="w-full rounded-lg px-3 py-2 text-sm"
                             style={classes.input.bg}
+                            rows={3}
                           />
                           <button
                             type="button"
@@ -1176,7 +1211,9 @@ export default function ProjectsManagementPage() {
         description={
           deleteType === "project"
             ? "Are you sure you want to delete this project? This action cannot be undone."
-            : "Are you sure you want to delete this scope?"
+            : deleteType === "membership"
+              ? "Are you sure you want to delete this scope membership?"
+              : "Are you sure you want to delete this scope?"
         }
         confirmText="Yes"
         cancelText="No"

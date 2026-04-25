@@ -120,7 +120,7 @@ export default function BannerManagementPage() {
         <button
           onClick={handleSave}
           disabled={isLoading || !banner || !formData.headline?.trim()}
-          className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+          className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-95"
         >
           <Save className="h-4 w-4" />
           Save

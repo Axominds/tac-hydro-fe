@@ -755,7 +755,7 @@ export default function TeamPage() {
                 <button
                   onClick={handleAddCategory}
                   disabled={addingCategory || !newCategoryName.trim()}
-                  className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   {addingCategory ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add"}
                 </button>
@@ -945,7 +945,7 @@ export default function TeamPage() {
               <button
                 onClick={handleMemberSave}
                 disabled={isSavingMember || !memberFormData.name?.trim()}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isSavingMember && <Loader2 className="h-4 w-4 animate-spin" />}
                 <Save className="h-4 w-4" />
@@ -1054,7 +1054,7 @@ export default function TeamPage() {
               <button
                 onClick={handleAddMemberToCategory}
                 disabled={!selectedMemberId || isSavingAddMember}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold flex items-center gap-2 disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isSavingAddMember && <Loader2 className="h-4 w-4 animate-spin" />}
                 <Save className="h-4 w-4" />

@@ -26,6 +26,7 @@ import { NewsItem, NewsCategory, apiFetch, NewsDetail } from "../../../src/lib/a
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { QuillEditor } from "../../../src/components/admin/QuillEditor";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
+import { Toast, useToast } from "../../../src/components/ui/toast";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -52,6 +53,12 @@ function CategoryRow({
   const [name, setName] = useState(category.name);
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    if (!editing) {
+      setName(category.name);
+    }
+  }, [category.name, editing]);
+
   const handleSave = async () => {
     if (name.trim() === category.name) {
       setEditing(false);
@@ -59,6 +66,7 @@ function CategoryRow({
     }
     setSaving(true);
     await onUpdate(category.id, name.trim());
+    category.name = name.trim();
     setSaving(false);
     setEditing(false);
   };
@@ -161,6 +169,7 @@ export default function NewsManagementPage() {
   const { createCategory, updateCategory, reorderCategories, deleteCategory } =
     useNewsCategoryMutations();
   const { setIsModalOpen: setContextModalOpen } = useModalContext();
+  const { toast, showToast, hideToast } = useToast();
 
   const [isModalOpen, setIsModalOpenLocal] = useState(false);
   const setIsModalOpen = (open: boolean) => {
@@ -177,6 +186,8 @@ export default function NewsManagementPage() {
     setIsCatModalOpenLocal(open);
     setContextModalOpen(open);
   };
+  const isFormValid = formData && formData.title?.trim() && formData.content_html?.trim();
+
   const [newCatName, setNewCatName] = useState("");
   const [addingCat, setAddingCat] = useState(false);
 
@@ -260,6 +271,8 @@ export default function NewsManagementPage() {
           body: formDataToSend,
         });
         newsId = res.id;
+        queryClient.invalidateQueries({ queryKey: ["news-counts"] });
+        showToast("News saved successfully", "success");
       } else {
         const changedData: Partial<NewsItem> = {};
         Object.keys(cleanedFormData).forEach((k) => {
@@ -271,7 +284,9 @@ export default function NewsManagementPage() {
         if (Object.keys(changedData).length > 0) {
           const res = await updateNews.mutateAsync({ id: editingItem.id, data: changedData });
           newsId = res.id;
+          queryClient.invalidateQueries({ queryKey: ["news-counts"] });
         }
+        showToast("News saved successfully", "success");
       }
     } else {
       if (selectedImage) {
@@ -287,10 +302,14 @@ export default function NewsManagementPage() {
           method: "POST",
           body: formDataToSend,
         });
+        showToast("News added successfully", "success");
       } else {
         await createNews.mutateAsync(cleanedFormData);
+        showToast("News added successfully", "success");
       }
       queryClient.invalidateQueries({ queryKey: ["news"] });
+      queryClient.invalidateQueries({ queryKey: ["news-counts"] });
+      showToast("News added successfully", "success");
     }
     closeModal();
   };
@@ -317,9 +336,19 @@ export default function NewsManagementPage() {
   const confirmDelete = async () => {
     if (deleteType === "article" && deleteId) {
       await deleteNews.mutateAsync(deleteId);
+      queryClient.invalidateQueries({ queryKey: ["news-counts"] });
+      showToast("News deleted successfully", "success");
     } else if (deleteType === "category" && deleteId) {
+      const categoryCount = counts?.by_category?.[deleteId] ?? 0;
+      if (categoryCount > 0) {
+        showToast("Category is in use, cannot be deleted!", "error");
+        setDeleteId(null);
+        setDeleteType(null);
+        return;
+      }
       await deleteCategory.mutateAsync(deleteId);
       setOrderedCategories((prev) => prev.filter((c) => c.id !== deleteId));
+      showToast("Category deleted successfully", "success");
     }
     setDeleteId(null);
     setDeleteType(null);
@@ -329,12 +358,17 @@ export default function NewsManagementPage() {
     if (!newCatName.trim()) return;
     setAddingCat(true);
     await createCategory.mutateAsync({ name: newCatName.trim() });
+    queryClient.invalidateQueries({ queryKey: ["news-categories"] });
     setNewCatName("");
     setAddingCat(false);
   };
 
   const handleUpdateCategory = async (id: number, name: string) => {
     await updateCategory.mutateAsync({ id, data: { name } });
+    setOrderedCategories((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, name } : c))
+    );
+    queryClient.invalidateQueries({ queryKey: ["news-categories"] });
   };
 
   const handleDragStart = (id: number) => {
@@ -667,7 +701,7 @@ export default function NewsManagementPage() {
                 <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 overflow-y-auto" style={{ maxHeight: "calc(100vh - 320px)" }}>
                 <button
                   onClick={() => setCategoryFilter(null)}
                   className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
@@ -922,14 +956,7 @@ export default function NewsManagementPage() {
                     </div>
                   </div>
 
-                  <div className="pt-4 flex gap-4 shrink-0">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95"
-                    >
-                      <Save className="h-5 w-5" />
-                      Save
-                    </button>
+                  <div className="pt-4 flex gap-4 shrink-0 justify-end">
                     <button
                       type="button"
                       onClick={() => closeModal()}
@@ -941,6 +968,14 @@ export default function NewsManagementPage() {
                       }}
                     >
                       Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={!isFormValid}
+                      className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 text-white font-bold py-4 px-8 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-600/10 active:scale-95 disabled:cursor-not-allowed disabled:text-gray-600"
+                    >
+                      <Save className="h-5 w-5" />
+                      Save
                     </button>
                   </div>
                 </>
@@ -984,7 +1019,7 @@ export default function NewsManagementPage() {
               </button>
             </div>
 
-            <div className="p-8 space-y-6 overflow-y-auto">
+            <div className="p-8 space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between px-1">
                   <p
@@ -996,13 +1031,13 @@ export default function NewsManagementPage() {
                   {reordering && <Loader2 className="h-3.5 w-3.5 text-blue-500 animate-spin" />}
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 overflow-y-auto" style={{ maxHeight: "200px" }}>
                   {orderedCategories.map((cat) => (
                     <CategoryRow
                       key={cat.id}
                       category={cat}
                       onUpdate={handleUpdateCategory}
-                      onDelete={handleDeleteCategory}
+                      onDeleteClick={handleDeleteCategory}
                       isDragOver={dragOverId === cat.id}
                       onDragStart={() => handleDragStart(cat.id)}
                       onDragOver={(e) => handleDragOver(e, cat.id)}
@@ -1062,6 +1097,7 @@ export default function NewsManagementPage() {
         confirmText="Yes"
         cancelText="No"
       />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }

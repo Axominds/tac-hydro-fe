@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, X } from "lucide-react";
+import { Check, X, AlertTriangle } from "lucide-react";
 
 interface ToastProps {
   message: string;
@@ -26,6 +26,7 @@ export function Toast({ message, type = "success", onClose }: ToastProps) {
       className={`fixed top-4 right-4 ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 z-[150] animate-slide-in`}
     >
       {type === "success" && <Check className="h-5 w-5" />}
+      {type === "error" && <AlertTriangle className="h-5 w-5" />}
       <span className="font-medium">{message}</span>
       <button onClick={onClose} className="hover:opacity-80">
         <X className="h-4 w-4" />

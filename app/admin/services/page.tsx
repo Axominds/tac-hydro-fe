@@ -214,7 +214,7 @@ function EditableServiceSectorCard({
           <button
             onClick={handleSave}
             disabled={isSaving || !editTitle?.trim()}
-            className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 text-white py-2 rounded-lg text-sm flex items-center justify-center gap-2 disabled:cursor-not-allowed"
           >
             {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Save

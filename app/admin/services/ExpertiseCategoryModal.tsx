@@ -459,7 +459,7 @@ export function ExpertiseCategoryModal({
                   <button
                     onClick={handleAddItem}
                     disabled={!newItemTitle.trim()}
-                    className="p-2 bg-blue-600 hover:bg-blue-500 rounded-lg disabled:opacity-50"
+                    className="p-2 bg-blue-600 hover:bg-blue-500 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
                     <Plus className="h-4 w-4 text-white" />
                   </button>
@@ -500,7 +500,7 @@ export function ExpertiseCategoryModal({
               }
             }}
             disabled={isSaving || !title.trim()}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2 disabled:opacity-50"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Save
