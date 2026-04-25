@@ -332,7 +332,7 @@ export default function AboutManagementPage() {
                 <button
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95"
-                  disabled={createSection.isPending || updateSection.isPending}
+                  disabled={(createSection.isPending || updateSection.isPending) || !formData.title?.trim()}
                 >
                   {createSection.isPending || updateSection.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

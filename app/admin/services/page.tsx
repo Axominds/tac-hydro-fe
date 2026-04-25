@@ -213,8 +213,8 @@ function EditableServiceSectorCard({
         <div className="flex gap-2">
           <button
             onClick={handleSave}
-            disabled={isSaving}
-            className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm flex items-center justify-center gap-2"
+            disabled={isSaving || !editTitle?.trim()}
+            className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             Save
