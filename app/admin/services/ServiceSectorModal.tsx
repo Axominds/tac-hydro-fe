@@ -77,7 +77,6 @@ export function ServiceSectorModal({
     setImageRemoved(false);
     setIsSaving(false);
     onClose();
-    showToast("Sector saved successfully!");
   };
 
   const handleDelete = async () => {

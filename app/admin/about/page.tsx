@@ -108,7 +108,9 @@ export default function AboutManagementPage() {
       setFormData({ ...updatedSection });
     }
     setSelectedFile(null);
-    showToast("Changes saved successfully!");
+    showToast(
+      editingSection ? "Changes saved successfully!" : "Section added successfully!"
+    );
   };
 
   const handleDelete = (id: number) => {

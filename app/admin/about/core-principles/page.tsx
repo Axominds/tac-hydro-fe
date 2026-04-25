@@ -232,7 +232,9 @@ export default function CorePrinciplesPage() {
         });
       }
       setIsPrincipleModal(false);
-      showToast("Changes saved successfully!");
+      showToast(
+        editingPrinciple ? "Changes saved successfully!" : "Principle added successfully!"
+      );
     } finally {
       setIsSavingPrinciple(false);
     }

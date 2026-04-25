@@ -417,7 +417,7 @@ export default function TeamPage() {
         await createTeamMember.mutateAsync(data);
       }
       setIsMemberModal(false);
-      showToast("Team member saved successfully!");
+      showToast(editingMember ? "Team member saved successfully!" : "Team member added successfully!");
     } finally {
       setIsSavingMember(false);
     }

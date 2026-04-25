@@ -18,6 +18,8 @@ import { useValuedPartners } from "../../../src/hooks/useValuedPartners";
 import { useValuedPartnerMutations } from "../../../src/hooks/useAdminMutations";
 import { ValuedPartner } from "../../../src/lib/api";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
+import { Toast, useToast } from "../../../src/components/ui/toast";
+import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -127,20 +129,20 @@ function PartnerModal({
   onClose,
   onSave,
   onDelete,
-  isSaving,
 }: {
   partner?: ValuedPartner | null;
   isOpen: boolean;
   onClose: () => void;
   onSave: (name: string, logoFile?: File) => Promise<void>;
   onDelete?: (id: number) => Promise<void>;
-  isSaving: boolean;
 }) {
   const { theme, colors, mounted } = useAdminTheme();
   const [name, setName] = useState(partner?.name || "");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(partner?.logo || null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   useEffect(() => {
     setName(partner?.name || "");
@@ -163,7 +165,12 @@ function PartnerModal({
 
   const handleDelete = async () => {
     if (!partner?.id || !onDelete) return;
-    if (!confirm("Are you sure you want to delete this partner?")) return;
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!partner?.id || !onDelete) return;
+    setDeleteConfirmOpen(false);
     setIsDeleting(true);
     try {
       await onDelete(partner.id);
@@ -294,6 +301,15 @@ function PartnerModal({
           </div>
         </div>
       </div>
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this partner?"
+        confirmText="Yes"
+        cancelText="No"
+      />
     </div>
   );
 }
@@ -305,9 +321,9 @@ export default function ValuedPartnersPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState<ValuedPartner | null>(null);
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
+  const { toast, showToast, hideToast } = useToast();
 
   const partnersList = (partners || []) as ValuedPartner[];
 
@@ -332,7 +348,6 @@ export default function ValuedPartnersPage() {
   };
 
   const handleSave = async (name: string, logoFile?: File) => {
-    setSaveStatus("saving");
     const token = document.cookie.replace(
       /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
       "$1",
@@ -366,27 +381,22 @@ export default function ValuedPartnersPage() {
           },
         );
       }
-      setSaveStatus("success");
-      setTimeout(() => setSaveStatus("idle"), 3000);
+      showToast(editingPartner ? "Partner updated successfully!" : "Partner added successfully!");
       setIsModalOpen(false);
       refetch();
     } catch (error) {
-      setSaveStatus("error");
-      setTimeout(() => setSaveStatus("idle"), 5000);
+      showToast("Failed to save partner", "error");
     }
   };
 
   const handleDelete = async (id: number) => {
-    setSaveStatus("saving");
     try {
       await deletePartner.mutateAsync(id);
-      setSaveStatus("success");
-      setTimeout(() => setSaveStatus("idle"), 3000);
+      showToast("Partner deleted successfully!", "error");
       setIsModalOpen(false);
       refetch();
     } catch (error) {
-      setSaveStatus("error");
-      setTimeout(() => setSaveStatus("idle"), 5000);
+      showToast("Failed to delete partner", "error");
     }
   };
 
@@ -492,18 +502,6 @@ export default function ValuedPartnersPage() {
       )}
 
       <div className="flex justify-end pt-4">
-        {saveStatus === "success" && (
-          <span className="flex items-center gap-2 text-green-500 text-xs font-bold mr-4">
-            <CheckCircle2 className="h-4 w-4" />
-            Saved successfully
-          </span>
-        )}
-        {saveStatus === "error" && (
-          <span className="flex items-center gap-2 text-red-500 text-xs font-bold mr-4">
-            <AlertCircle className="h-4 w-4" />
-            Failed to save
-          </span>
-        )}
       </div>
 
       <PartnerModal
@@ -512,8 +510,8 @@ export default function ValuedPartnersPage() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
         onDelete={handleDelete}
-        isSaving={saveStatus === "saving"}
       />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }

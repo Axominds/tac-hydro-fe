@@ -493,7 +493,7 @@ export function ExpertiseCategoryModal({
                   theme_color: themeColor,
                 });
                 onClose();
-                showToast("Category saved successfully!");
+                showToast(isEditing ? "Category saved successfully!" : "Category added successfully!");
               } finally {
                 setIsSaving(false);
               }

@@ -560,7 +560,7 @@ export default function ServicesManagementPage() {
               showToast("Category saved successfully!");
             } else {
               await createCategory.mutateAsync({ ...data, order: (categories?.length || 0) + 1 });
-              showToast("Category saved successfully!");
+              showToast("Category added successfully!");
             }
             refetchCategories();
           }}
@@ -587,13 +587,14 @@ export default function ServicesManagementPage() {
           onSave={async (formData) => {
             if (editingSector) {
               await updateSector.mutateAsync({ id: editingSector.id, data: formData });
+              showToast("Sector saved successfully!");
             } else {
               const data = new FormData();
               formData.forEach((value, key) => data.append(key, value));
               data.append("order", String((sectors?.length || 0) + 1));
               await createSector.mutateAsync(data);
+              showToast("Sector added successfully!");
             }
-            showToast("Sector saved successfully!");
           }}
           onDelete={
             editingSector

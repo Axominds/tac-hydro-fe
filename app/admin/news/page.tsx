@@ -15,6 +15,7 @@ import {
   Pencil,
   Check,
   GripVertical,
+  FileText,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useQueryClient } from "@tanstack/react-query";
@@ -615,7 +616,7 @@ export default function NewsManagementPage() {
               {[
                 { id: "all", label: "All Status", icon: ChevronRight },
                 { id: "published", label: "Published", icon: Check },
-                { id: "draft", label: "Drafts", icon: Pencil },
+                { id: "draft", label: "Drafts", icon: FileText },
               ].map((status) => (
                 <button
                   key={status.id}

@@ -27,6 +27,8 @@ import {
 } from "../../../src/hooks/useAdminMutations";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { useModalContext } from "../layout";
+import { Toast, useToast } from "../../../src/components/ui/toast";
+import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -35,6 +37,7 @@ function EditableRow({
   initialName,
   onSave,
   onDelete,
+  onSaveComplete,
   isActive,
   onSelect,
   isDragOver = false,
@@ -47,6 +50,7 @@ function EditableRow({
   initialName: string;
   onSave: (id: number, name: string) => Promise<void>;
   onDelete: (id: number) => Promise<void>;
+  onSaveComplete?: () => void;
   isActive: boolean;
   onSelect: () => void;
   isDragOver?: boolean;
@@ -65,6 +69,7 @@ function EditableRow({
     await onSave(id, name.trim());
     setIsSaving(false);
     setIsEditing(false);
+    onSaveComplete?.();
   };
 
   const isDark = theme === "dark";
@@ -96,22 +101,39 @@ function EditableRow({
       />
 
       {isEditing ? (
-        <input
-          autoFocus
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSave();
-            if (e.key === "Escape") setIsEditing(false);
-          }}
-          onClick={(e) => e.stopPropagation()}
-          className="flex-1 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-          style={{
-            backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
-            border: `1px solid ${isDark ? "rgba(255,255,255,0.2)" : "#cbd5e1"}`,
-            color: isDark ? "#ffffff" : "#1e293b",
-          }}
-        />
+        <div className="flex items-center flex-1 gap-1">
+          <input
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSave();
+              if (e.key === "Escape") setIsEditing(false);
+            }}
+            onClick={(e) => e.stopPropagation()}
+            className="flex-1 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            style={{
+              backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+              border: `1px solid ${isDark ? "rgba(255,255,255,0.2)" : "#cbd5e1"}`,
+              color: isDark ? "#ffffff" : "#1e293b",
+            }}
+          />
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSave();
+            }}
+            disabled={isSaving}
+            className="p-1 rounded transition-all"
+            style={{ backgroundColor: isDark ? "rgba(255,255,255,0.2)" : "#3b82f6" }}
+          >
+            {isSaving ? (
+              <Loader2 className="h-3 w-3 animate-spin text-white" />
+            ) : (
+              <Check className="h-3 w-3 text-white" />
+            )}
+          </button>
+        </div>
       ) : (
         <span
           className="flex-1 text-sm font-semibold truncate"
@@ -122,47 +144,33 @@ function EditableRow({
       )}
 
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all shrink-0">
-        {isEditing ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSave();
-            }}
-            disabled={isSaving}
-            className="p-1 rounded transition-all"
-            style={{ backgroundColor: "rgba(255,255,255,0.2)" }}
-          >
-            {isSaving ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
-            ) : (
-              <Check className="h-3 w-3" />
-            )}
-          </button>
-        ) : (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditing(true);
-            }}
-            className="p-2.5 rounded-lg transition-all"
-            style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }}
-          >
-            <Edit2
-              className="h-4 w-4"
-              style={{ color: isActive ? "#ffffff" : isDark ? "#888" : "#64748b" }}
-            />
-          </button>
+        {isEditing ? null : (
+          <>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(true);
+              }}
+              className="p-2.5 rounded-lg transition-all"
+              style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }}
+            >
+              <Edit2
+                className="h-4 w-4"
+                style={{ color: isActive ? "#ffffff" : isDark ? "#888" : "#64748b" }}
+              />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(id);
+              }}
+              className="p-2.5 rounded-lg transition-all"
+              style={{ backgroundColor: "rgba(239,68,68,0.1)" }}
+            >
+              <Trash2 className="h-4 w-4" style={{ color: "#ef4444" }} />
+            </button>
+          </>
         )}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            window.confirm("Delete this item?") && onDelete(id);
-          }}
-          className="p-2.5 rounded-lg transition-all"
-          style={{ backgroundColor: "rgba(239,68,68,0.1)" }}
-        >
-          <Trash2 className="h-4 w-4" style={{ color: "#ef4444" }} />
-        </button>
       </div>
     </div>
   );
@@ -190,11 +198,14 @@ export default function GalleriesManagementPage() {
   const { createSubcategory, updateSubcategory, reorderSubcategories, deleteSubcategory } =
     useGallerySubcategoryMutations();
   const { uploadImage, reorderImages, deleteImage } = useGalleryImageMutations();
+  const { toast, showToast, hideToast } = useToast();
 
   const [newCatName, setNewCatName] = useState("");
   const [newSubCatName, setNewSubCatName] = useState("");
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: "category" | "subcategory"; id: number } | null>(null);
 
   const currentCategory = categories?.find((c) => c.id === selectedCatId) || null;
 
@@ -233,6 +244,22 @@ export default function GalleriesManagementPage() {
     });
     setNewSubCatName("");
     refetchSubcategories();
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget || !selectedCatId) return;
+    if (deleteTarget.type === "category") {
+      await deleteCategory.mutateAsync(deleteTarget.id);
+      setSelectedCatId(null);
+      showToast("Category deleted successfully!", "error");
+    } else {
+      await deleteSubcategory.mutateAsync({ categoryId: selectedCatId, id: deleteTarget.id });
+      setSelectedSubCatId(null);
+      refetchSubcategories();
+      showToast("Subcategory deleted successfully!", "error");
+    }
+    setDeleteConfirmOpen(false);
+    setDeleteTarget(null);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -353,9 +380,10 @@ export default function GalleriesManagementPage() {
                   onSave={async (id, name) => {
                     await updateCategory.mutateAsync({ id, data: { name } });
                   }}
+                  onSaveComplete={() => showToast("Category saved successfully!")}
                   onDelete={async (id) => {
-                    await deleteCategory.mutateAsync(id);
-                    setSelectedCatId(null);
+                    setDeleteTarget({ type: "category", id });
+                    setDeleteConfirmOpen(true);
                   }}
                   onDragStart={() => setDraggedId(cat.id)}
                   onDragOver={(e) => {
@@ -411,7 +439,7 @@ export default function GalleriesManagementPage() {
               Subcategories in {currentCategory?.name || "..."}
             </div>
 
-            <div className="flex items-center gap-3 overflow-x-auto pb-2 pr-4 custom-scrollbar-h">
+            <div className="flex items-center gap-3 pb-2 pr-4 custom-scrollbar-h overflow-x-auto">
               {subLoading ? (
                 <div className="py-2">
                   <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
@@ -434,12 +462,10 @@ export default function GalleriesManagementPage() {
                           refetchSubcategories();
                         }
                       }}
+                      onSaveComplete={() => showToast("Subcategory saved successfully!")}
                       onDelete={async (id) => {
-                        if (selectedCatId) {
-                          await deleteSubcategory.mutateAsync({ categoryId: selectedCatId, id });
-                          setSelectedSubCatId(null);
-                          refetchSubcategories();
-                        }
+                        setDeleteTarget({ type: "subcategory", id });
+                        setDeleteConfirmOpen(true);
                       }}
                       onDragStart={() => setDraggedId(sub.id)}
                       onDragOver={(e) => {
@@ -638,6 +664,20 @@ export default function GalleriesManagementPage() {
           background: rgba(37, 99, 235, 0.4);
         }
       `}</style>
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        onConfirm={confirmDelete}
+        title="Confirm Delete"
+        description={
+          deleteTarget?.type === "category"
+            ? "Are you sure you want to delete this category and all its subcategories?"
+            : "Are you sure you want to delete this subcategory?"
+        }
+        confirmText="Yes"
+        cancelText="No"
+      />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }

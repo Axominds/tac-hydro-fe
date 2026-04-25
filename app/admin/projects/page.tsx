@@ -39,6 +39,7 @@ import {
 import { useAdminTheme, getThemedClasses } from "../../../src/hooks/useAdminTheme";
 import { useModalContext } from "../layout";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
+import { Toast, useToast } from "../../../src/components/ui/toast";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -73,6 +74,7 @@ export default function ProjectsManagementPage() {
     useProjectScopeMembershipMutations();
   const { createScopeImage, deleteScopeImage, reorderScopeImages } =
     useProjectScopeImageMutations();
+  const { toast, showToast, hideToast } = useToast();
 
   const [isModalOpen, setIsModalOpenLocal] = useState(false);
   const [isMembershipModalOpen, setIsMembershipModalOpen] = useState(false);
@@ -181,9 +183,11 @@ export default function ProjectsManagementPage() {
       });
       if (Object.keys(changedData).length > 0) {
         await updateProject.mutateAsync({ id: editingProject.id, data: changedData });
+        showToast("Project saved successfully!");
       }
     } else {
       await createProject.mutateAsync(formData);
+      showToast("Project added successfully!");
     }
     setIsModalOpen(false);
   };
@@ -197,9 +201,11 @@ export default function ProjectsManagementPage() {
   const confirmDelete = async () => {
     if (deleteType === "project" && deleteId) {
       await deleteProject.mutateAsync(deleteId);
+      showToast("Project deleted successfully!", "error");
     } else if (deleteType === "scope" && deleteId) {
       await deleteScope.mutateAsync(deleteId);
       setOrderedScopes((prev) => prev.filter((s) => s.id !== deleteId));
+      showToast("Scope deleted successfully!", "error");
     }
     setDeleteId(null);
     setDeleteType(null);
@@ -1174,6 +1180,7 @@ export default function ProjectsManagementPage() {
         confirmText="Yes"
         cancelText="No"
       />
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }

@@ -6,8 +6,6 @@ import {
   Type,
   AlignLeft,
   Loader2,
-  CheckCircle2,
-  AlertCircle,
   Layers,
   List,
 } from "lucide-react";
@@ -16,6 +14,7 @@ import { useBanners } from "../../../src/hooks/useBanner";
 import { useBannerMutations } from "../../../src/hooks/useAdminMutations";
 import { Banner } from "../../../src/lib/api";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
+import { Toast, useToast } from "../../../src/components/ui/toast";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -27,14 +26,13 @@ export default function BannerManagementPage() {
   const banner = Array.isArray(banners) ? banners[0] : undefined;
 
   const [formData, setFormData] = useState<Partial<Banner>>({});
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [typewriterInput, setTypewriterInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { toast, showToast, hideToast } = useToast();
 
   const handleSave = async () => {
     if (!banner?.id) return;
 
-    setSaveStatus("saving");
     try {
       if (selectedFile) {
         const fileData = new FormData();
@@ -74,11 +72,9 @@ export default function BannerManagementPage() {
         await updateBanner.mutateAsync({ id: banner.id, data: changedData });
       }
 
-      setSaveStatus("success");
-      setTimeout(() => setSaveStatus("idle"), 3000);
+      showToast("Banner saved successfully!");
     } catch (error) {
-      setSaveStatus("error");
-      setTimeout(() => setSaveStatus("idle"), 5000);
+      showToast("Failed to save banner", "error");
     }
   };
 
@@ -109,16 +105,26 @@ export default function BannerManagementPage() {
 
   return (
     <div className="space-y-15 uppercase relative pb-40">
-      <div>
-        <h1
-          className={`${montserrat.className} text-4xl mb-2`}
-          style={{ color: colors.text as string }}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1
+            className={`${montserrat.className} text-4xl mb-2`}
+            style={{ color: colors.text as string }}
+          >
+            Home <span className="text-blue-500">Banner</span>
+          </h1>
+          <p style={{ color: colors.textSecondary as string }}>
+            Edit the hero banner displayed on the main landing page.
+          </p>
+        </div>
+        <button
+          onClick={handleSave}
+          disabled={isLoading || !banner}
+          className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-95"
         >
-          Home <span className="text-blue-500">Banner</span>
-        </h1>
-        <p style={{ color: colors.textSecondary as string }}>
-          Edit the hero banner displayed on the main landing page.
-        </p>
+          <Save className="h-4 w-4" />
+          Save
+        </button>
       </div>
 
       {isLoading ? (
@@ -302,32 +308,7 @@ export default function BannerManagementPage() {
         </div>
       )}
 
-      <div className="flex justify-end pt-8 pb-8">
-        {saveStatus === "success" && (
-          <span className="flex items-center gap-2 text-green-500 text-xs font-bold mr-4">
-            <CheckCircle2 className="h-4 w-4" />
-            Saved successfully
-          </span>
-        )}
-        {saveStatus === "error" && (
-          <span className="flex items-center gap-2 text-red-500 text-xs font-bold mr-4">
-            <AlertCircle className="h-4 w-4" />
-            Failed to save
-          </span>
-        )}
-        <button
-          onClick={handleSave}
-          disabled={saveStatus === "saving" || isLoading || !banner}
-          className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition-all shadow-xl shadow-blue-500/20 active:scale-95"
-        >
-          {saveStatus === "saving" ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Save className="h-5 w-5" />
-          )}
-          {saveStatus === "saving" ? "Saving..." : "Save"}
-        </button>
-      </div>
+      {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
 }
