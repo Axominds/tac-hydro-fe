@@ -9,23 +9,15 @@ export function useExpertiseCategories() {
 }
 
 export function useExpertiseItems(categoryId?: number) {
-  if (categoryId) {
+  if (!categoryId) {
     return useQuery<ExpertiseItem[]>({
-      queryKey: ["expertise-items", categoryId],
-      queryFn: () => apiFetch<ExpertiseItem[]>(`/api/services/expertise-categories/${categoryId}/items/`),
+      queryKey: ["expertise-items"],
+      queryFn: async () => [],
     });
   }
   
   return useQuery<ExpertiseItem[]>({
-    queryKey: ["expertise-items"],
-    queryFn: async () => {
-      const categories = await apiFetch<any[]>("/api/services/expertise-categories/");
-      const allItems: ExpertiseItem[] = [];
-      for (const cat of categories) {
-        const items = await apiFetch<ExpertiseItem[]>(`/api/services/expertise-categories/${cat.id}/items/`);
-        allItems.push(...items);
-      }
-      return allItems;
-    },
+    queryKey: ["expertise-items", categoryId],
+    queryFn: () => apiFetch<ExpertiseItem[]>(`/api/services/expertise-categories/${categoryId}/items/`),
   });
 }

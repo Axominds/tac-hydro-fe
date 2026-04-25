@@ -58,13 +58,14 @@ export function ExpertiseCategoryModal({
   const [dragOverItemId, setDragOverItemId] = useState<number | null>(null);
 
   const { data: items, refetch: refetchItems } = useExpertiseItems(
-    isOpen && category?.id ? category.id : undefined,
+    category?.id,
   );
   const { data: projectScopes } = useProjectScopes();
   const { createItem, updateItem, deleteItem, reorderItems } = useExpertiseItemMutations();
 
   const categoryItems = items || [];
   const isEditing = !!category?.id;
+  const canEditItems = !!category?.id;
 
   useEffect(() => {
     if (isOpen) {
@@ -133,7 +134,7 @@ export function ExpertiseCategoryModal({
   const handleUpdateItem = async (itemId: number) => {
     if (!editingItemTitle.trim()) return;
     await updateItem.mutateAsync({
-      categoryId: category!.id,
+      categoryId: category.id,
       id: itemId,
       data: { title: editingItemTitle.trim(), project_scope_id: editingItemScopeId || null },
     });
@@ -279,7 +280,7 @@ export function ExpertiseCategoryModal({
             </div>
           </div>
 
-          {isEditing && (
+          {canEditItems && (
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold" style={{ color: colors.text as string }}>

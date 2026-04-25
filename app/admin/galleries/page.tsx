@@ -39,6 +39,8 @@ function EditableRow({
   onDelete,
   onSaveComplete,
   isActive,
+  isEditing: externalIsEditing,
+  onEdit,
   onSelect,
   isDragOver = false,
   onDragStart,
@@ -52,6 +54,8 @@ function EditableRow({
   onDelete: (id: number) => Promise<void>;
   onSaveComplete?: () => void;
   isActive: boolean;
+  isEditing?: boolean;
+  onEdit?: () => void;
   onSelect: () => void;
   isDragOver?: boolean;
   onDragStart?: () => void;
@@ -59,16 +63,14 @@ function EditableRow({
   onDrop?: () => void;
   theme: "light" | "dark";
 }) {
-  const [isEditing, setIsEditing] = useState(false);
+  const isEditing = externalIsEditing;
   const [name, setName] = useState(initialName);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
-    if (name.trim() === initialName) return setIsEditing(false);
     setIsSaving(true);
     await onSave(id, name.trim());
     setIsSaving(false);
-    setIsEditing(false);
     onSaveComplete?.();
   };
 
@@ -80,7 +82,7 @@ function EditableRow({
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      className="group flex items-center gap-2 p-2 rounded-xl border transition-all cursor-pointer"
+      className="group flex items-center gap-2 p-2 rounded-xl border transition-all cursor-pointer min-h-[42px]"
       style={{
         backgroundColor: isActive ? "#3b82f6" : isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
         borderColor: isDragOver
@@ -95,13 +97,15 @@ function EditableRow({
       }}
       onClick={() => !isEditing && onSelect()}
     >
-      <GripVertical
-        className="h-4 w-4 shrink-0 cursor-grab active:cursor-grabbing"
-        style={{ color: isActive ? "rgba(255,255,255,0.7)" : isDark ? "#555" : "#94a3b8" }}
-      />
+      {!isEditing && (
+        <GripVertical
+          className="h-4 w-4 shrink-0 cursor-grab active:cursor-grabbing"
+          style={{ color: isActive ? "rgba(255,255,255,0.7)" : isDark ? "#555" : "#94a3b8" }}
+        />
+      )}
 
       {isEditing ? (
-        <div className="flex items-center flex-1 gap-1">
+        <div className="flex items-center flex-1 relative">
           <input
             autoFocus
             value={name}
@@ -111,7 +115,7 @@ function EditableRow({
               if (e.key === "Escape") setIsEditing(false);
             }}
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 rounded px-2 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="flex-1 rounded px-2 py-1 pr-8 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
             style={{
               backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
               border: `1px solid ${isDark ? "rgba(255,255,255,0.2)" : "#cbd5e1"}`,
@@ -124,13 +128,13 @@ function EditableRow({
               handleSave();
             }}
             disabled={isSaving}
-            className="p-1 rounded transition-all"
-            style={{ backgroundColor: isDark ? "rgba(255,255,255,0.2)" : "#3b82f6" }}
+            className="absolute right-1 p-1"
+            style={{ color: isDark ? "#ffffff" : "#1e293b" }}
           >
             {isSaving ? (
-              <Loader2 className="h-3 w-3 animate-spin text-white" />
+              <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
             ) : (
-              <Check className="h-3 w-3 text-white" />
+              <Check className="h-4 w-4 text-green-500" />
             )}
           </button>
         </div>
@@ -144,12 +148,12 @@ function EditableRow({
       )}
 
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all shrink-0">
-        {isEditing ? null : (
+        {!isEditing && (
           <>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setIsEditing(true);
+                onEdit?.();
               }}
               className="p-2.5 rounded-lg transition-all"
               style={{ backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }}
@@ -204,6 +208,8 @@ export default function GalleriesManagementPage() {
   const [newSubCatName, setNewSubCatName] = useState("");
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverId, setDragOverId] = useState<number | null>(null);
+  const [editingCatId, setEditingCatId] = useState<number | null>(null);
+  const [editingSubCatId, setEditingSubCatId] = useState<number | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ type: "category" | "subcategory"; id: number } | null>(null);
 
@@ -373,6 +379,15 @@ export default function GalleriesManagementPage() {
                   id={cat.id}
                   initialName={cat.name}
                   isActive={selectedCatId === cat.id}
+                  isEditing={editingCatId === cat.id}
+                  onEdit={() => {
+                    if (editingCatId === cat.id) {
+                      setEditingCatId(null);
+                    } else {
+                      setEditingCatId(cat.id);
+                      setEditingSubCatId(null);
+                    }
+                  }}
                   onSelect={() => {
                     setSelectedCatId(cat.id);
                     setSelectedSubCatId(null);
@@ -380,7 +395,10 @@ export default function GalleriesManagementPage() {
                   onSave={async (id, name) => {
                     await updateCategory.mutateAsync({ id, data: { name } });
                   }}
-                  onSaveComplete={() => showToast("Category saved successfully!")}
+                  onSaveComplete={() => {
+                    showToast("Category saved successfully!");
+                    setEditingCatId(null);
+                  }}
                   onDelete={async (id) => {
                     setDeleteTarget({ type: "category", id });
                     setDeleteConfirmOpen(true);
@@ -451,6 +469,15 @@ export default function GalleriesManagementPage() {
                       id={sub.id}
                       initialName={sub.name}
                       isActive={selectedSubCatId === sub.id}
+                      isEditing={editingSubCatId === sub.id}
+                      onEdit={() => {
+                        if (editingSubCatId === sub.id) {
+                          setEditingSubCatId(null);
+                        } else {
+                          setEditingSubCatId(sub.id);
+                          setEditingCatId(null);
+                        }
+                      }}
                       onSelect={() => setSelectedSubCatId(sub.id)}
                       onSave={async (id, name) => {
                         if (selectedCatId) {
@@ -462,7 +489,10 @@ export default function GalleriesManagementPage() {
                           refetchSubcategories();
                         }
                       }}
-                      onSaveComplete={() => showToast("Subcategory saved successfully!")}
+                      onSaveComplete={() => {
+                        showToast("Subcategory saved successfully!");
+                        setEditingSubCatId(null);
+                      }}
                       onDelete={async (id) => {
                         setDeleteTarget({ type: "subcategory", id });
                         setDeleteConfirmOpen(true);
