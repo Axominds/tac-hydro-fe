@@ -339,7 +339,7 @@ export function ExpertiseCategoryModal({
                               autoFocus
                             />
                             <select
-                              value={editingItemScopeId === null ? "" : editingItemScopeId}
+                              value={!editingItemScopeId && editingItemScopeId !== 0 ? "" : editingItemScopeId}
                               onChange={(e) => {
                                 const newScopeId =
                                   e.target.value === "" ? null : Number(e.target.value);
@@ -384,12 +384,6 @@ export function ExpertiseCategoryModal({
                         ) : (
                           <>
                             <span
-                              className="text-xs font-mono w-6"
-                              style={{ color: colors.textMuted as string }}
-                            >
-                              {item.order}
-                            </span>
-                            <span
                               className="flex-1 text-sm"
                               style={{ color: colors.text as string }}
                             >
@@ -403,9 +397,9 @@ export function ExpertiseCategoryModal({
                             )}
                             <button
                               onClick={() => {
-                                setEditingItemId(null);
-                                setEditingItemTitle("");
-                                setEditingItemScopeId("");
+                                setEditingItemId(item.id);
+                                setEditingItemTitle(item.title);
+                                setEditingItemScopeId(item.project_scope_id ?? "");
                               }}
                               className="p-2.5 rounded-lg transition-all"
                               style={{

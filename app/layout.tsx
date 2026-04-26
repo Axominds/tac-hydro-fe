@@ -11,6 +11,18 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "TAC Hydro Consultancy",
   description: "Premium Hydroelectric Consultancy Services",
+  icons: [
+    {
+      url: "/favicon-64x64.png",
+      sizes: "64x64",
+      type: "image/png",
+    },
+    {
+      url: "/tac-logo.png",
+      sizes: "192x192",
+      type: "image/png",
+    },
+  ],
 };
 
 import Providers from "../src/components/Providers";

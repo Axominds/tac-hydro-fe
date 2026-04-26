@@ -2,13 +2,21 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Head from "next/head";
 import Cookies from "js-cookie";
 import { AdminSidebar } from "../../components/admin/AdminSidebar";
-import { getTheme } from "../../src/components/admin/ThemeToggle";
+import { getTheme } from "../../src/hooks/useAdminTheme";
 import { validateToken } from "../../src/lib/api";
 
 const THEME_KEY = "admin-theme";
 const DEFAULT_THEME = "light";
+
+export const adminHead = () => (
+  <>
+    <link rel="icon" href="/favicon-64x64.png" />
+    <title>TAC Hydro Admin</title>
+  </>
+);
 
 export const adminTheme = {
   dark: {
@@ -197,9 +205,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   return (
     <ModalContext.Provider value={{ isModalOpen, setIsModalOpen }}>
-      <div
-        className="admin-dashboard"
-        style={{
+      <>
+<Head>
+          {adminHead()}
+        </Head>
+        <div
+          className="admin-dashboard"
+          style={{
           backgroundColor: colors.bg,
           color: colors.text,
           minHeight: "100vh",
@@ -224,6 +236,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <div className="relative z-10 max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
+      </>
     </ModalContext.Provider>
   );
 }

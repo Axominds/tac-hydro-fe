@@ -646,15 +646,6 @@ export default function GalleriesManagementPage() {
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
-                        <div
-                          className="absolute top-2 left-2 p-1 rounded-lg text-[10px] font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                          style={{
-                            backgroundColor: "rgba(0,0,0,0.5)",
-                            backdropFilter: "blur(4px)",
-                          }}
-                        >
-                          #{img.order}
-                        </div>
                       </div>
                     ))}
                   </div>

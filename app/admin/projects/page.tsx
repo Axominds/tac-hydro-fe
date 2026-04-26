@@ -1182,9 +1182,6 @@ export default function ProjectsManagementPage() {
                                       <Trash2 className="h-4 w-4" />
                                     </button>
                                   </div>
-                                  <div className="absolute bottom-1 left-1 text-[10px] text-white bg-black/50 px-1 rounded">
-                                    {image.order + 1}
-                                  </div>
                                 </div>
                               ))}
                             </div>
