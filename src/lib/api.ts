@@ -200,6 +200,8 @@ export interface SiteSettings {
   map_embed_url: string | null;
   organization_chart_image: string | null;
   founded_year?: number | null;
+  video: string | null;
+  youtube_url: string | null;
 }
 
 export type SiteSettingsList = SiteSettings[];

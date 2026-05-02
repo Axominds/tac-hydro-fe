@@ -278,7 +278,7 @@ export function useSettingsMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<SiteSettings> }) => 
+    mutationFn: ({ id, data }: { id: number; data: Partial<SiteSettings> | FormData }) =>
       apiFetch<SiteSettings>(`/api/home/settings/${id}/`, { method: "PATCH", body: data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["site-settings"] }),
   });

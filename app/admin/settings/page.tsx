@@ -14,9 +14,12 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
+  Video,
+  PlayCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useSiteSettings } from "../../../src/hooks/useSiteSettings";
+import { convertToEmbedUrl } from "../../../src/lib/utils";
 import { useSettingsMutation } from "../../../src/hooks/useAdminMutations";
 import { SiteSettings } from "../../../src/lib/api";
 import { useAdminTheme, getThemedClasses } from "../../../src/hooks/useAdminTheme";
@@ -35,34 +38,61 @@ export default function SiteSettingsManagementPage() {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [showMapPreview, setShowMapPreview] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [videoMode, setVideoMode] = useState<"upload" | "youtube">("upload");
+  const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingMode, setPendingMode] = useState<"upload" | "youtube" | null>(null);
   const { toast, showToast, hideToast } = useToast();
 
   useEffect(() => {
     if (settings) {
       setFormData({ ...settings });
+      if (settings.youtube_url) {
+        setVideoMode("youtube");
+      } else if (settings.video) {
+        setVideoMode("upload");
+      }
     }
   }, [settings]);
+
+  const handleVideoModeSwitch = (targetMode: "upload" | "youtube") => {
+    if (targetMode === videoMode) return;
+
+    const hasCurrentData =
+      (videoMode === "upload" && (selectedVideo || formData.video)) ||
+      (videoMode === "youtube" && formData.youtube_url);
+
+    if (hasCurrentData) {
+      setPendingMode(targetMode);
+      setShowConfirmDialog(true);
+    } else {
+      setVideoMode(targetMode);
+    }
+  };
+
+  const confirmModeSwitch = () => {
+    if (pendingMode === "upload") {
+      setFormData({ ...formData, youtube_url: null });
+    } else if (pendingMode === "youtube") {
+      setFormData({ ...formData, video: null });
+      setSelectedVideo(null);
+    }
+    setVideoMode(pendingMode!);
+    setPendingMode(null);
+    setShowConfirmDialog(false);
+  };
+
+  const cancelModeSwitch = () => {
+    setPendingMode(null);
+    setShowConfirmDialog(false);
+  };
 
   const handleSave = async () => {
     if (!settings?.id) return;
 
+    setSaveStatus("saving");
+
     try {
-      if (selectedFile) {
-        const fileData = new FormData();
-        fileData.append("organization_chart_image", selectedFile);
-
-        await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/settings/${settings.id}/organization_chart_image/`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/, "$1")}`,
-            },
-            body: fileData,
-          },
-        );
-      }
-
       const changedData: Partial<SiteSettings> = {};
       Object.keys(formData).forEach((k) => {
         const key = k as keyof SiteSettings;
@@ -72,13 +102,36 @@ export default function SiteSettingsManagementPage() {
         }
       });
 
-      if (Object.keys(changedData).length > 0) {
+      const hasFiles = Boolean(selectedFile || selectedVideo);
+
+      if (hasFiles) {
+        const multipartData = new FormData();
+
+        Object.entries(changedData).forEach(([key, value]) => {
+          if (value === undefined) return;
+          multipartData.append(key, value === null ? "" : String(value));
+        });
+
+        if (selectedFile) {
+          multipartData.append("organization_chart_image", selectedFile);
+        }
+
+        if (selectedVideo) {
+          multipartData.append("video", selectedVideo);
+          multipartData.set("youtube_url", "");
+        }
+
+        await updateSettings.mutateAsync({ id: settings.id, data: multipartData });
+      } else if (Object.keys(changedData).length > 0) {
         await updateSettings.mutateAsync({ id: settings.id, data: changedData });
       }
 
+      setSaveStatus("success");
       showToast("Settings saved successfully!");
       setSelectedFile(null);
+      setSelectedVideo(null);
     } catch (error) {
+      setSaveStatus("error");
       showToast("Failed to save settings", "error");
     }
   };
@@ -102,27 +155,27 @@ export default function SiteSettingsManagementPage() {
 
   return (
     <div className="space-y-15 uppercase relative pb-40">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1
-              className={`${montserrat.className} text-4xl mb-2`}
-              style={{ color: colors.text as string }}
-            >
-              Global <span className="text-blue-500">Settings</span>
-            </h1>
-            <p style={{ color: colors.text.secondary as string }}>
-              Configure site-wide metadata, contact information, and social links.
-            </p>
-          </div>
-          <button
-            onClick={handleSave}
-            disabled={isLoading || !formData.company_name?.trim()}
-            className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+      <div className="flex items-center justify-between">
+        <div>
+          <h1
+            className={`${montserrat.className} text-4xl mb-2`}
+            style={{ color: colors.text as string }}
           >
-            <Save className="h-4 w-4" />
-            {saveStatus === "saving" ? "Saving..." : "Save"}
-          </button>
+            Global <span className="text-blue-500">Settings</span>
+          </h1>
+          <p style={{ color: colors.text.secondary as string }}>
+            Configure site-wide metadata, contact information, and social links.
+          </p>
         </div>
+        <button
+          onClick={handleSave}
+          disabled={isLoading || saveStatus === "saving" || !formData.company_name?.trim()}
+          className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+        >
+          <Save className="h-4 w-4" />
+          {saveStatus === "saving" ? "Saving..." : "Save"}
+        </button>
+      </div>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
@@ -130,7 +183,6 @@ export default function SiteSettingsManagementPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-20">
-          {/* Contact Info Card */}
           <div className="p-8 rounded-3xl space-y-8" style={cardStyle}>
             <h2
               className={`${montserrat.className} text-xl mb-4 flex items-center gap-2 pb-4`}
@@ -303,7 +355,6 @@ export default function SiteSettingsManagementPage() {
             </div>
           </div>
 
-          {/* Social Presence Card */}
           <div className="p-8 rounded-3xl space-y-8" style={cardStyle}>
             <h2
               className={`${montserrat.className} text-xl mb-4 flex items-center gap-2 pb-4`}
@@ -408,7 +459,119 @@ export default function SiteSettingsManagementPage() {
             </div>
           </div>
 
-          {/* Organization Chart Card */}
+          <div className="lg:col-span-2 p-8 rounded-3xl space-y-8" style={cardStyle}>
+            <h2
+              className={`${montserrat.className} text-xl mb-4 flex items-center gap-2 pb-4`}
+              style={{
+                borderBottom: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                color: colors.text as string,
+              }}
+            >
+              <Video className="h-5 w-5 text-blue-500" />
+              Video Section
+            </h2>
+
+            <div className="flex gap-2 px-1">
+              <button
+                type="button"
+                onClick={() => handleVideoModeSwitch("upload")}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                  videoMode === "upload"
+                    ? "bg-blue-500 text-white"
+                    : "bg-transparent border border-blue-500/30 text-blue-500 hover:bg-blue-500/10"
+                }`}
+              >
+                <Video className="h-4 w-4" />
+                Upload Video
+              </button>
+              <button
+                type="button"
+                onClick={() => handleVideoModeSwitch("youtube")}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${
+                  videoMode === "youtube"
+                    ? "bg-red-500 text-white"
+                    : "bg-transparent border border-red-500/30 text-red-500 hover:bg-red-500/10"
+                }`}
+              >
+                <PlayCircle className="h-4 w-4" />
+                YouTube URL
+              </button>
+            </div>
+
+            {videoMode === "upload" && (
+              <div className="space-y-4">
+                <label
+                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  style={{ color: colors.textMuted as string }}
+                >
+                  Video File
+                </label>
+                {(selectedVideo || formData.video) && (
+                  <div
+                    className="h-48 w-full md:w-96 rounded-xl overflow-hidden bg-black"
+                    style={{
+                      border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                    }}
+                  >
+                    <video controls className="w-full h-full object-contain">
+                      <source
+                        src={
+                          selectedVideo
+                            ? URL.createObjectURL(selectedVideo)
+                            : formData.video!
+                        }
+                      />
+                    </video>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={(e) => e.target.files && setSelectedVideo(e.target.files[0])}
+                  className="block w-full text-sm file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-xl"
+                  style={inputStyle}
+                />
+              </div>
+            )}
+
+            {videoMode === "youtube" && (
+              <div className="space-y-4">
+                <label
+                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  style={{ color: colors.textMuted as string }}
+                >
+                  YouTube URL
+                </label>
+                <input
+                  type="url"
+                  value={formData.youtube_url || ""}
+                  onChange={(e) => setFormData({ ...formData, youtube_url: e.target.value })}
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+                  style={inputStyle}
+                />
+                {formData.youtube_url && (
+                  <div
+                    className="w-full h-64 rounded-xl overflow-hidden"
+                    style={{
+                      border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                    }}
+                  >
+                    <iframe
+                      src={convertToEmbedUrl(formData.youtube_url)}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="lg:col-span-2 p-8 rounded-3xl space-y-8" style={cardStyle}>
             <h2
               className={`${montserrat.className} text-xl mb-4 flex items-center gap-2 pb-4`}
@@ -459,6 +622,53 @@ export default function SiteSettingsManagementPage() {
           </div>
         </div>
       )}
+
+      {showConfirmDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div
+            className="rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+            style={{
+              backgroundColor: theme === "dark" ? "#1f2937" : "#ffffff",
+              border: `1px solid ${theme === "dark" ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,
+            }}
+          >
+            <h3
+              className="text-lg font-bold mb-4"
+              style={{ color: colors.text as string }}
+            >
+              Confirm Switch
+            </h3>
+            <p
+              className="text-sm mb-6"
+              style={{ color: colors.text.secondary as string }}
+            >
+              Switching to {pendingMode === "upload" ? "video upload" : "YouTube URL"} will clear
+              your existing {videoMode === "upload" ? "video file" : "YouTube URL"}. Are you sure?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={cancelModeSwitch}
+                className="px-4 py-2 rounded-xl border transition-all"
+                style={{
+                  borderColor: theme === "dark" ? "rgba(255,255,255,0.2)" : "#cbd5e1",
+                  color: colors.text as string,
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmModeSwitch}
+                className="px-4 py-2 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition-all"
+              >
+                Yes, switch
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {toast && <Toast message={toast.message} type={toast.type} onClose={hideToast} />}
     </div>
   );
