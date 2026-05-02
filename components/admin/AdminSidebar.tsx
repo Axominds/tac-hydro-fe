@@ -132,7 +132,13 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
               className={`${montserrat.className} text-xl tracking-tight font-bold`}
               style={{ color: colors.textColor }}
             >
-              Tac-Hydro <span className="text-blue-500">Admin</span>
+              <span
+                className="cursor-pointer"
+                onClick={() => window.open("/", "_blank")}
+              >
+                Tac-Hydro{" "}
+              </span>
+              <span className="text-blue-500">Admin</span>
             </h1>
             <button
               onClick={toggleTheme}

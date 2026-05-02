@@ -96,7 +96,7 @@ export function ExpertiseCategoryModal({
     await onDelete(category.id);
     setIsDeleting(false);
     onClose();
-    showToast("Category deleted successfully!", "error");
+    showToast("Category deleted successfully!", "success");
   };
 
   const handleDeleteClick = () => {
@@ -110,10 +110,16 @@ export function ExpertiseCategoryModal({
 
   const confirmDeleteItem = async () => {
     if (!itemToDelete || !category?.id) return;
+    const itemToCheck = categoryItems.find((item) => item.id === itemToDelete);
+    if (itemToCheck?.project_scope_id) {
+      showToast("Item is in use, cannot be deleted", "error");
+      setItemToDelete(null);
+      return;
+    }
     await deleteItem.mutateAsync({ categoryId: category.id, id: itemToDelete });
     refetchItems();
     setItemToDelete(null);
-    showToast("Item deleted successfully!", "error");
+    showToast("Item deleted successfully!", "success");
   };
 
   const handleAddItem = async () => {
@@ -129,6 +135,7 @@ export function ExpertiseCategoryModal({
     setNewItemTitle("");
     setNewItemScopeId("");
     refetchItems();
+    showToast("Item added successfully!", "success");
   };
 
   const handleUpdateItem = async (itemId: number) => {
@@ -142,6 +149,7 @@ export function ExpertiseCategoryModal({
     setEditingItemTitle("");
     setEditingItemScopeId("");
     refetchItems();
+    showToast("Item updated successfully!", "success");
   };
 
   const handleDeleteItem = async (itemId: number) => {
@@ -345,7 +353,7 @@ export function ExpertiseCategoryModal({
                                   e.target.value === "" ? null : Number(e.target.value);
                                 setEditingItemScopeId(newScopeId);
                               }}
-                              className="rounded px-2 py-1 text-xs max-w-[120px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              className="rounded px-2 py-1 text-xs max-w-[160px] focus:outline-none focus:ring-1 focus:ring-blue-500 truncate"
                               style={inputStyle}
                             >
                               <option value="">No Scope</option>
@@ -440,7 +448,7 @@ export function ExpertiseCategoryModal({
                     onChange={(e) =>
                       setNewItemScopeId(e.target.value === "" ? "" : Number(e.target.value))
                     }
-                    className="rounded-lg px-2 py-2 text-sm min-w-[140px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="rounded-lg px-2 py-2 text-sm min-w-[160px] max-w-[200px] focus:outline-none focus:ring-1 focus:ring-blue-500 truncate"
                     style={inputStyle}
                   >
                     <option value="">Scope</option>
