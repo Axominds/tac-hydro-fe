@@ -42,7 +42,6 @@ const NAV_ITEMS: NavigationItem[] = [
     href: "/contact-us",
     dropdown: [
       { label: "Collaboration", href: "/contact-us/collaboration" },
-      { label: "Career", href: "/contact-us/career" },
     ],
   },
 ];
