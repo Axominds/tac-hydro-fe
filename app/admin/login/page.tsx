@@ -6,6 +6,7 @@ import { Montserrat } from "next/font/google";
 import { Lock, Mail, Loader2, Eye, EyeOff } from "lucide-react";
 import Cookies from "js-cookie";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
+import { BASE_URL } from "../../../src/lib/api";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
@@ -24,7 +25,7 @@ export default function AdminLoginPage() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:8000/api/auth/token/", {
+      const response = await fetch(`${BASE_URL}/api/auth/token/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
