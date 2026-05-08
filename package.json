@@ -60,5 +60,11 @@
   },
   "alias": {
     "@/*": "./src/components/ui/$1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
   }
 }
