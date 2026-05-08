@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+}
+
+body {
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+/* Admin Dashboard Theme Variables */
+:root,
+[data-admin-theme="dark"] {
+  --admin-bg: #070707;
+  --admin-text: #ffffff;
+  --admin-sidebar-bg: #0c0c0c;
+  --admin-sidebar-border: rgba(255, 255, 255, 0.05);
+  --admin-card-bg: #111111;
+  --admin-card-border: #1f1f1f;
+  --admin-muted: #888888;
+  --admin-gradient: rgba(37, 99, 235, 0.05);
+}
+
+[data-admin-theme="light"] {
+  --admin-bg: #f8fafc;
+  --admin-text: #1e293b;
+  --admin-sidebar-bg: #ffffff;
+  --admin-sidebar-border: #e2e8f0;
+  --admin-card-bg: #ffffff;
+  --admin-card-border: #e2e8f0;
+  --admin-muted: #64748b;
+  --admin-gradient: rgba(37, 99, 235, 0.03);
+}
+
+.admin-dashboard {
+  background-color: var(--admin-bg);
+  color: var(--admin-text);
+  min-height: 100vh;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}

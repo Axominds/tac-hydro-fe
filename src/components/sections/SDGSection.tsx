@@ -1,3 +1,5 @@
+"use client";
+
 import { Zap, TrendingUp, Cog, Leaf } from "lucide-react";
 
 const sdgData = [

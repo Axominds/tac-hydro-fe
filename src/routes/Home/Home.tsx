@@ -1,8 +1,8 @@
+import dynamic from "next/dynamic";
 import { StatsAndCorePrinciplesSection } from "./sections/StatsAndCorePrinciplesSection";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "./sections/BannerSection";
 import { ExpertiseAndServicesSection } from "../../components/sections/ExpertiseAndServicesSection";
-import { MapSection } from "./sections/MapSection";
 import { ValuedPartnersSection } from "./sections/ValuedPartnersSection";
 import { SectorsOfServicesSection } from "../../components/sections/SectorsOfServicesSection";
 import { VideoSection } from "./sections/VideoSection";
@@ -11,15 +11,20 @@ import { MoveDownSection } from "../../components/sections/MoveDownSection";
 import { FooterSection } from "../../components/sections/FooterSection";
 import { SDGSection } from "../../components/sections/SDGSection";
 
+const MapSection = dynamic(() => import("./sections/MapSection").then(mod => mod.MapSection), {
+  ssr: false,
+  loading: () => <div className="h-screen w-full bg-slate-50 animate-pulse flex items-center justify-center text-slate-400">Loading Map...</div>
+});
+
 const HOME_SECTIONS = [
   "stats-and-core-principles",
   "expertise-and-services",
   "sectors-of-services",
-  // "video-section",
+  "video-section",
   "map-section",
   "sdg-section",
   "valued-partners",
-  "news-and-articles",
+  "news-and-events",
 ];
 
 export const Home = () => {
@@ -33,7 +38,7 @@ export const Home = () => {
       <StatsAndCorePrinciplesSection />
       <ExpertiseAndServicesSection />
       <SectorsOfServicesSection />
-      {/* <VideoSection /> */}
+      <VideoSection />
       <MapSection />
       <SDGSection />
       <ValuedPartnersSection />

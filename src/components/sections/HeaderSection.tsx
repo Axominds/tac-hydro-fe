@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { usePathname } from "next/navigation";
 import { cn } from "../../lib/utils";
 import { LOGO_PRIMARY } from "../../assets";
 import { LogoContainer } from "./header/LogoContainer";
@@ -57,12 +59,12 @@ export const HeaderSection = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const location = useLocation();
+  const pathname = usePathname();
 
   // Dynamic navigation items with active state
   const navigationItems = NAV_ITEMS.map((item) => {
     const isCurrent =
-      item.href === "/" ? location.pathname === "/" : location.pathname.startsWith(item.href);
+      item.href === "/" ? pathname === "/" : pathname?.startsWith(item.href);
 
     return {
       ...item,

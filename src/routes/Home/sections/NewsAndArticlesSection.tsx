@@ -1,106 +1,128 @@
-import { useState, useEffect } from "react";
-import { newsItems } from "../../../data/newsData";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+"use client";
 
-const newsFilters = ["ALL", "CONTRACT SIGNING", "NEWS"];
+import { useState } from "react";
+import { useNewsCategories, useNewsItems } from "../../../hooks/useNews";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getImageUrl } from "../../../lib/api";
 
 export const NewsAndArticlesSection = () => {
-  const [activeFilter, setActiveFilter] = useState("ALL");
+  const [activeFilter, setActiveFilter] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const pageSize = 3;
 
-  const sortedItems = [...newsItems].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+  const { data: categories, isLoading: isLoadingCategories } = useNewsCategories();
+  const { data: newsData, isLoading: isLoadingItems } = useNewsItems(activeFilter, currentPage, pageSize, true);
 
-  const filteredItems = sortedItems.filter(
-    (item) => activeFilter === "ALL" || item.category === activeFilter,
-  );
+  const isLoading = isLoadingCategories || isLoadingItems;
 
-  // Reset to first page when filter changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeFilter]);
+  const categoryMap: Record<number, string> = {};
+  categories?.forEach((cat) => {
+    categoryMap[cat.id] = cat.name;
+  });
 
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = filteredItems.slice(startIndex, startIndex + itemsPerPage);
+  const items = newsData?.results || [];
+  const totalPages = newsData?.count ? Math.ceil(newsData.count / 3) : 1;
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
-    const element = document.getElementById("news-and-articles");
+    const element = document.getElementById("news-and-events");
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
+  if (isLoading) {
+    return (
+      <section
+        id="news-and-events"
+        className="relative w-full bg-[#f8f9fa] min-h-screen flex flex-col justify-center py-12 lg:py-16 overflow-hidden"
+      >
+        <div className="relative mx-auto max-w-[1400px] w-full px-6 sm:px-8 lg:px-20">
+          <div className="flex flex-col items-center justify-center py-32">
+            <div className="animate-pulse text-slate-400">Loading news...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const filterOptions = [
+    { id: null, name: "ALL" },
+    ...(categories || []),
+  ];
+
   return (
     <section
-      id="news-and-articles"
+      id="news-and-events"
       className="relative w-full bg-[#f8f9fa] min-h-screen flex flex-col justify-center py-12 lg:py-16 overflow-hidden"
     >
       <div className="relative mx-auto max-w-[1400px] w-full px-6 sm:px-8 lg:px-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight font-extrabold text-slate-900">
-              News and Articles
+              News and Events
             </h1>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            {newsFilters.map((filter) => (
+            {filterOptions.map((filter) => (
               <button
-                key={filter}
+                key={filter.id ?? "all"}
                 type="button"
-                onClick={() => setActiveFilter(filter)}
+                onClick={() => {
+                  setActiveFilter(filter.id);
+                  setCurrentPage(1);
+                }}
                 className={`px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  activeFilter === filter
+                  activeFilter === filter.id
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
                     : "bg-white text-slate-500 border border-slate-100 hover:border-blue-200"
                 }`}
               >
-                {filter}
+                {filter.name}
               </button>
             ))}
           </div>
         </div>
 
         <div className="relative">
-          {currentItems.length > 0 ? (
+          {items.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {currentItems.map((item) => (
+                {items.map((item) => (
                   <a
                     key={item.id}
                     href={`/news/${item.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="group block bg-white rounded-[32px] border border-slate-100 overflow-hidden shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
                   >
                     <div className="relative aspect-[16/10] overflow-hidden">
-                      <img
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        alt={item.title}
-                        src={item.image}
-                        loading="lazy"
-                        decoding="async"
-                      />
+                      {item.image ? (
+                        <img
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          alt={item.title}
+                          src={getImageUrl(item.image) || undefined}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-blue-50 to-slate-100" />
+                      )}
                       <div className="absolute top-6 left-6">
                         <div className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-bold text-blue-600 uppercase tracking-widest shadow-lg">
-                          {item.category}
+                          {categoryMap[item.news_category_id] || "NEWS"}
                         </div>
                       </div>
                     </div>
                     <div className="p-8">
                       <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">
-                        {item.date}
+                        {item.news_date}
                       </div>
                       <h3 className="text-xl font-bold text-slate-900 mb-4 group-hover:text-blue-600 transition-colors leading-tight">
                         {item.title}
                       </h3>
                       <div className="mt-4">
                         <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-3">
-                          {item.description}
+                          {item.summary}
                         </p>
                       </div>
                       <div className="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-widest">
@@ -172,7 +194,10 @@ export const NewsAndArticlesSection = () => {
               </p>
               <button
                 type="button"
-                onClick={() => setActiveFilter("ALL")}
+                onClick={() => {
+                  setActiveFilter(null);
+                  setCurrentPage(1);
+                }}
                 className="px-8 py-3 rounded-2xl bg-slate-100 font-bold text-slate-600 text-sm transition-all hover:bg-blue-600 hover:text-white hover:shadow-xl active:scale-95"
               >
                 View All Categories

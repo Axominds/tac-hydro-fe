@@ -3,7 +3,8 @@ import { Navigation } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { projectData, type ProjectScope } from "../data/projectData";
+import { useProjectScopes } from "../../../hooks/useProjectScopes";
+import { useProjectsWithScopes } from "../../../hooks/useProjects";
 
 // Fix for leaflet default icon missing in build
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -18,7 +19,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const scopeColors: Record<ProjectScope, { pin: string; bg: string; border: string }> = {
+const scopeColors: Record<string, { pin: string; bg: string; border: string }> = {
   "Detailed Feasibility Study": {
     pin: "#F7DF1E",
     bg: "bg-yellow-400",
@@ -51,19 +52,25 @@ const createCustomIcon = (color: string) => {
 };
 
 interface ProjectMapProps {
-  onProjectSelect?: (projectId: string) => void;
+  onProjectSelect?: (projectId: number) => void;
 }
 
 export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
-  // Only filtering by scopes present in projectData.ts
-  const [activeScope, setActiveScope] = useState<ProjectScope | "All">("All");
+  const [activeScope, setActiveScope] = useState<string>("All");
+  const { data: projects } = useProjectsWithScopes();
+  const { data: scopes } = useProjectScopes();
+
+  const scopeNames = useMemo(() => scopes?.map((s) => s.name) || [], [scopes]);
 
   const filteredProjects = useMemo(() => {
+    if (!projects) return [];
     if (activeScope === "All") {
-      return projectData;
+      return projects.filter((p) => p.latitude && p.longitude);
     }
-    return projectData.filter((project) => project.scope === activeScope);
-  }, [activeScope]);
+    return projects.filter(
+      (p) => p.scopes?.some((s) => s.name === activeScope) && p.latitude && p.longitude,
+    );
+  }, [projects, activeScope]);
 
   return (
     <div className="relative w-full h-[600px] lg:h-[700px] rounded-[32px] overflow-hidden shadow-xl border border-slate-100">
@@ -87,11 +94,12 @@ export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
         {filteredProjects.map((project) => {
-          const colors = scopeColors[project.scope];
+          const colors =
+            scopeColors[project.scope || ""] || scopeColors["Detailed Feasibility Study"];
           return (
             <Marker
               key={project.id}
-              position={project.location}
+              position={[project.latitude, project.longitude]}
               icon={createCustomIcon(colors.pin)}
               eventHandlers={{
                 click: () => {
@@ -105,7 +113,7 @@ export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
                   onClick={() => onProjectSelect && onProjectSelect(project.id)}
                 >
                   <h4 className="font-bold text-slate-900 mb-1">
-                    {project.title} ({project.installedCapacity})
+                    {project.title} ({project.installed_capacity} {project.installed_capacity_unit})
                   </h4>
                   <span
                     className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
@@ -134,8 +142,8 @@ export const ProjectMap = ({ onProjectSelect }: ProjectMapProps) => {
             <div className="w-2.5 h-2.5 rounded-full bg-slate-400 ring-4 ring-offset-2 ring-transparent group-hover:ring-slate-200 transition-all" />
             <span className="text-xs font-semibold text-slate-700">All Projects</span>
           </button>
-          {(Object.keys(scopeColors) as ProjectScope[]).map((scope) => {
-            const colors = scopeColors[scope];
+          {scopeNames.map((scope) => {
+            const colors = scopeColors[scope] || scopeColors["Detailed Feasibility Study"];
             return (
               <button
                 key={scope}

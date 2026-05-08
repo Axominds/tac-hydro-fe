@@ -1,4 +1,6 @@
-import { useMemo, useState } from "react";
+"use client";
+
+import { useMemo, useState, useEffect } from "react";
 import { Navigation } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
 import L from "leaflet";
@@ -9,27 +11,29 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-// @ts-ignore
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
+// Leaflet setup - only runs on client
+if (typeof window !== "undefined") {
+  // @ts-ignore
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+  });
+}
 
-import { projectData, ProjectScope } from "../../Projects/data/projectData";
-
-// ... entries ...
+import { useProjectScopes } from "../../../hooks/useProjectScopes";
+import { useProjectsWithScopes } from "../../../hooks/useProjects";
 
 interface MapLocation {
   id: string;
   coords: [number, number];
   title: string;
-  scope: ProjectScope;
-  capacity?: string;
+  scope: string;
+  capacity: string;
 }
 
-const scopeColors: Record<ProjectScope, { pin: string; bg: string; border: string }> = {
+const scopeColors: Record<string, { pin: string; bg: string; border: string }> = {
   "Detailed Feasibility Study": {
     pin: "#F7DF1E",
     bg: "bg-yellow-400",
@@ -44,14 +48,6 @@ const scopeColors: Record<ProjectScope, { pin: string; bg: string; border: strin
     border: "border-purple-200",
   },
 };
-
-const mapLocations: MapLocation[] = projectData.map((project) => ({
-  id: project.id,
-  coords: project.location,
-  title: project.title,
-  scope: project.scope,
-  capacity: project.installedCapacity,
-}));
 
 const createCustomIcon = (color: string) => {
   return L.divIcon({
@@ -70,14 +66,38 @@ const createCustomIcon = (color: string) => {
 };
 
 export const MapSection = () => {
-  const [activeScope, setActiveScope] = useState<ProjectScope | "All">("All");
+  const [activeScope, setActiveScope] = useState<string>("All");
+  const { data: projects } = useProjectsWithScopes();
+  const { data: scopes } = useProjectScopes();
+
+  const mapLocations: MapLocation[] = useMemo(() => {
+    if (!projects) return [];
+    const locations: MapLocation[] = [];
+    projects
+      .filter((p) => p.latitude && p.longitude && p.scopes?.length)
+      .forEach((project) => {
+        project.scopes.forEach((scope) => {
+          locations.push({
+            id: `${project.id}-${scope.id}`,
+            coords: [project.latitude, project.longitude] as [number, number],
+            title: project.title,
+            scope: scope.name,
+            capacity: `${project.installed_capacity} ${project.installed_capacity_unit}`,
+          });
+        });
+      });
+    return locations;
+  }, [projects]);
 
   const filteredLocations = useMemo(() => {
+    if (!mapLocations.length) return [];
     if (activeScope === "All") {
       return mapLocations;
     }
     return mapLocations.filter((location) => location.scope === activeScope);
-  }, [activeScope]);
+  }, [mapLocations, activeScope]);
+
+  const scopeNames = useMemo(() => scopes?.map((s) => s.name) || [], [scopes]);
 
   return (
     <section id="map-section" className="relative w-full bg-[#f8f9fa] h-screen overflow-hidden">
@@ -92,7 +112,7 @@ export const MapSection = () => {
             </div>
 
             <MapContainer
-              center={[28.3949, 83.1]} // Stronger west shift so Nepal sits more to the right
+              center={[28.3949, 83.1]}
               zoom={7}
               style={{ height: "100%", width: "100%" }}
               scrollWheelZoom={false}
@@ -105,7 +125,8 @@ export const MapSection = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
               />
               {filteredLocations.map((location) => {
-                const colors = scopeColors[location.scope];
+                const colors =
+                  scopeColors[location.scope] || scopeColors["Detailed Feasibility Study"];
                 return (
                   <Marker
                     key={location.id}
@@ -115,7 +136,7 @@ export const MapSection = () => {
                     <Popup className="custom-popup">
                       <div className="p-1">
                         <h4 className="font-bold text-slate-900 mb-1">
-                          {location.title} {location.capacity && `(${location.capacity})`}
+                          {location.title} ({location.capacity})
                         </h4>
                         <span
                           className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
@@ -148,8 +169,8 @@ export const MapSection = () => {
                   All Scopes
                 </span>
               </button>
-              {(Object.keys(scopeColors) as ProjectScope[]).map((scope) => {
-                const colors = scopeColors[scope];
+              {scopeNames.map((scope) => {
+                const colors = scopeColors[scope] || scopeColors["Detailed Feasibility Study"];
                 return (
                   <button
                     key={scope}

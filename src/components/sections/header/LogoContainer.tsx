@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import Link from "next/link";
 import { cn } from "../../../lib/utils";
 import { LOGO_PRIMARY } from "../../../assets";
 
@@ -16,8 +16,8 @@ export const LogoContainer = ({
   logoClassName,
 }: LogoContainerProps) => {
   return (
-    <NavLink
-      to="/"
+    <Link
+      href="/"
       className={cn(
         "group relative inline-flex items-center rounded-[32px] border border-white/20 backdrop-blur-[30px] shadow-[0_15px_35px_rgba(0,0,0,0.25)] transition-all duration-500",
         isScrolled
@@ -39,6 +39,6 @@ export const LogoContainer = ({
         loading="lazy"
         decoding="async"
       />
-    </NavLink>
+    </Link>
   );
 };

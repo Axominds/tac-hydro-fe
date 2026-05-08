@@ -1,6 +1,65 @@
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { useState } from "react";
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { useSiteSettings } from "../../../hooks/useSiteSettings";
+import { useProjectScopes } from "../../../hooks/useProjectScopes";
+import { Button } from "../../../components/ui/button";
+import { apiFetch } from "../../../lib/api";
 
 export const ContactDetailsSection = () => {
+  const { data: settings } = useSiteSettings();
+  const { data: projectScopes } = useProjectScopes();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    project_scope_id: "" as string,
+    message: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setStatus("idle");
+    setErrorMessage("");
+
+    try {
+      await apiFetch<{ message: string }>("/api/contact-us/inquiry/", {
+        method: "POST",
+        body: {
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          project_scope_id: formData.project_scope_id ? parseInt(formData.project_scope_id) : null,
+          message: formData.message,
+        },
+      });
+      setStatus("success");
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        project_scope_id: "",
+        message: "",
+      });
+    } catch (error) {
+      setStatus("error");
+      setErrorMessage("Failed to send message. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <section id="contact-details" className="relative w-full py-16 lg:py-24 bg-[#f8f9fa]">
       <div className="mx-auto max-w-7xl px-4 sm:px-8 lg:px-12 w-full">
@@ -14,77 +73,96 @@ export const ContactDetailsSection = () => {
               <h3 className="text-2xl font-bold mb-8 tracking-tight">Contact Information</h3>
 
               <div className="space-y-8">
-                <div className="flex items-start gap-4 group">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300 shrink-0 shadow-lg">
-                    <Phone className="w-5 h-5 text-white" />
+                {settings?.phone && (
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300 shrink-0 shadow-lg">
+                      <Phone className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-blue-400 uppercase tracking-[0.2em] font-bold mb-1">
+                        Call Us
+                      </p>
+                      <a
+                        href={`tel:${settings.phone.replace(/\D/g, "")}`}
+                        className="text-lg font-semibold hover:text-blue-400 transition-colors"
+                      >
+                        {settings.phone}
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[11px] text-blue-400 uppercase tracking-[0.2em] font-bold mb-1">
-                      Call Us
-                    </p>
-                    <a
-                      href="tel:+977015439239"
-                      className="text-lg font-semibold hover:text-blue-400 transition-colors"
-                    >
-                      +977 01-5439239
-                    </a>
-                  </div>
-                </div>
+                )}
 
-                <div className="flex items-start gap-4 group">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300 shrink-0 shadow-lg">
-                    <Mail className="w-5 h-5 text-white" />
+                {settings?.contact_email && (
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300 shrink-0 shadow-lg">
+                      <Mail className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-blue-400 uppercase tracking-[0.2em] font-bold mb-1">
+                        Email Us
+                      </p>
+                      <a
+                        href={`mailto:${settings.contact_email}`}
+                        className="text-lg font-semibold hover:text-blue-400 transition-colors break-all"
+                      >
+                        {settings.contact_email}
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[11px] text-blue-400 uppercase tracking-[0.2em] font-bold mb-1">
-                      Email Us
-                    </p>
-                    <a
-                      href="mailto:info@tachydro.com.np"
-                      className="text-lg font-semibold hover:text-blue-400 transition-colors break-all"
-                    >
-                      info@tachydro.com.np
-                    </a>
-                  </div>
-                </div>
+                )}
 
-                <div className="flex items-start gap-4 group">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300 shrink-0 shadow-lg">
-                    <MapPin className="w-5 h-5 text-white" />
+                {settings?.address && (
+                  <div className="flex items-start gap-4 group">
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center group-hover:bg-blue-600 transition-all duration-300 shrink-0 shadow-lg">
+                      <MapPin className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-blue-400 uppercase tracking-[0.2em] font-bold mb-1">
+                        Visit Us
+                      </p>
+                      <a
+                        href="/contact-us#location-map"
+                        className="text-lg font-semibold leading-snug hover:text-blue-400 transition-colors"
+                      >
+                        {settings.address}
+                      </a>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[11px] text-blue-400 uppercase tracking-[0.2em] font-bold mb-1">
-                      Visit Us
-                    </p>
-                    <a
-                      href="/contact-us#location-map"
-                      className="text-lg font-semibold leading-snug hover:text-blue-400 transition-colors"
-                    >
-                      Sanepa - 02, Lalitpur 44600, Nepal
-                    </a>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
-            <div className="relative z-10 mt-12 pt-8 border-t border-white/10">
-              <h4 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                Business Hours
-              </h4>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center bg-white/5 p-4 rounded-[20px] hover:bg-white/10 transition-colors">
-                  <span className="text-slate-300 text-sm font-medium">Sun - Fri</span>
-                  <span className="font-bold text-white text-sm">9:00 AM - 5:00 PM</span>
+            {settings?.business_hours && (
+              <div className="relative z-10 mt-12 pt-8 border-t border-white/10">
+                <h4 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Business Hours
+                </h4>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center bg-white/5 p-4 rounded-[20px] hover:bg-white/10 transition-colors">
+                    <span className="text-slate-300 text-sm font-medium">Sun - Fri</span>
+                    <span className="font-bold text-white text-sm">{settings.business_hours}</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Right Form Area */}
           <div className="flex-1 p-8 sm:p-12 bg-white">
-            {/*
-            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+            {status === "success" && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl flex items-center gap-3 text-green-700">
+                <CheckCircle className="w-5 h-5 shrink-0" />
+                <p className="font-medium">Thank you! Your message has been sent successfully.</p>
+              </div>
+            )}
+            {status === "error" && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-700">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <p className="font-medium">{errorMessage}</p>
+              </div>
+            )}
+            <form className="space-y-8" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex flex-col gap-2.5">
                   <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
@@ -92,7 +170,11 @@ export const ContactDetailsSection = () => {
                   </label>
                   <input
                     type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="Enter your name*"
+                    required
                     className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400"
                   />
                 </div>
@@ -102,7 +184,11 @@ export const ContactDetailsSection = () => {
                   </label>
                   <input
                     type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
                     placeholder="Enter your phone*"
+                    required
                     className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400"
                   />
                 </div>
@@ -115,7 +201,11 @@ export const ContactDetailsSection = () => {
                   </label>
                   <input
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="Enter your email*"
+                    required
                     className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400"
                   />
                 </div>
@@ -123,12 +213,18 @@ export const ContactDetailsSection = () => {
                   <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
                     Desired Service
                   </label>
-                  <select className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer">
+                  <select
+                    name="project_scope_id"
+                    value={formData.project_scope_id}
+                    onChange={handleChange}
+                    className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer"
+                  >
                     <option value="">Select a service</option>
-                    <option value="feasibility">Feasibility Study</option>
-                    <option value="design">Detailed Engineering Design</option>
-                    <option value="supervision">Construction Supervision</option>
-                    <option value="appraisal">Due Diligence Appraisal</option>
+                    {projectScopes?.map((scope) => (
+                      <option key={scope.id} value={scope.id}>
+                        {scope.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -138,6 +234,9 @@ export const ContactDetailsSection = () => {
                   Message
                 </label>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   className="min-h-[160px] rounded-2xl bg-slate-50 border border-slate-100 px-6 py-5 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400 resize-none"
                   placeholder="Tell us about your project or inquiry..."
                 />
@@ -146,36 +245,21 @@ export const ContactDetailsSection = () => {
               <div className="flex justify-end">
                 <Button
                   type="submit"
-                  className="h-14 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-[0_15px_30px_rgba(37,99,235,0.25)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.35)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-3 group w-full md:w-auto"
+                  disabled={isLoading}
+                  className="h-14 px-10 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-[0_15px_30px_rgba(37,99,235,0.25)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.35)] hover:-translate-y-1 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-3 group w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                 >
-                  <span>Send Message</span>
-                  <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  {isLoading ? (
+                    <span>Sending...</span>
+                  ) : (
+                    <>
+                      <span>Send</span>
+                      <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
-            */}
-            <div className="h-full flex flex-col justify-center">
-              <div className="max-w-xl">
-                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
-                  Please email us directly
-                </h3>
-                <p className="text-slate-600 text-base leading-relaxed mb-6">
-                  Please send your inquiry to our team by email and we will respond within one
-                  business day.
-                </p>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  <a
-                    href="mailto:info@tachydro.com.np"
-                    className="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold shadow-[0_12px_24px_rgba(37,99,235,0.25)] hover:bg-blue-700 hover:shadow-[0_18px_32px_rgba(37,99,235,0.3)] transition-all"
-                  >
-                    Email info@tachydro.com.np
-                  </a>
-                  <p className="text-sm text-slate-500">
-                    Prefer a call? Use the direct line on the left.
-                  </p>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>

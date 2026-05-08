@@ -1,9 +1,11 @@
+"use client";
+
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { BannerSection } from "../../components/sections/BannerSection";
 import { CollaborativeAdvantageSection } from "./sections/CollaborativeAdvantageSection";
 import { PartnershipRoadMapSection } from "./sections/PartnershipRoadMapSection";
 import { OurCollaborativeEcosystemSection } from "./sections/OurCollaborativeEcosystemSection";
-import { InnitiateSynergySection } from "./sections/InnitiateSynergySection";
+import { InitiateSynergySection } from "./sections/InitiateSynergySection";
 import { MoveDownSection } from "../../components/sections/MoveDownSection";
 import { FooterSection } from "../../components/sections/FooterSection";
 
@@ -25,7 +27,7 @@ export const Collaboration = () => {
       <CollaborativeAdvantageSection />
       <PartnershipRoadMapSection />
       <OurCollaborativeEcosystemSection />
-      <InnitiateSynergySection />
+      <InitiateSynergySection />
       <MoveDownSection sections={COLLABORATION_SECTIONS} />
       <FooterSection />
     </div>

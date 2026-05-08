@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect, useMemo } from "react";
 import {
-  MegaphoneIcon,
   XIcon,
   BriefcaseIcon,
   GraduationCapIcon,
@@ -10,8 +11,10 @@ import {
   UploadIcon,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
-import { CAREER_DATA, JobType, JobRole } from "../data/careerData";
 import { Button } from "../../../components/ui/button";
+import { CAREER_DATA, JobRole, JobType } from "../data/careerData";
+
+type JobType = "Full Time" | "Internship" | "Independent Consultant";
 
 const TYPE_CONFIG: Record<
   JobType,
@@ -43,6 +46,10 @@ export const CurrentVacancySection = () => {
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
 
+  const filteredRoles = selectedType
+    ? CAREER_DATA.filter((role) => role.type === selectedType)
+    : [];
+
   const handleApplyClick = (role: JobRole, e: React.MouseEvent) => {
     e.stopPropagation();
     setViewingRole(role);
@@ -66,10 +73,6 @@ export const CurrentVacancySection = () => {
       else setCoverLetterFile(file);
     }
   };
-
-  const filteredRoles = selectedType
-    ? CAREER_DATA.filter((role) => role.type === selectedType)
-    : [];
 
   useEffect(() => {
     if (viewingRole) {
@@ -95,7 +98,7 @@ export const CurrentVacancySection = () => {
                 </h1>
                 <nav className="space-y-2">
                   {(Object.keys(TYPE_CONFIG) as JobType[]).map((type) => {
-                    const count = CAREER_DATA.filter((v) => v.type === type).length;
+                    const count = filteredRoles.length;
                     const isActive = selectedType === type;
 
                     return (
@@ -229,7 +232,7 @@ export const CurrentVacancySection = () => {
                 <span
                   className={cn(
                     "text-[10px] font-black tracking-[0.2em] uppercase mb-1 block",
-                    TYPE_CONFIG[viewingRole.type].color,
+                    TYPE_CONFIG[viewingRole.type as JobType]?.color || "text-gray-600",
                   )}
                 >
                   {viewingRole.type} • {viewingRole.category}
@@ -267,7 +270,7 @@ export const CurrentVacancySection = () => {
                       <h4 className="font-bold text-lg leading-none">Key Responsibilities</h4>
                     </div>
                     <ul className="space-y-3">
-                      {viewingRole.responsibilities.map((item, idx) => (
+                      {viewingRole.responsibilities?.map((item, idx) => (
                         <li
                           key={idx}
                           className="flex gap-4 text-gray-600 text-[14px] leading-relaxed"
@@ -286,7 +289,7 @@ export const CurrentVacancySection = () => {
                       <h4 className="font-bold text-lg leading-none">Qualifications</h4>
                     </div>
                     <ul className="space-y-3">
-                      {viewingRole.qualifications.map((item, idx) => (
+                      {viewingRole.qualifications?.map((item, idx) => (
                         <li
                           key={idx}
                           className="flex gap-4 text-gray-600 text-[14px] leading-relaxed"

@@ -1,14 +1,20 @@
-import { useState, useEffect } from "react";
-import { ChevronRightIcon } from "lucide-react";
-import { HERO_BG_ALT } from "../../../assets";
-import { Button } from "../../../components/ui/button";
+"use client";
 
-const typewriterWords = ["INNOVATE", "ENGINEER", "SUSTAIN"];
+import { useState, useEffect, useMemo } from "react";
+import { ChevronRightIcon } from "lucide-react";
+import { Button } from "../../../components/ui/button";
+import { useBanners } from "../../../hooks/useBanner";
+import { getImageUrl } from "../../../lib/api";
 
 export const BannerSection = () => {
+  const { data: banners, isLoading } = useBanners();
+  const banner = banners?.[0];
+
   const [typewriterText, setTypewriterText] = useState("");
   const [typewriterIndex, setTypewriterIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const typewriterWords = useMemo(() => banner?.typewriter_words ?? [], [banner]);
 
   const handleGetStarted = () => {
     const target = document.getElementById("stats-and-core-principles");
@@ -17,7 +23,7 @@ export const BannerSection = () => {
     const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
     const startPosition = window.pageYOffset;
     const distance = targetPosition - startPosition;
-    const duration = 1500; // Longer duration for slow start
+    const duration = 1500;
     let start: number | null = null;
 
     const easeInOutQuart = (t: number) => {
@@ -44,7 +50,7 @@ export const BannerSection = () => {
       return () => window.clearTimeout(pauseTimer);
     }
 
-    if (isDeleting && typewriterText.length === 0) {
+    if (isDeleting && typewriterText?.length === 0) {
       const resetTimer = window.setTimeout(() => {
         setIsDeleting(false);
         setTypewriterIndex((prev) => prev + 1);
@@ -53,11 +59,11 @@ export const BannerSection = () => {
     }
 
     const nextText = isDeleting
-      ? currentWord.substring(0, typewriterText.length - 1)
-      : currentWord.substring(0, typewriterText.length + 1);
+      ? currentWord?.substring(0, typewriterText?.length - 1)
+      : currentWord?.substring(0, typewriterText?.length + 1);
     let delay = isDeleting ? 90 : 130;
 
-    if (!isDeleting && typewriterText.length === currentWord.length - 1) {
+    if (!isDeleting && typewriterText?.length === currentWord?.length - 1) {
       delay = 60;
     }
 
@@ -66,7 +72,20 @@ export const BannerSection = () => {
     }, delay);
 
     return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDeleting, typewriterIndex, typewriterText]);
+
+  const backgroundImage = getImageUrl(banner?.background_image);
+
+  if (isLoading) {
+    return (
+      <section className="relative w-full min-h-screen overflow-hidden bg-slate-900" />
+    );
+  }
+
+  if (!banner) {
+    return null;
+  }
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden">
@@ -78,14 +97,16 @@ export const BannerSection = () => {
                     }
                 `}
       </style>
-      <img
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        style={{ animation: "slowZoom 20s ease-in-out infinite alternate" }}
-        alt="Hero Background"
-        src={HERO_BG_ALT}
-        loading="lazy"
-        decoding="async"
-      />
+      {backgroundImage && (
+        <img
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          style={{ animation: "slowZoom 20s ease-in-out infinite alternate" }}
+          alt="Hero Background"
+          src={backgroundImage}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
       <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent pointer-events-none" />
 
       <div className="absolute inset-0 z-10">
@@ -94,22 +115,26 @@ export const BannerSection = () => {
             <div className="max-w-[720px] animate-fade-in opacity-0 [--animation-delay:200ms] lg:max-w-[995px]">
               <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold leading-tight text-white sm:leading-[1.1] lg:leading-[1.1] mb-2">
                 <span className="block">
-                  Empowering Sustainable Resources Through Engineering Excellence
+                  {banner.headline}
                 </span>
               </h1>
-              <div className="mt-0 flex items-center gap-2 min-h-[32px]">
-                <span className="font-bold text-white text-xl sm:text-2xl lg:text-[32px] leading-[1]">
-                  {typewriterText}
-                </span>
-                <span
-                  className="inline-block w-[2px] h-7 bg-white animate-blink"
-                  aria-hidden="true"
-                />
-              </div>
+              {typewriterWords.length > 0 && (
+                <div className="mt-0 flex items-center gap-2 min-h-[32px]">
+                  <span className="font-bold text-white text-xl sm:text-2xl lg:text-[32px] leading-[1]">
+                    {typewriterText}
+                  </span>
+                  <span
+                    className="inline-block w-[2px] h-7 bg-white animate-blink"
+                    aria-hidden="true"
+                  />
+                </div>
+              )}
               <div className="bg-white mt-3" />
-              <p className="font-semibold text-white text-base sm:text-lg lg:text-[20px] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[640px]">
-                Transforming natural potential into sustainable legacies through technical mastery.
-              </p>
+              {banner.subheadline && (
+                <p className="font-semibold text-white text-base sm:text-lg lg:text-[20px] leading-7 sm:leading-8 lg:leading-[35px] mt-4 max-w-[640px]">
+                  {banner.subheadline}
+                </p>
+              )}
 
               <Button
                 type="button"
@@ -125,13 +150,6 @@ export const BannerSection = () => {
           </div>
         </div>
       </div>
-      {/*
-      <img
-        src="/iso.png"
-        alt="ISO Certification"
-        className="absolute bottom-0 right-0 sm:bottom-0 sm:right-0 lg:bottom-0 lg:right-0 w-24 sm:w-48 lg:w-48 z-20 pointer-events-none animate-fade-in"
-      />
-      */}
     </section>
   );
 };
