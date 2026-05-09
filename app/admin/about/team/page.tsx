@@ -808,7 +808,7 @@ export default function TeamPage() {
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
                   Education
                 </label>
-                <input
+                <textarea
                   value={memberFormData.education}
                   onChange={(e) =>
                     setMemberFormData({ ...memberFormData, education: e.target.value })
@@ -816,6 +816,7 @@ export default function TeamPage() {
                   className="w-full rounded-lg px-3 py-2 text-sm"
                   style={classes.input.bg}
                   placeholder="Education/Qualifications"
+                  rows={3}
                 />
               </div>
               <div>

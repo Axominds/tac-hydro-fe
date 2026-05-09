@@ -225,7 +225,7 @@ export const TeamSection: FC = () => {
                       <span className="w-6 h-[2px] bg-blue-500"></span>
                       Education
                     </h4>
-                    <p className="text-slate-800 text-lg leading-relaxed font-medium pl-9">
+                    <p className="text-slate-800 text-lg leading-relaxed font-medium pl-9 whitespace-pre-line">
                       {selectedMember.education}
                     </p>
                   </div>
@@ -238,11 +238,9 @@ export const TeamSection: FC = () => {
                       <span className="w-6 h-[2px] bg-blue-500"></span>
                       Profile
                     </h4>
-                    <div className="text-slate-600 leading-relaxed space-y-4 text-justify pl-9 text-base">
-                      {selectedMember.profile.split("\n\n").map((paragraph, idx) => (
-                        <p key={idx}>{paragraph}</p>
-                      ))}
-                    </div>
+                    <p className="text-slate-600 leading-relaxed text-justify pl-9 text-base whitespace-pre-line">
+                      {selectedMember.profile}
+                    </p>
                   </div>
                 )}
 
