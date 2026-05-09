@@ -656,11 +656,11 @@ export function useTeamMemberMutations() {
   const queryClient = useQueryClient();
 
   const createTeamMember = useMutation({
-    mutationFn: (data: { name: string; education?: string; bio?: string; is_active: boolean; role?: string; technical_expertise?: string; photo?: File; profile_photo?: File }) => {
+    mutationFn: (data: { name: string; education?: string; profile?: string; is_active: boolean; role?: string; technical_expertise?: string; photo?: File; profile_photo?: File }) => {
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("education", data.education || "");
-      formData.append("bio", data.bio || "");
+      formData.append("profile", data.profile || "");
       formData.append("is_active", String(data.is_active));
       if (data.photo) formData.append("photo", data.photo);
       if (data.profile_photo) formData.append("profile_photo", data.profile_photo);
@@ -673,11 +673,11 @@ export function useTeamMemberMutations() {
   });
 
   const updateTeamMember = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: { name?: string; education?: string; bio?: string; is_active?: boolean; photo?: File; profile_photo?: File } }) => {
+    mutationFn: ({ id, data }: { id: number; data: { name?: string; education?: string; profile?: string; is_active?: boolean; photo?: File; profile_photo?: File } }) => {
       const formData = new FormData();
       if (data.name !== undefined) formData.append("name", data.name);
       if (data.education !== undefined) formData.append("education", data.education);
-      if (data.bio !== undefined) formData.append("bio", data.bio);
+      if (data.profile !== undefined) formData.append("profile", data.profile);
       if (data.is_active !== undefined) formData.append("is_active", String(data.is_active));
       if (data.photo) formData.append("photo", data.photo);
       if (data.profile_photo) formData.append("profile_photo", data.profile_photo);

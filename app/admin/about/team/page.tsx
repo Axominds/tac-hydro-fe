@@ -397,6 +397,7 @@ export default function TeamPage() {
               technical_expertise: memberFormData.technical_expertise || "",
             },
           });
+          queryClient.invalidateQueries({ queryKey: ["team-member-categories"] });
         }
       } else {
         const data: {
