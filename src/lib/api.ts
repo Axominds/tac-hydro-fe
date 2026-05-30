@@ -172,6 +172,19 @@ export function getImageUrl(path: string | null | undefined): string | null {
   return `${BASE_URL}/${path}`;
 }
 
+export async function downloadFile(url: string, filename: string) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = objectUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(objectUrl);
+}
+
 export interface AboutPageSection {
   id: number;
   section_key: string;
@@ -292,6 +305,13 @@ export interface NewsCategory {
   order: number;
 }
 
+export interface Attachment {
+  id: number;
+  news_id: number;
+  file: string;
+  title: string;
+}
+
 export interface NewsItem {
   id: number;
   title: string;
@@ -314,6 +334,7 @@ export interface NewsDetail {
   summary: string | null;
   content_html: string | null;
   is_published: boolean;
+  attachments: Attachment[];
 }
 
 export interface NewsListResponse {

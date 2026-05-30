@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { useNewsDetail } from "../../hooks/useNews";
 import { HeaderSection } from "../../components/sections/HeaderSection";
 import { FooterSection } from "../../components/sections/FooterSection";
-import { Calendar, Tag, ChevronLeft, Link2, Check } from "lucide-react";
-import { getImageUrl } from "../../lib/api";
+import { Calendar, Tag, ChevronLeft, Link2, Check, FileText, Download } from "lucide-react";
+import { getImageUrl, downloadFile } from "../../lib/api";
 
 export const NewsDetail = () => {
   const { id } = useParams();
@@ -134,6 +134,38 @@ export const NewsDetail = () => {
                   className="text-slate-600 leading-relaxed space-y-6 text-lg"
                   dangerouslySetInnerHTML={{ __html: news.content_html }}
                 />
+              )}
+
+              {news.attachments && news.attachments.length > 0 && (
+                <div className="mt-12 pt-8 border-t border-slate-100">
+                  <h3 className="text-lg font-bold text-slate-900 mb-4">
+                    Attachments
+                  </h3>
+                  <div className="space-y-2">
+                    {news.attachments.map((att) => (
+                      <button
+                        key={att.id}
+                        type="button"
+                        onClick={() =>
+                          downloadFile(
+                            getImageUrl(att.file)!,
+                            att.title || att.file.split("/").pop() || "attachment"
+                          )
+                        }
+                        className="flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-slate-50 group w-full text-left"
+                        style={{ border: "1px solid #e2e8f0" }}
+                      >
+                        <div className="p-2 rounded-lg bg-blue-50 shrink-0">
+                          <FileText className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <span className="flex-1 text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition-colors truncate">
+                          {att.title || att.file.split("/").pop()}
+                        </span>
+                        <Download className="h-4 w-4 text-slate-400 group-hover:text-blue-500 transition-colors shrink-0" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
 
