@@ -8,6 +8,7 @@ import {
   Loader2,
   Layers,
   List,
+  AlertCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useBanners } from "../../../src/hooks/useBanner";
@@ -29,9 +30,17 @@ export default function BannerManagementPage() {
   const [typewriterInput, setTypewriterInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast, showToast, hideToast } = useToast();
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const handleSave = async () => {
     if (!banner?.id) return;
+
+    const errors: Record<string, string> = {};
+    if (!formData.headline?.trim()) {
+      errors.headline = "Headline is required.";
+    }
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
     try {
       if (selectedFile) {
@@ -72,9 +81,18 @@ export default function BannerManagementPage() {
         await updateBanner.mutateAsync({ id: banner.id, data: changedData });
       }
 
+      setValidationErrors({});
       showToast("Banner saved successfully!");
-    } catch (error) {
-      showToast("Failed to save banner", "error");
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors(serverErrors);
+      } else {
+        showToast("Failed to save banner", "error");
+      }
     }
   };
 
@@ -119,7 +137,7 @@ export default function BannerManagementPage() {
         </div>
         <button
           onClick={handleSave}
-          disabled={isLoading || !banner || !formData.headline?.trim()}
+          disabled={isLoading || !banner}
           className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-95"
         >
           <Save className="h-4 w-4" />
@@ -167,16 +185,34 @@ export default function BannerManagementPage() {
                   className="text-[10px] font-bold tracking-widest uppercase px-1"
                   style={{ color: colors.textMuted as string }}
                 >
-                  Headline
+                  Headline <span className="text-red-500 normal-case">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.headline || ""}
-                  onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, headline: e.target.value });
+                    if (validationErrors.headline) {
+                      setValidationErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.headline;
+                        return next;
+                      });
+                    }
+                  }}
                   placeholder="e.g. Building the Future of Energy"
                   className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
-                  style={inputStyle}
+                  style={{
+                    ...inputStyle,
+                    borderColor: validationErrors.headline ? "#ef4444" : inputStyle.borderColor,
+                  }}
                 />
+                {validationErrors.headline && (
+                  <p className="mt-1 text-xs flex items-center gap-1 normal-case" style={{ color: "#ef4444" }}>
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.headline}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">

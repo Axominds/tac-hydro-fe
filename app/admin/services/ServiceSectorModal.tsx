@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Plus, Edit2, Trash2, Loader2, X, Save } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader2, X, Save, AlertCircle } from "lucide-react";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 import { Toast, useToast } from "../../../src/components/ui/toast";
@@ -35,6 +35,7 @@ export function ServiceSectorModal({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageRemoved, setImageRemoved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -62,7 +63,15 @@ export function ServiceSectorModal({
   const isDark = theme === "dark";
 
   const handleSave = async () => {
-    if (!title.trim()) return;
+    const errors: Record<string, string> = {};
+    if (!title.trim()) {
+      errors.title = "Title is required.";
+    } else if (title.length > 255) {
+      errors.title = "Title cannot exceed 255 characters.";
+    }
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     setIsSaving(true);
     const formData = new FormData();
     formData.append("title", title.trim());
@@ -73,10 +82,22 @@ export function ServiceSectorModal({
     if (imageRemoved) {
       formData.append("image", "");
     }
-    await onSave(formData);
-    setImageRemoved(false);
-    setIsSaving(false);
-    onClose();
+    try {
+      await onSave(formData);
+      setImageRemoved(false);
+      setIsSaving(false);
+      onClose();
+      showToast(sector ? "Sector saved successfully!" : "Sector added successfully!");
+    } catch (error: any) {
+      setIsSaving(false);
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors(serverErrors);
+      }
+    }
   };
 
   const handleDelete = async () => {
@@ -145,15 +166,24 @@ export function ServiceSectorModal({
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           <div>
             <label className="block text-sm mb-1" style={{ color: colors.textMuted as string }}>
-              Title
+              Title <span className="text-red-500">*</span>
             </label>
             <input
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                setValidationErrors((prev) => ({ ...prev, title: "" }));
+              }}
               placeholder="Sector title..."
               className="w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
               style={inputStyle}
             />
+            {validationErrors.title && (
+              <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                {validationErrors.title}
+              </p>
+            )}
           </div>
 
           <div>

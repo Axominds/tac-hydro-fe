@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Users, Plus, Edit2, Trash2, Loader2, X, Save } from "lucide-react";
+import { Users, Plus, Edit2, Trash2, Loader2, X, Save, AlertCircle } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { useAboutSections } from "../../../src/hooks/useAboutSections";
@@ -32,6 +32,7 @@ export default function AboutManagementPage() {
   const [formData, setFormData] = useState<Partial<AboutPageSection>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast, showToast, hideToast } = useToast();
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -72,6 +73,7 @@ export default function AboutManagementPage() {
       image: null,
     });
     setSelectedFile(null);
+    setValidationErrors({});
     setIsModalOpen(true);
   };
 
@@ -80,37 +82,62 @@ export default function AboutManagementPage() {
     setSelectedSectionType(section.section_key);
     setFormData({ ...section });
     setSelectedFile(null);
+    setValidationErrors({});
     setIsModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errors: Record<string, string> = {};
+    if (!formData.title?.trim()) {
+      errors.title = "Title is required.";
+    } else if (formData.title.length > 255) {
+      errors.title = "Title cannot exceed 255 characters.";
+    }
+    if (!formData.content_html?.trim()) {
+      errors.content_html = "Content is required.";
+    }
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     const cleanedContent = (formData.content_html || "").replace(/&nbsp;/g, " ");
     const dataToSave = { ...formData, content_html: cleanedContent };
     let sectionId: number;
-    if (editingSection) {
-      await updateSection.mutateAsync({
-        id: editingSection.id,
-        data: dataToSave,
-      });
-      sectionId = editingSection.id;
-    } else {
-      const created = await createSection.mutateAsync(dataToSave);
-      sectionId = created.id;
+    try {
+      if (editingSection) {
+        await updateSection.mutateAsync({
+          id: editingSection.id,
+          data: dataToSave,
+        });
+        sectionId = editingSection.id;
+      } else {
+        const created = await createSection.mutateAsync(dataToSave);
+        sectionId = created.id;
+      }
+      if (selectedFile) {
+        await uploadImage.mutateAsync({ id: sectionId, file: selectedFile });
+      }
+      await queryClient.invalidateQueries({ queryKey: ["about-sections"] });
+      const freshSections = queryClient.getQueryData<AboutPageSection[]>(["about-sections"]);
+      const updatedSection = freshSections?.find((s) => s.id === sectionId);
+      if (updatedSection) {
+        setFormData({ ...updatedSection });
+      }
+      setSelectedFile(null);
+      setValidationErrors({});
+      showToast(
+        editingSection ? "Changes saved successfully!" : "Section added successfully!"
+      );
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors(serverErrors);
+      } else {
+        showToast("Failed to save section", "error");
+      }
     }
-    if (selectedFile) {
-      await uploadImage.mutateAsync({ id: sectionId, file: selectedFile });
-    }
-    await queryClient.invalidateQueries({ queryKey: ["about-sections"] });
-    const freshSections = queryClient.getQueryData<AboutPageSection[]>(["about-sections"]);
-    const updatedSection = freshSections?.find((s) => s.id === sectionId);
-    if (updatedSection) {
-      setFormData({ ...updatedSection });
-    }
-    setSelectedFile(null);
-    showToast(
-      editingSection ? "Changes saved successfully!" : "Section added successfully!"
-    );
   };
 
   const handleDelete = (id: number) => {
@@ -249,16 +276,33 @@ export default function AboutManagementPage() {
                     className="text-[10px] font-bold tracking-widest uppercase ml-1"
                     style={{ color: colors.textMuted as string }}
                   >
-                    Title
+                    Title <span className="text-red-500 normal-case">*</span>
                   </label>
                   <input
-                    required
                     value={formData.title || ""}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, title: e.target.value });
+                      if (validationErrors.title) {
+                        setValidationErrors((prev) => {
+                          const next = { ...prev };
+                          delete next.title;
+                          return next;
+                        });
+                      }
+                    }}
                     className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                    style={inputStyle}
+                    style={{
+                      ...inputStyle,
+                      borderColor: validationErrors.title ? "#ef4444" : inputStyle.borderColor,
+                    }}
                     placeholder="Section title..."
                   />
+                  {validationErrors.title && (
+                    <p className="mt-1 text-xs flex items-center gap-1 normal-case" style={{ color: "#ef4444" }}>
+                      <AlertCircle className="h-3 w-3" />
+                      {validationErrors.title}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -305,21 +349,36 @@ export default function AboutManagementPage() {
                     className="text-[10px] font-bold tracking-widest uppercase ml-1"
                     style={{ color: colors.textMuted as string }}
                   >
-                    Content
+                    Content <span className="text-red-500 normal-case">*</span>
                   </label>
                   <QuillEditor
                     value={formData.content_html || ""}
-                    onChange={(value) => setFormData({ ...formData, content_html: value })}
+                    onChange={(value) => {
+                      setFormData({ ...formData, content_html: value });
+                      if (validationErrors.content_html) {
+                        setValidationErrors((prev) => {
+                          const next = { ...prev };
+                          delete next.content_html;
+                          return next;
+                        });
+                      }
+                    }}
                     isDark={isDark}
                     placeholder="Enter content..."
                   />
+                  {validationErrors.content_html && (
+                    <p className="mt-1 text-xs flex items-center gap-1 normal-case" style={{ color: "#ef4444" }}>
+                      <AlertCircle className="h-3 w-3" />
+                      {validationErrors.content_html}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="pt-4 flex justify-end gap-2 shrink-0">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+            onClick={() => { setIsModalOpen(false); setValidationErrors({}); }}
                   className="px-4 py-2 rounded-lg transition-all"
                   style={{
                     border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0"}`,
@@ -332,7 +391,7 @@ export default function AboutManagementPage() {
                 <button
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-95"
-                  disabled={(createSection.isPending || updateSection.isPending) || !formData.title?.trim()}
+                  disabled={createSection.isPending || updateSection.isPending}
                 >
                   {createSection.isPending || updateSection.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

@@ -13,6 +13,7 @@ import {
   Check,
   Upload,
   Pencil,
+  AlertCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import {
@@ -232,24 +233,32 @@ export default function GalleriesManagementPage() {
 
   const handleAddCategory = async () => {
     if (!newCatName.trim()) return;
-    await createCategory.mutateAsync({
-      name: newCatName.trim(),
-      order: (categories?.length || 0) + 1,
-    });
-    setNewCatName("");
+    try {
+      await createCategory.mutateAsync({
+        name: newCatName.trim(),
+        order: (categories?.length || 0) + 1,
+      });
+      setNewCatName("");
+    } catch (error: any) {
+      showToast(error?.body?.name?.[0] || "Failed to add category", "error");
+    }
   };
 
   const handleAddSubcategory = async () => {
     if (!newSubCatName.trim() || !selectedCatId) return;
-    await createSubcategory.mutateAsync({
-      categoryId: selectedCatId,
-      data: {
-        name: newSubCatName.trim(),
-        order: (activeSubcategories.length || 0) + 1,
-      },
-    });
-    setNewSubCatName("");
-    refetchSubcategories();
+    try {
+      await createSubcategory.mutateAsync({
+        categoryId: selectedCatId,
+        data: {
+          name: newSubCatName.trim(),
+          order: (activeSubcategories.length || 0) + 1,
+        },
+      });
+      setNewSubCatName("");
+      refetchSubcategories();
+    } catch (error: any) {
+      showToast(error?.body?.name?.[0] || "Failed to add subcategory", "error");
+    }
   };
 
   const confirmDelete = async () => {
@@ -393,7 +402,11 @@ export default function GalleriesManagementPage() {
                     setSelectedSubCatId(null);
                   }}
                   onSave={async (id, name) => {
-                    await updateCategory.mutateAsync({ id, data: { name } });
+                    try {
+                      await updateCategory.mutateAsync({ id, data: { name } });
+                    } catch (error: any) {
+                      showToast(error?.body?.name?.[0] || "Failed to save category", "error");
+                    }
                   }}
                   onSaveComplete={() => {
                     showToast("Category saved successfully!");
@@ -481,12 +494,16 @@ export default function GalleriesManagementPage() {
                       onSelect={() => setSelectedSubCatId(sub.id)}
                       onSave={async (id, name) => {
                         if (selectedCatId) {
-                          await updateSubcategory.mutateAsync({
-                            categoryId: selectedCatId,
-                            id,
-                            data: { name },
-                          });
-                          refetchSubcategories();
+                          try {
+                            await updateSubcategory.mutateAsync({
+                              categoryId: selectedCatId,
+                              id,
+                              data: { name },
+                            });
+                            refetchSubcategories();
+                          } catch (error: any) {
+                            showToast(error?.body?.name?.[0] || "Failed to save subcategory", "error");
+                          }
                         }
                       }}
                       onSaveComplete={() => {

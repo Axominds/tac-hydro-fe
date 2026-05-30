@@ -140,7 +140,21 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
   }
 
   if (!res.ok) {
-    throw new Error(`${path} → ${res.status}`);
+    let bodyData: any = null;
+    try {
+      const text = await res.text();
+      try {
+        bodyData = JSON.parse(text);
+      } catch {
+        bodyData = text;
+      }
+    } catch {
+      // Ignore body parsing errors
+    }
+    const error = new Error(`${path} → ${res.status}`) as any;
+    error.status = res.status;
+    error.body = bodyData;
+    throw error;
   }
 
   if (method === "DELETE") {

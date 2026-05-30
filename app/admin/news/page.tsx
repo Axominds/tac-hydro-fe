@@ -16,6 +16,7 @@ import {
   Check,
   GripVertical,
   FileText,
+  AlertCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useQueryClient } from "@tanstack/react-query";
@@ -171,6 +172,7 @@ export default function NewsManagementPage() {
   const { setIsModalOpen: setContextModalOpen } = useModalContext();
   const { toast, showToast, hideToast } = useToast();
 
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isModalOpen, setIsModalOpenLocal] = useState(false);
   const setIsModalOpen = (open: boolean) => {
     setIsModalOpenLocal(open);
@@ -249,69 +251,113 @@ export default function NewsManagementPage() {
     setIsLoadingDetail(false);
   };
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.title?.trim()) {
+      errors.title = "News title is required.";
+    } else if (formData.title.length > 255) {
+      errors.title = "News title cannot exceed 255 characters.";
+    }
+    if (!formData.news_date) {
+      errors.news_date = "News date is required.";
+    }
+    if (!formData.content_html?.trim()) {
+      errors.content_html = "Content is required.";
+    }
+    return errors;
+  };
+
+  const fieldError = (field: string) => {
+    const error = validationErrors[field];
+    if (!error) return null;
+    return (
+      <p className="text-xs text-red-500 mt-1 px-1 flex items-center gap-1">
+        <AlertCircle className="h-3 w-3 shrink-0" />
+        {error}
+      </p>
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const errors = validateForm();
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     const cleanedContent = (formData.content_html || "").replace(/&nbsp;/g, " ");
     const cleanedFormData = { ...formData, content_html: cleanedContent };
 
     let newsId = editingItem?.id;
 
-    if (editingItem) {
-      if (selectedImage) {
-        const formDataToSend = new FormData();
-        formDataToSend.append("title", cleanedFormData.title || "");
-        formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
-        formDataToSend.append("news_date", cleanedFormData.news_date || "");
-        formDataToSend.append("summary", cleanedFormData.summary || "");
-        formDataToSend.append("content_html", cleanedFormData.content_html || "");
-        formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
-        formDataToSend.append("image", selectedImage);
-        const res = await apiFetch<NewsItem>(`/api/home/news/${editingItem.id}/`, {
-          method: "PATCH",
-          body: formDataToSend,
-        });
-        newsId = res.id;
-        queryClient.invalidateQueries({ queryKey: ["news-counts"] });
-        showToast("News saved successfully", "success");
-      } else {
-        const changedData: Partial<NewsItem> = {};
-        Object.keys(cleanedFormData).forEach((k) => {
-          const key = k as keyof NewsItem;
-          if (cleanedFormData[key] !== editingItem[key]) {
-            changedData[key] = cleanedFormData[key];
-          }
-        });
-        if (Object.keys(changedData).length > 0) {
-          const res = await updateNews.mutateAsync({ id: editingItem.id, data: changedData });
+    try {
+      if (editingItem) {
+        if (selectedImage) {
+          const formDataToSend = new FormData();
+          formDataToSend.append("title", cleanedFormData.title || "");
+          formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
+          formDataToSend.append("news_date", cleanedFormData.news_date || "");
+          formDataToSend.append("summary", cleanedFormData.summary || "");
+          formDataToSend.append("content_html", cleanedFormData.content_html || "");
+          formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
+          formDataToSend.append("image", selectedImage);
+          const res = await apiFetch<NewsItem>(`/api/home/news/${editingItem.id}/`, {
+            method: "PATCH",
+            body: formDataToSend,
+          });
           newsId = res.id;
           queryClient.invalidateQueries({ queryKey: ["news-counts"] });
+          showToast("News saved successfully", "success");
+        } else {
+          const changedData: Partial<NewsItem> = {};
+          Object.keys(cleanedFormData).forEach((k) => {
+            const key = k as keyof NewsItem;
+            if (cleanedFormData[key] !== editingItem[key]) {
+              changedData[key] = cleanedFormData[key];
+            }
+          });
+          if (Object.keys(changedData).length > 0) {
+            const res = await updateNews.mutateAsync({ id: editingItem.id, data: changedData });
+            newsId = res.id;
+            queryClient.invalidateQueries({ queryKey: ["news-counts"] });
+          }
+          showToast("News saved successfully", "success");
         }
-        showToast("News saved successfully", "success");
-      }
-    } else {
-      if (selectedImage) {
-        const formDataToSend = new FormData();
-        formDataToSend.append("title", cleanedFormData.title || "");
-        formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
-        formDataToSend.append("news_date", cleanedFormData.news_date || "");
-        formDataToSend.append("summary", cleanedFormData.summary || "");
-        formDataToSend.append("content_html", cleanedFormData.content_html || "");
-        formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
-        formDataToSend.append("image", selectedImage);
-        await apiFetch<NewsItem>("/api/home/news/", {
-          method: "POST",
-          body: formDataToSend,
-        });
-        showToast("News added successfully", "success");
       } else {
-        await createNews.mutateAsync(cleanedFormData);
+        if (selectedImage) {
+          const formDataToSend = new FormData();
+          formDataToSend.append("title", cleanedFormData.title || "");
+          formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
+          formDataToSend.append("news_date", cleanedFormData.news_date || "");
+          formDataToSend.append("summary", cleanedFormData.summary || "");
+          formDataToSend.append("content_html", cleanedFormData.content_html || "");
+          formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
+          formDataToSend.append("image", selectedImage);
+          await apiFetch<NewsItem>("/api/home/news/", {
+            method: "POST",
+            body: formDataToSend,
+          });
+          showToast("News added successfully", "success");
+        } else {
+          await createNews.mutateAsync(cleanedFormData);
+          showToast("News added successfully", "success");
+        }
+        queryClient.invalidateQueries({ queryKey: ["news"] });
+        queryClient.invalidateQueries({ queryKey: ["news-counts"] });
         showToast("News added successfully", "success");
       }
-      queryClient.invalidateQueries({ queryKey: ["news"] });
-      queryClient.invalidateQueries({ queryKey: ["news-counts"] });
-      showToast("News added successfully", "success");
+      closeModal();
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors((prev) => ({ ...prev, ...serverErrors }));
+      } else {
+        showToast("Failed to save news.", "error");
+      }
     }
-    closeModal();
   };
 
   const closeModal = () => {
@@ -804,16 +850,20 @@ export default function NewsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={{ color: colors.textMuted as string }}
                       >
-                        News Title
+                        News Title <span className="text-red-500">*</span>
                       </label>
                       <input
                         required
                         value={formData.title || ""}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, title: e.target.value });
+                          setValidationErrors((prev) => ({ ...prev, title: "" }));
+                        }}
                         className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         style={inputStyle}
                         placeholder="Headline goes here..."
                       />
+                      {fieldError("title")}
                     </div>
 
                     <div className="space-y-2">
@@ -844,16 +894,20 @@ export default function NewsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={{ color: colors.textMuted as string }}
                       >
-                        News Date
+                        News Date <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="date"
                         required
                         value={formData.news_date || ""}
-                        onChange={(e) => setFormData({ ...formData, news_date: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, news_date: e.target.value });
+                          setValidationErrors((prev) => ({ ...prev, news_date: "" }));
+                        }}
                         className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         style={inputStyle}
                       />
+                      {fieldError("news_date")}
                     </div>
 
                     <div className="space-y-2">
@@ -918,15 +972,19 @@ export default function NewsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={{ color: colors.textMuted as string }}
                       >
-                        Content
+                        Content <span className="text-red-500">*</span>
                       </label>
                       <QuillEditor
                         key={editingItem?.id}
                         value={formData.content_html || ""}
-                        onChange={(value) => setFormData({ ...formData, content_html: value })}
+                        onChange={(value) => {
+                          setFormData({ ...formData, content_html: value });
+                          setValidationErrors((prev) => ({ ...prev, content_html: "" }));
+                        }}
                         isDark={isDark}
                         placeholder="Enter article content..."
                       />
+                      {fieldError("content_html")}
                     </div>
 
                     <div className="flex items-center gap-3 col-span-2">

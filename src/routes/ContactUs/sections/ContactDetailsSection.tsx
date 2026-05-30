@@ -5,6 +5,48 @@ import { useProjectScopes } from "../../../hooks/useProjectScopes";
 import { Button } from "../../../components/ui/button";
 import { apiFetch } from "../../../lib/api";
 
+const validateForm = (formData: {
+  name: string;
+  phone: string;
+  email: string;
+  message: string;
+}) => {
+  const errors: Record<string, string> = {};
+
+  if (!formData.name.trim()) {
+    errors.name = "Name is required.";
+  } else if (formData.name.trim().length < 2) {
+    errors.name = "Name must be at least 2 characters long.";
+  } else if (formData.name.trim().length > 100) {
+    errors.name = "Name cannot exceed 100 characters.";
+  } else if (!/^[a-zA-Z\s'\-]+$/.test(formData.name.trim())) {
+    errors.name = "Name can only contain alphabetical characters, spaces, hyphens, and apostrophes.";
+  }
+
+  if (!formData.phone.trim()) {
+    errors.phone = "Phone number is required.";
+  } else if (!/^\+?[0-9\s\-\(\)]+$/.test(formData.phone.trim())) {
+    errors.phone = "Phone number can only contain digits, spaces, hyphens, parentheses, and start with +.";
+  } else {
+    const digits = formData.phone.replace(/\D/g, "");
+    if (digits.length < 7 || digits.length > 20) {
+      errors.phone = "Phone number must contain between 7 and 20 digits.";
+    }
+  }
+
+  if (!formData.email.trim()) {
+    errors.email = "Email is required.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+    errors.email = "Enter a valid email address.";
+  }
+
+  if (formData.message.length > 5000) {
+    errors.message = "Message cannot exceed 5000 characters.";
+  }
+
+  return errors;
+};
+
 export const ContactDetailsSection = () => {
   const { data: settings } = useSiteSettings();
   const { data: projectScopes } = useProjectScopes();
@@ -19,16 +61,48 @@ export const ContactDetailsSection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
+  };
+
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const errors = validateForm(formData);
+    if (errors[name]) {
+      setValidationErrors((prev) => ({ ...prev, [name]: errors[name] }));
+    } else {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const errors = validateForm(formData);
+    setValidationErrors(errors);
+    setTouched({ name: true, phone: true, email: true, message: true });
+    if (Object.keys(errors).length > 0) return;
+
     setIsLoading(true);
     setStatus("idle");
     setErrorMessage("");
@@ -52,7 +126,17 @@ export const ContactDetailsSection = () => {
         project_scope_id: "",
         message: "",
       });
-    } catch (error) {
+      setValidationErrors({});
+      setTouched({});
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors((prev) => ({ ...prev, ...serverErrors }));
+        setTouched((prev) => ({ ...prev, ...Object.keys(serverErrors).reduce((acc, k) => ({ ...acc, [k]: true }), {}) }));
+      }
       setStatus("error");
       setErrorMessage("Failed to send message. Please try again.");
     } finally {
@@ -166,48 +250,69 @@ export const ContactDetailsSection = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex flex-col gap-2.5">
                   <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
-                    Your Name
+                    Your Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Enter your name*"
                     required
                     className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400"
                   />
+                  {validationErrors.name && touched.name && (
+                    <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      {validationErrors.name}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-2.5">
                   <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
-                    Phone Number
+                    Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Enter your phone*"
                     required
                     className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400"
                   />
+                  {validationErrors.phone && touched.phone && (
+                    <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      {validationErrors.phone}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex flex-col gap-2.5">
                   <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
-                    Email Address
+                    Email Address <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     placeholder="Enter your email*"
                     required
                     className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400"
                   />
+                  {validationErrors.email && touched.email && (
+                    <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      {validationErrors.email}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-2.5">
                   <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">
@@ -217,6 +322,7 @@ export const ContactDetailsSection = () => {
                     name="project_scope_id"
                     value={formData.project_scope_id}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     className="h-14 rounded-2xl bg-slate-50 border border-slate-100 px-6 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all appearance-none cursor-pointer"
                   >
                     <option value="">Select a service</option>
@@ -237,9 +343,16 @@ export const ContactDetailsSection = () => {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="min-h-[160px] rounded-2xl bg-slate-50 border border-slate-100 px-6 py-5 text-slate-900 text-base outline-none focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/5 transition-all placeholder:text-slate-400 resize-none"
                   placeholder="Tell us about your project or inquiry..."
                 />
+                {validationErrors.message && touched.message && (
+                  <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    {validationErrors.message}
+                  </p>
+                )}
               </div>
 
               <div className="flex justify-end">

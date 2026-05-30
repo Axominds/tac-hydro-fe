@@ -15,6 +15,7 @@ import {
   Pencil,
   Image as ImageIcon,
   Search,
+  AlertCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import {
@@ -106,6 +107,7 @@ export default function ProjectsManagementPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [formData, setFormData] = useState<Partial<Project>>({});
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [membershipScopeId, setMembershipScopeId] = useState<number | null>(null);
   const [membershipRole, setMembershipRole] = useState("");
   const [roleDrafts, setRoleDrafts] = useState<Record<number, string>>({});
@@ -172,26 +174,71 @@ export default function ProjectsManagementPage() {
     setIsLoadingDetail(false);
   };
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.title?.trim()) {
+      errors.title = "Project title is required.";
+    } else if (formData.title.length > 255) {
+      errors.title = "Project title cannot exceed 255 characters.";
+    }
+    if (formData.installed_capacity == null || formData.installed_capacity <= 0) {
+      errors.installed_capacity = "Installed capacity must be a positive number.";
+    }
+    if (formData.latitude == null || formData.latitude < -90 || formData.latitude > 90) {
+      errors.latitude = "Latitude must be between -90 and 90.";
+    }
+    if (formData.longitude == null || formData.longitude < -180 || formData.longitude > 180) {
+      errors.longitude = "Longitude must be between -180 and 180.";
+    }
+    return errors;
+  };
+
+  const fieldError = (field: string) => {
+    const error = validationErrors[field];
+    if (!error) return null;
+    return (
+      <p className="text-xs text-red-500 mt-1 px-1 flex items-center gap-1">
+        <AlertCircle className="h-3 w-3 shrink-0" />
+        {error}
+      </p>
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingProject) {
-      const changedData: Partial<Project> = {};
-      Object.keys(formData).forEach((k) => {
-        const key = k as keyof Project;
-        if (JSON.stringify(formData[key]) !== JSON.stringify(editingProject[key])) {
-          // @ts-ignore
-          changedData[key] = formData[key];
+    const errors = validateForm();
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+    try {
+      if (editingProject) {
+        const changedData: Partial<Project> = {};
+        Object.keys(formData).forEach((k) => {
+          const key = k as keyof Project;
+          if (JSON.stringify(formData[key]) !== JSON.stringify(editingProject[key])) {
+            // @ts-ignore
+            changedData[key] = formData[key];
+          }
+        });
+        if (Object.keys(changedData).length > 0) {
+          await updateProject.mutateAsync({ id: editingProject.id, data: changedData });
+          showToast("Project saved successfully!");
         }
-      });
-      if (Object.keys(changedData).length > 0) {
-        await updateProject.mutateAsync({ id: editingProject.id, data: changedData });
-        showToast("Project saved successfully!");
+      } else {
+        await createProject.mutateAsync(formData);
+        showToast("Project added successfully!");
       }
-    } else {
-      await createProject.mutateAsync(formData);
-      showToast("Project added successfully!");
+      setIsModalOpen(false);
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors((prev) => ({ ...prev, ...serverErrors }));
+      } else {
+        showToast("Failed to save project.", "error");
+      }
     }
-    setIsModalOpen(false);
   };
 
   const handleDelete = (id: number) => {
@@ -572,12 +619,15 @@ export default function ProjectsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={classes.text.muted}
                       >
-                        Project Title
+                        Project Title <span className="text-red-500">*</span>
                       </label>
                       <input
                         required
                         value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, title: e.target.value });
+                          setValidationErrors((prev) => ({ ...prev, title: "" }));
+                        }}
                         className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         style={{
                           ...classes.input.bg,
@@ -586,6 +636,7 @@ export default function ProjectsManagementPage() {
                         }}
                         placeholder="e.g. Maduwa Hydropower"
                       />
+                      {fieldError("title")}
                     </div>
 
                     <div className="space-y-2">
@@ -615,19 +666,20 @@ export default function ProjectsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={classes.text.muted}
                       >
-                        Capacity (MW)
+                        Capacity (MW) <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
                         step="0.1"
                         required
                         value={formData.installed_capacity}
-                        onChange={(e) =>
+                        onChange={(e) => {
                           setFormData({
                             ...formData,
                             installed_capacity: parseFloat(e.target.value),
-                          })
-                        }
+                          });
+                          setValidationErrors((prev) => ({ ...prev, installed_capacity: "" }));
+                        }}
                         className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         style={{
                           ...classes.input.bg,
@@ -635,6 +687,7 @@ export default function ProjectsManagementPage() {
                           borderStyle: "solid",
                         }}
                       />
+                      {fieldError("installed_capacity")}
                     </div>
 
                     <div className="space-y-2">
@@ -667,16 +720,17 @@ export default function ProjectsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={classes.text.muted}
                       >
-                        Latitude
+                        Latitude <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
                         step="0.0001"
                         required
                         value={formData.latitude}
-                        onChange={(e) =>
-                          setFormData({ ...formData, latitude: parseFloat(e.target.value) })
-                        }
+                        onChange={(e) => {
+                          setFormData({ ...formData, latitude: parseFloat(e.target.value) });
+                          setValidationErrors((prev) => ({ ...prev, latitude: "" }));
+                        }}
                         className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         style={{
                           ...classes.input.bg,
@@ -684,6 +738,7 @@ export default function ProjectsManagementPage() {
                           borderStyle: "solid",
                         }}
                       />
+                      {fieldError("latitude")}
                     </div>
 
                     <div className="space-y-2">
@@ -691,16 +746,17 @@ export default function ProjectsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={classes.text.muted}
                       >
-                        Longitude
+                        Longitude <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="number"
                         step="0.0001"
                         required
                         value={formData.longitude}
-                        onChange={(e) =>
-                          setFormData({ ...formData, longitude: parseFloat(e.target.value) })
-                        }
+                        onChange={(e) => {
+                          setFormData({ ...formData, longitude: parseFloat(e.target.value) });
+                          setValidationErrors((prev) => ({ ...prev, longitude: "" }));
+                        }}
                         className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         style={{
                           ...classes.input.bg,
@@ -708,6 +764,7 @@ export default function ProjectsManagementPage() {
                           borderStyle: "solid",
                         }}
                       />
+                      {fieldError("longitude")}
                     </div>
 
                     <div className="space-y-2 col-span-2">
