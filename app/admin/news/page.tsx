@@ -469,11 +469,11 @@ export default function NewsManagementPage() {
   };
 
   return (
-    <div className="space-y-15 uppercase relative">
+    <div className="space-y-15 relative">
       <div className="flex items-center justify-between">
         <div>
           <h1
-            className={`${montserrat.className} text-4xl mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={{ color: colors.text as string }}
           >
             News & <span className="text-blue-500">Events</span>

@@ -460,11 +460,11 @@ export default function TeamPage() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1
-            className={`${montserrat.className} text-3xl font-bold mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={classes.text.primary}
           >
             Team <span className="text-blue-500">Members</span>

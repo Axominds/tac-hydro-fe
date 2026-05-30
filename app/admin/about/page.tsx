@@ -158,7 +158,7 @@ export default function AboutManagementPage() {
       <div className="flex items-center">
         <div>
           <h1
-            className={`${montserrat.className} text-4xl mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={{ color: colors.text as string }}
           >
             About <span className="text-blue-500">Us</span>

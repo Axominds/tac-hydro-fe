@@ -465,10 +465,10 @@ export default function ProjectsManagementPage() {
   };
 
   return (
-    <div className="space-y-15 uppercase relative">
+    <div className="space-y-15 relative">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`${montserrat.className} text-4xl mb-2`} style={classes.text.primary}>
+          <h1 className={`${montserrat.className} text-4xl font-bold mb-2`} style={classes.text.primary}>
             Hydro <span className="text-blue-500">Projects</span>
           </h1>
           <p style={classes.text.secondary}>

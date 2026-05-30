@@ -2,9 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Plus, Edit2, Trash2, Loader2, X, Save, AlertCircle } from "lucide-react";
+import { Montserrat } from "next/font/google";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 import { Toast, useToast } from "../../../src/components/ui/toast";
+
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
 interface SectorData {
   id: number;
@@ -151,7 +154,7 @@ export function ServiceSectorModal({
           className="p-6 flex items-center justify-between"
           style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
         >
-          <h2 className="text-xl font-bold" style={{ color: colors.text as string }}>
+          <h2 className={`${montserrat.className} text-xl font-bold`} style={{ color: colors.text as string }}>
             {sector ? "Edit Sector" : "Add Sector"}
           </h2>
           <button

@@ -5,9 +5,12 @@ import { Briefcase, Plus, Edit2, Trash2, Loader2, GripVertical, X, Save, AlertCi
 import { useExpertiseItems } from "../../../src/hooks/useExpertiseCategories";
 import { useProjectScopes } from "../../../src/hooks/useProjectScopes";
 import { useExpertiseItemMutations } from "../../../src/hooks/useAdminMutations";
+import { Montserrat } from "next/font/google";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 import { Toast, useToast } from "../../../src/components/ui/toast";
+
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
 const colorStylesMap: Record<string, { bg: string; text: string }> = {
   blue: { bg: "bg-blue-600/10", text: "text-blue-500" },
@@ -248,7 +251,7 @@ export function ExpertiseCategoryModal({
           className="p-6 flex items-center justify-between"
           style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
         >
-          <h2 className="text-xl font-bold" style={{ color: colors.text as string }}>
+          <h2 className={`${montserrat.className} text-xl font-bold`} style={{ color: colors.text as string }}>
             {isEditing ? "Edit Category" : "Add Category"}
           </h2>
           <button

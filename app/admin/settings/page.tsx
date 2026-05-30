@@ -232,11 +232,11 @@ export default function SiteSettingsManagementPage() {
   };
 
   return (
-    <div className="space-y-15 uppercase relative pb-40">
+    <div className="space-y-15 relative pb-40">
       <div className="flex items-center justify-between">
         <div>
           <h1
-            className={`${montserrat.className} text-4xl mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={{ color: colors.text as string }}
           >
             Global <span className="text-blue-500">Settings</span>
@@ -275,7 +275,7 @@ export default function SiteSettingsManagementPage() {
             <div className="space-y-6">
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Company Name <span className="text-red-500">*</span>
@@ -294,7 +294,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Tagline
@@ -313,7 +313,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Official Email Support
@@ -338,7 +338,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Collaboration Email
@@ -363,7 +363,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Phone Number
@@ -388,7 +388,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Business Hours
@@ -413,7 +413,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Headquarter Location
@@ -438,7 +438,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Founded Year
@@ -476,7 +476,7 @@ export default function SiteSettingsManagementPage() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center px-1">
                   <label
-                    className="text-sm font-semibold uppercase tracking-widest text-[10px]"
+                    className="text-[10px] font-bold tracking-widest uppercase"
                     style={{ color: colors.textMuted as string }}
                   >
                     Map Embed URL
@@ -536,7 +536,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   LinkedIn URL
@@ -556,7 +556,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Facebook URL
@@ -619,7 +619,7 @@ export default function SiteSettingsManagementPage() {
             {videoMode === "upload" && (
               <div className="space-y-4">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Video File
@@ -664,7 +664,7 @@ export default function SiteSettingsManagementPage() {
             {videoMode === "youtube" && (
               <div className="space-y-4">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   YouTube URL
@@ -712,7 +712,7 @@ export default function SiteSettingsManagementPage() {
             </h2>
             <div className="space-y-4">
               <label
-                className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                className="text-[10px] font-bold tracking-widest uppercase"
                 style={{ color: colors.textMuted as string }}
               >
                 Chart Image
@@ -769,7 +769,7 @@ export default function SiteSettingsManagementPage() {
             }}
           >
             <h3
-              className="text-lg font-bold mb-4"
+              className={`${montserrat.className} text-lg font-bold mb-4`}
               style={{ color: colors.text as string }}
             >
               Confirm Switch

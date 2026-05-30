@@ -477,11 +477,11 @@ export default function ValuedPartnersPage() {
   };
 
   return (
-    <div className="space-y-6 relative pb-40">
+    <div className="space-y-15 relative pb-40">
       <div className="flex items-center justify-between">
         <div>
           <h1
-            className={`${montserrat.className} text-4xl mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={{ color: colors.text as string }}
           >
             Valued <span className="text-blue-500">Partners</span>
