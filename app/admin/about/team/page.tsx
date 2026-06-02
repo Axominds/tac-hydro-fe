@@ -134,6 +134,7 @@ export default function TeamPage() {
         },
       });
       queryClient.invalidateQueries({ queryKey: ["team-member-categories"] });
+      showToast("Member added to category successfully!", "success");
       setIsAddToCategoryModalOpen(false);
     } catch (e) {
       console.error(e);
@@ -449,6 +450,7 @@ export default function TeamPage() {
   const toggleMemberCategory = async (memberId: number, categoryId: number, isAdding: boolean) => {
     if (isAdding) {
       await addMemberCategory.mutateAsync({ team_member_id: memberId, category_id: categoryId });
+      showToast("Category added to member successfully!", "success");
     } else {
       const mc = memberCategories?.find(
         (m) => m.team_member_id === memberId && m.category_id === categoryId,

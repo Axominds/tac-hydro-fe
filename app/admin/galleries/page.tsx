@@ -239,6 +239,7 @@ export default function GalleriesManagementPage() {
         order: (categories?.length || 0) + 1,
       });
       setNewCatName("");
+      showToast("Category added successfully!");
     } catch (error: any) {
       showToast(error?.body?.name?.[0] || "Failed to add category", "error");
     }
@@ -255,6 +256,7 @@ export default function GalleriesManagementPage() {
         },
       });
       setNewSubCatName("");
+      showToast("Subcategory added successfully!");
       refetchSubcategories();
     } catch (error: any) {
       showToast(error?.body?.name?.[0] || "Failed to add subcategory", "error");
@@ -290,6 +292,7 @@ export default function GalleriesManagementPage() {
       });
     }
     refetchImages();
+    showToast("Images uploaded successfully!", "success");
   };
 
   const onDropReorder = async (targetId: number, type: "cat" | "sub" | "img") => {

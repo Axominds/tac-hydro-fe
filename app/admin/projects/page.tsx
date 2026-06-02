@@ -459,6 +459,7 @@ export default function ProjectsManagementPage() {
           }),
         ),
       );
+      showToast("Images uploaded successfully!", "success");
     } finally {
       setUploadingMembershipId(null);
     }

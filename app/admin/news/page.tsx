@@ -459,6 +459,7 @@ export default function NewsManagementPage() {
     if (!newCatName.trim()) return;
     setAddingCat(true);
     await createCategory.mutateAsync({ name: newCatName.trim() });
+    showToast("Category added successfully!", "success");
     queryClient.invalidateQueries({ queryKey: ["news-categories"] });
     setNewCatName("");
     setAddingCat(false);
@@ -466,6 +467,7 @@ export default function NewsManagementPage() {
 
   const handleUpdateCategory = async (id: number, name: string) => {
     await updateCategory.mutateAsync({ id, data: { name } });
+    showToast("Category updated successfully!", "success");
     setOrderedCategories((prev) =>
       prev.map((c) => (c.id === id ? { ...c, name } : c))
     );
