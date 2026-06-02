@@ -3,6 +3,71 @@ import { Mail, Phone, ArrowRight, FileText, Upload, CheckCircle, AlertCircle } f
 import { useSiteSettings } from "../../../hooks/useSiteSettings";
 import { apiFetch } from "../../../lib/api";
 
+const validateForm = (formData: {
+  rep_name: string;
+  organization: string;
+  email: string;
+  phone: string;
+  website: string;
+  company_profile: string;
+  proposal_brief: string;
+}) => {
+  const errors: Record<string, string> = {};
+
+  if (!formData.rep_name.trim()) {
+    errors.rep_name = "Name is required.";
+  } else if (formData.rep_name.trim().length < 2) {
+    errors.rep_name = "Name must be at least 2 characters long.";
+  } else if (formData.rep_name.trim().length > 100) {
+    errors.rep_name = "Name cannot exceed 100 characters.";
+  } else if (!/^[a-zA-Z\s'\-]+$/.test(formData.rep_name.trim())) {
+    errors.rep_name = "Name can only contain alphabetical characters, spaces, hyphens, and apostrophes.";
+  }
+
+  if (!formData.organization.trim()) {
+    errors.organization = "Organization is required.";
+  } else if (formData.organization.trim().length < 2) {
+    errors.organization = "Organization must be at least 2 characters long.";
+  } else if (formData.organization.trim().length > 200) {
+    errors.organization = "Organization cannot exceed 200 characters.";
+  }
+
+  if (!formData.email.trim()) {
+    errors.email = "Email is required.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+    errors.email = "Enter a valid email address.";
+  }
+
+  if (!formData.phone.trim()) {
+    errors.phone = "Phone number is required.";
+  } else if (!/^\+?[0-9\s\-\(\)]+$/.test(formData.phone.trim())) {
+    errors.phone = "Phone number can only contain digits, spaces, hyphens, parentheses, and start with +.";
+  } else {
+    const digits = formData.phone.replace(/\D/g, "");
+    if (digits.length < 7 || digits.length > 20) {
+      errors.phone = "Phone number must contain between 7 and 20 digits.";
+    }
+  }
+
+  if (formData.website.trim() && !/^https?:\/\/.+/.test(formData.website.trim())) {
+    errors.website = "Enter a valid URL starting with http:// or https://.";
+  }
+
+  if (!formData.company_profile.trim()) {
+    errors.company_profile = "Company profile is required.";
+  } else if (formData.company_profile.trim().length < 10) {
+    errors.company_profile = "Company profile must be at least 10 characters long.";
+  } else if (formData.company_profile.length > 5000) {
+    errors.company_profile = "Company profile cannot exceed 5000 characters.";
+  }
+
+  if (formData.proposal_brief.length > 1000) {
+    errors.proposal_brief = "Proposal brief cannot exceed 1000 characters.";
+  }
+
+  return errors;
+};
+
 export const InitiateSynergySection = () => {
   const { data: settings } = useSiteSettings();
   const [fileName, setFileName] = useState<string>("");
@@ -23,12 +88,38 @@ export const InitiateSynergySection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
+  };
+
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const errors = validateForm(formData);
+    if (errors[name]) {
+      setValidationErrors((prev) => ({ ...prev, [name]: errors[name] }));
+    } else {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
   };
 
   const handleUploadClick = () => {
@@ -37,16 +128,49 @@ export const InitiateSynergySection = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file?.size > 10 * 1024 * 1024) {
-      alert("File size exceeds 10MB limit.");
+    if (!file) return;
+
+    const allowedExtensions = [".pdf", ".doc", ".docx"];
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    if (!ext || !allowedExtensions.includes(`.${ext}`)) {
+      setValidationErrors((prev) => ({ ...prev, attachment: "Only PDF, DOC, and DOCX files are allowed." }));
+      setTouched((prev) => ({ ...prev, attachment: true }));
+      e.target.value = "";
       return;
     }
-    setFileName(file?.name || "");
-    setSelectedFile(file || null);
+
+    if (file.size > 10 * 1024 * 1024) {
+      setValidationErrors((prev) => ({ ...prev, attachment: "Attachment size cannot exceed 10MB." }));
+      setTouched((prev) => ({ ...prev, attachment: true }));
+      e.target.value = "";
+      return;
+    }
+
+    setValidationErrors((prev) => {
+      const next = { ...prev };
+      delete next.attachment;
+      return next;
+    });
+    setFileName(file.name);
+    setSelectedFile(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const errors = validateForm(formData);
+    setValidationErrors(errors);
+    setTouched({
+      rep_name: true,
+      organization: true,
+      email: true,
+      phone: true,
+      website: true,
+      company_profile: true,
+      proposal_brief: true,
+    });
+    if (Object.keys(errors).length > 0) return;
+
     setIsLoading(true);
     setStatus("idle");
     setErrorMessage("");
@@ -80,8 +204,18 @@ export const InitiateSynergySection = () => {
       });
       setFileName("");
       setSelectedFile(null);
+      setValidationErrors({});
+      setTouched({});
       if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors((prev) => ({ ...prev, ...serverErrors }));
+        setTouched((prev) => ({ ...prev, ...Object.keys(serverErrors).reduce((acc, k) => ({ ...acc, [k]: true }), {}) }));
+      }
       setStatus("error");
       setErrorMessage("Failed to submit. Please try again.");
     } finally {
@@ -169,59 +303,87 @@ export const InitiateSynergySection = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-                    Representative Name*
+                    Representative Name<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     name="rep_name"
                     value={formData.rep_name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#0070c0] focus:ring-2 focus:ring-[#0070c0]/10 outline-none transition-all placeholder:text-gray-400 text-sm"
                     placeholder="Full Name"
                   />
+                  {validationErrors.rep_name && touched.rep_name && (
+                    <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      {validationErrors.rep_name}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-                    Organization*
+                    Organization<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     name="organization"
                     value={formData.organization}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#0070c0] focus:ring-2 focus:ring-[#0070c0]/10 outline-none transition-all placeholder:text-gray-400 text-sm"
                     placeholder="Organization Name"
                   />
+                  {validationErrors.organization && touched.organization && (
+                    <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      {validationErrors.organization}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-                    Contact Email*
+                    Contact Email<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#0070c0] focus:ring-2 focus:ring-[#0070c0]/10 outline-none transition-all placeholder:text-gray-400 text-sm"
                     placeholder="email@example.com"
                   />
+                  {validationErrors.email && touched.email && (
+                    <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      {validationErrors.email}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-                    Contact Phone*
+                    Contact Phone<span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     required
                     className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#0070c0] focus:ring-2 focus:ring-[#0070c0]/10 outline-none transition-all placeholder:text-gray-400 text-sm"
                     placeholder="+1 (555) 000-0000"
                   />
+                  {validationErrors.phone && touched.phone && (
+                    <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      {validationErrors.phone}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -235,9 +397,16 @@ export const InitiateSynergySection = () => {
                     name="website"
                     value={formData.website}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#0070c0] focus:ring-2 focus:ring-[#0070c0]/10 outline-none transition-all placeholder:text-gray-400 text-sm"
                     placeholder="https://"
                   />
+                  {validationErrors.website && touched.website && (
+                    <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      {validationErrors.website}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
@@ -248,6 +417,7 @@ export const InitiateSynergySection = () => {
                       name="collab_type"
                       value={formData.collab_type}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#0070c0] focus:ring-2 focus:ring-[#0070c0]/10 outline-none transition-all appearance-none cursor-pointer text-gray-700 text-sm"
                     >
                       <option value="">Select Type</option>
@@ -277,17 +447,24 @@ export const InitiateSynergySection = () => {
 
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">
-                  Company Profile / Overview*
-                </label>
+                    Company Profile / Overview<span className="text-red-500">*</span>
+                  </label>
                 <textarea
                   name="company_profile"
                   value={formData.company_profile}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   rows={2}
                   className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#0070c0] focus:ring-2 focus:ring-[#0070c0]/10 outline-none transition-all resize-none placeholder:text-gray-400 text-sm"
                   placeholder="Brief overview of your company..."
                 />
+                {validationErrors.company_profile && touched.company_profile && (
+                  <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    {validationErrors.company_profile}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-1.5">
@@ -299,9 +476,16 @@ export const InitiateSynergySection = () => {
                   name="proposal_brief"
                   value={formData.proposal_brief}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   className="w-full px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100 focus:bg-white focus:border-[#0070c0] focus:ring-2 focus:ring-[#0070c0]/10 outline-none transition-all placeholder:text-gray-400 text-sm"
                   placeholder="Short description or title of proposal"
                 />
+                {validationErrors.proposal_brief && touched.proposal_brief && (
+                  <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    {validationErrors.proposal_brief}
+                  </p>
+                )}
               </div>
 
               <div
@@ -331,6 +515,12 @@ export const InitiateSynergySection = () => {
                   accept=".pdf,.doc,.docx"
                 />
               </div>
+              {validationErrors.attachment && touched.attachment && (
+                <p className="flex items-center gap-1 text-red-500 text-xs mt-1">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                  {validationErrors.attachment}
+                </p>
+              )}
 
               <div className="pt-2">
                 <button

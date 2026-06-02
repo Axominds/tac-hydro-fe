@@ -57,21 +57,18 @@ export default function AdminLoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-300"
-      style={{ backgroundColor: colors.bg as string }}
+      style={{ backgroundColor: isDark ? "#0a0a0a" : "#f9fafb" }}
     >
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-600/10 rounded-full blur-[120px]" />
-
       <div
-        className="w-full max-w-md p-8 backdrop-blur-xl rounded-2xl shadow-2xl relative z-10 transition-all"
+        className="w-full max-w-md p-8 rounded-2xl relative z-10 transition-all"
         style={{
-          backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.8)",
-          border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+          background: "transparent",
+          border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.08)"}`,
         }}
       >
         <div className="text-center mb-8">
           <h1
-            className={`${montserrat.className} text-3xl mb-2`}
+            className={`${montserrat.className} text-3xl font-bold mb-2`}
             style={{ color: colors.text as string }}
           >
             Tac-Hydro <span className="text-blue-500">Admin</span>
@@ -92,10 +89,10 @@ export default function AdminLoginPage() {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
               style={{
-                backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
-                border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#cbd5e1"}`,
+                background: "transparent",
+                border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)"}`,
                 color: colors.text as string,
               }}
               required
@@ -112,10 +109,10 @@ export default function AdminLoginPage() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full rounded-xl py-3 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
               style={{
-                backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9",
-                border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "#cbd5e1"}`,
+                background: "transparent",
+                border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)"}`,
                 color: colors.text as string,
               }}
               required
@@ -137,7 +134,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all transform active:scale-[0.98] disabled:opacity-50"
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50"
           >
             {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Login"}
           </button>
@@ -145,7 +142,7 @@ export default function AdminLoginPage() {
 
         <div
           className="mt-8 pt-6 text-center"
-          style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
+          style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"}` }}
         >
           <p
             className="text-xs uppercase tracking-widest leading-relaxed"

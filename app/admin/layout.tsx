@@ -195,6 +195,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
+
   const colors = adminTheme[theme];
 
   if (!mounted) return null;

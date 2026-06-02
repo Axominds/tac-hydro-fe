@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Briefcase, Plus, Edit2, Trash2, Loader2, GripVertical, X, Save } from "lucide-react";
+import { Briefcase, Plus, Edit2, Trash2, Loader2, GripVertical, X, Save, AlertCircle } from "lucide-react";
 import { useExpertiseItems } from "../../../src/hooks/useExpertiseCategories";
 import { useProjectScopes } from "../../../src/hooks/useProjectScopes";
 import { useExpertiseItemMutations } from "../../../src/hooks/useAdminMutations";
+import { Montserrat } from "next/font/google";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 import { Toast, useToast } from "../../../src/components/ui/toast";
+
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
 const colorStylesMap: Record<string, { bg: string; text: string }> = {
   blue: { bg: "bg-blue-600/10", text: "text-blue-500" },
@@ -43,6 +46,7 @@ export function ExpertiseCategoryModal({
   const [iconKey, setIconKey] = useState(category?.icon_key || "briefcase");
   const [themeColor, setThemeColor] = useState(category?.theme_color || "blue");
   const [isSaving, setIsSaving] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [itemDeleteConfirmOpen, setItemDeleteConfirmOpen] = useState(false);
@@ -83,11 +87,31 @@ export function ExpertiseCategoryModal({
   const isDark = theme === "dark";
 
   const handleSave = async () => {
-    if (!title.trim()) return;
+    const errors: Record<string, string> = {};
+    if (!title.trim()) {
+      errors.title = "Title is required.";
+    } else if (title.length > 255) {
+      errors.title = "Title cannot exceed 255 characters.";
+    }
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     setIsSaving(true);
-    await onSave({ title: title.trim(), icon_key: iconKey, theme_color: themeColor });
-    setIsSaving(false);
-    onClose();
+    try {
+      await onSave({ title: title.trim(), icon_key: iconKey, theme_color: themeColor });
+      setIsSaving(false);
+      onClose();
+      showToast(isEditing ? "Category saved successfully!" : "Category added successfully!");
+    } catch (error: any) {
+      setIsSaving(false);
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors(serverErrors);
+      }
+    }
   };
 
   const handleDelete = async () => {
@@ -227,7 +251,7 @@ export function ExpertiseCategoryModal({
           className="p-6 flex items-center justify-between"
           style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
         >
-          <h2 className="text-xl font-bold" style={{ color: colors.text as string }}>
+          <h2 className={`${montserrat.className} text-xl font-bold`} style={{ color: colors.text as string }}>
             {isEditing ? "Edit Category" : "Add Category"}
           </h2>
           <button
@@ -243,14 +267,23 @@ export function ExpertiseCategoryModal({
           <div className="space-y-4">
             <div>
               <label className="block text-sm mb-1" style={{ color: colors.textMuted as string }}>
-                Title
+                Title <span className="text-red-500">*</span>
               </label>
               <input
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  setValidationErrors((prev) => ({ ...prev, title: "" }));
+                }}
                 className="w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 style={inputStyle}
               />
+              {validationErrors.title && (
+                <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3 shrink-0" />
+                  {validationErrors.title}
+                </p>
+              )}
             </div>
             <div className="flex gap-4">
               <div className="flex-1">
@@ -486,22 +519,8 @@ export function ExpertiseCategoryModal({
             Cancel
           </button>
           <button
-            onClick={async () => {
-              if (!title.trim()) return;
-              setIsSaving(true);
-              try {
-                await onSave({
-                  title: title.trim(),
-                  icon_key: iconKey,
-                  theme_color: themeColor,
-                });
-                onClose();
-                showToast(isEditing ? "Category saved successfully!" : "Category added successfully!");
-              } finally {
-                setIsSaving(false);
-              }
-            }}
-            disabled={isSaving || !title.trim()}
+            onClick={handleSave}
+            disabled={isSaving}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}

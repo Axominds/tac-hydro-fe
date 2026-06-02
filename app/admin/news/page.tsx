@@ -16,6 +16,7 @@ import {
   Check,
   GripVertical,
   FileText,
+  AlertCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,6 +26,7 @@ import { useNewsMutations, useNewsCategoryMutations } from "../../../src/hooks/u
 import { NewsItem, NewsCategory, apiFetch, NewsDetail } from "../../../src/lib/api";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { QuillEditor } from "../../../src/components/admin/QuillEditor";
+import { NewsAttachmentManager } from "../../../src/components/admin/NewsAttachmentManager";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
 import { Toast, useToast } from "../../../src/components/ui/toast";
 
@@ -171,6 +173,7 @@ export default function NewsManagementPage() {
   const { setIsModalOpen: setContextModalOpen } = useModalContext();
   const { toast, showToast, hideToast } = useToast();
 
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isModalOpen, setIsModalOpenLocal] = useState(false);
   const setIsModalOpen = (open: boolean) => {
     setIsModalOpenLocal(open);
@@ -180,6 +183,23 @@ export default function NewsManagementPage() {
   const [formData, setFormData] = useState<Partial<NewsItem>>({});
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [createdNewsId, setCreatedNewsId] = useState<number | null>(null);
+  const [pendingAttachments, setPendingAttachments] = useState<{ file: File; title: string }[]>([]);
+  const pendingAttachmentsRef = useRef(pendingAttachments);
+  pendingAttachmentsRef.current = pendingAttachments;
+  const [attachmentTitle, setAttachmentTitle] = useState("");
+  const attachmentFileRef = useRef<HTMLInputElement>(null);
+
+  const titleFromFilename = (name: string): string => {
+    return name
+      .replace(/\.[^.]+$/, "")
+      .replace(/[-_]+/g, " ")
+      .replace(/\s+/g, " ")
+      .split(" ")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ")
+      .trim();
+  };
 
   const [isCatModalOpen, setIsCatModalOpenLocal] = useState(false);
   const setIsCatModalOpen = (open: boolean) => {
@@ -187,6 +207,7 @@ export default function NewsManagementPage() {
     setContextModalOpen(open);
   };
   const isFormValid = formData && formData.title?.trim() && formData.content_html?.trim();
+  const activeNewsId = editingItem?.id ?? createdNewsId;
 
   const [newCatName, setNewCatName] = useState("");
   const [addingCat, setAddingCat] = useState(false);
@@ -225,6 +246,7 @@ export default function NewsManagementPage() {
 
   const openCreateModal = () => {
     setEditingItem(null);
+    setCreatedNewsId(null);
     setFormData({
       title: "",
       news_date: new Date().toISOString().split("T")[0],
@@ -235,11 +257,14 @@ export default function NewsManagementPage() {
       published_at: null,
     });
     setSelectedImage(null);
+    setPendingAttachments([]);
+    setAttachmentTitle("");
     setIsModalOpen(true);
   };
 
   const openEditModal = async (item: NewsItem) => {
     setEditingItem(item);
+    setCreatedNewsId(null);
     setFormData({});
     setSelectedImage(null);
     setIsModalOpen(true);
@@ -249,76 +274,152 @@ export default function NewsManagementPage() {
     setIsLoadingDetail(false);
   };
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.title?.trim()) {
+      errors.title = "News title is required.";
+    } else if (formData.title.length > 255) {
+      errors.title = "News title cannot exceed 255 characters.";
+    }
+    if (!formData.news_date) {
+      errors.news_date = "News date is required.";
+    }
+    if (!formData.content_html?.trim()) {
+      errors.content_html = "Content is required.";
+    }
+    return errors;
+  };
+
+  const fieldError = (field: string) => {
+    const error = validationErrors[field];
+    if (!error) return null;
+    return (
+      <p className="text-xs text-red-500 mt-1 px-1 flex items-center gap-1">
+        <AlertCircle className="h-3 w-3 shrink-0" />
+        {error}
+      </p>
+    );
+  };
+
+  const addPendingAttachment = () => {
+    const file = attachmentFileRef.current?.files?.[0];
+    if (!file || !attachmentTitle.trim()) return;
+    setPendingAttachments((prev) => [...prev, { file, title: attachmentTitle.trim() }]);
+    setAttachmentTitle("");
+    if (attachmentFileRef.current) attachmentFileRef.current.value = "";
+  };
+
+  const removePendingAttachment = (index: number) => {
+    setPendingAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const errors = validateForm();
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     const cleanedContent = (formData.content_html || "").replace(/&nbsp;/g, " ");
     const cleanedFormData = { ...formData, content_html: cleanedContent };
 
     let newsId = editingItem?.id;
 
-    if (editingItem) {
-      if (selectedImage) {
-        const formDataToSend = new FormData();
-        formDataToSend.append("title", cleanedFormData.title || "");
-        formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
-        formDataToSend.append("news_date", cleanedFormData.news_date || "");
-        formDataToSend.append("summary", cleanedFormData.summary || "");
-        formDataToSend.append("content_html", cleanedFormData.content_html || "");
-        formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
-        formDataToSend.append("image", selectedImage);
-        const res = await apiFetch<NewsItem>(`/api/home/news/${editingItem.id}/`, {
-          method: "PATCH",
-          body: formDataToSend,
-        });
-        newsId = res.id;
-        queryClient.invalidateQueries({ queryKey: ["news-counts"] });
-        showToast("News saved successfully", "success");
-      } else {
-        const changedData: Partial<NewsItem> = {};
-        Object.keys(cleanedFormData).forEach((k) => {
-          const key = k as keyof NewsItem;
-          if (cleanedFormData[key] !== editingItem[key]) {
-            changedData[key] = cleanedFormData[key];
-          }
-        });
-        if (Object.keys(changedData).length > 0) {
-          const res = await updateNews.mutateAsync({ id: editingItem.id, data: changedData });
+    try {
+      if (editingItem) {
+        if (selectedImage) {
+          const formDataToSend = new FormData();
+          formDataToSend.append("title", cleanedFormData.title || "");
+          formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
+          formDataToSend.append("news_date", cleanedFormData.news_date || "");
+          formDataToSend.append("summary", cleanedFormData.summary || "");
+          formDataToSend.append("content_html", cleanedFormData.content_html || "");
+          formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
+          formDataToSend.append("image", selectedImage);
+          const res = await apiFetch<NewsItem>(`/api/home/news/${editingItem.id}/`, {
+            method: "PATCH",
+            body: formDataToSend,
+          });
           newsId = res.id;
           queryClient.invalidateQueries({ queryKey: ["news-counts"] });
+          showToast("News saved successfully", "success");
+        } else {
+          const changedData: Partial<NewsItem> = {};
+          Object.keys(cleanedFormData).forEach((k) => {
+            const key = k as keyof NewsItem;
+            if (cleanedFormData[key] !== editingItem[key]) {
+              changedData[key] = cleanedFormData[key];
+            }
+          });
+          if (Object.keys(changedData).length > 0) {
+            const res = await updateNews.mutateAsync({ id: editingItem.id, data: changedData });
+            newsId = res.id;
+            queryClient.invalidateQueries({ queryKey: ["news-counts"] });
+          }
+          showToast("News saved successfully", "success");
         }
-        showToast("News saved successfully", "success");
-      }
-    } else {
-      if (selectedImage) {
-        const formDataToSend = new FormData();
-        formDataToSend.append("title", cleanedFormData.title || "");
-        formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
-        formDataToSend.append("news_date", cleanedFormData.news_date || "");
-        formDataToSend.append("summary", cleanedFormData.summary || "");
-        formDataToSend.append("content_html", cleanedFormData.content_html || "");
-        formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
-        formDataToSend.append("image", selectedImage);
-        await apiFetch<NewsItem>("/api/home/news/", {
-          method: "POST",
-          body: formDataToSend,
-        });
-        showToast("News added successfully", "success");
       } else {
-        await createNews.mutateAsync(cleanedFormData);
-        showToast("News added successfully", "success");
+        if (selectedImage) {
+          const formDataToSend = new FormData();
+          formDataToSend.append("title", cleanedFormData.title || "");
+          formDataToSend.append("news_category_id", String(cleanedFormData.news_category_id || ""));
+          formDataToSend.append("news_date", cleanedFormData.news_date || "");
+          formDataToSend.append("summary", cleanedFormData.summary || "");
+          formDataToSend.append("content_html", cleanedFormData.content_html || "");
+          formDataToSend.append("is_published", String(cleanedFormData.is_published || false));
+          formDataToSend.append("image", selectedImage);
+          const res = await apiFetch<NewsItem>("/api/home/news/", {
+            method: "POST",
+            body: formDataToSend,
+          });
+          newsId = res.id;
+        } else {
+          const res = await createNews.mutateAsync(cleanedFormData);
+          newsId = res.id;
+        }
+        let flushFailed = false;
+        if (newsId && pendingAttachmentsRef.current.length > 0) {
+          const results = await Promise.allSettled(
+            pendingAttachmentsRef.current.map(async (att) => {
+              const attachFormData = new FormData();
+              attachFormData.append("file", att.file);
+              attachFormData.append("title", att.title);
+              attachFormData.append("news_id", String(newsId));
+              return apiFetch("/api/home/news-attachments/", {
+                method: "POST",
+                body: attachFormData,
+              });
+            })
+          );
+          flushFailed = results.some((r) => r.status === "rejected");
+        }
+        queryClient.invalidateQueries({ queryKey: ["news"] });
+        queryClient.invalidateQueries({ queryKey: ["news-counts"] });
+        showToast(flushFailed ? "Failed to upload some attachments" : "News added successfully", flushFailed ? "error" : "success");
+        closeModal();
       }
-      queryClient.invalidateQueries({ queryKey: ["news"] });
-      queryClient.invalidateQueries({ queryKey: ["news-counts"] });
-      showToast("News added successfully", "success");
+      if (newsId) setCreatedNewsId(newsId);
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors((prev) => ({ ...prev, ...serverErrors }));
+      } else {
+        showToast("Failed to save news.", "error");
+      }
     }
-    closeModal();
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingItem(null);
+    setCreatedNewsId(null);
     setFormData({});
     setSelectedImage(null);
+    setPendingAttachments([]);
+    setAttachmentTitle("");
   };
 
   const handleDelete = (id: number) => {
@@ -358,6 +459,7 @@ export default function NewsManagementPage() {
     if (!newCatName.trim()) return;
     setAddingCat(true);
     await createCategory.mutateAsync({ name: newCatName.trim() });
+    showToast("Category added successfully!", "success");
     queryClient.invalidateQueries({ queryKey: ["news-categories"] });
     setNewCatName("");
     setAddingCat(false);
@@ -365,6 +467,7 @@ export default function NewsManagementPage() {
 
   const handleUpdateCategory = async (id: number, name: string) => {
     await updateCategory.mutateAsync({ id, data: { name } });
+    showToast("Category updated successfully!", "success");
     setOrderedCategories((prev) =>
       prev.map((c) => (c.id === id ? { ...c, name } : c))
     );
@@ -423,11 +526,11 @@ export default function NewsManagementPage() {
   };
 
   return (
-    <div className="space-y-15 uppercase relative">
+    <div className="space-y-15 relative">
       <div className="flex items-center justify-between">
         <div>
           <h1
-            className={`${montserrat.className} text-4xl mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={{ color: colors.text as string }}
           >
             News & <span className="text-blue-500">Events</span>
@@ -804,16 +907,20 @@ export default function NewsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={{ color: colors.textMuted as string }}
                       >
-                        News Title
+                        News Title <span className="text-red-500">*</span>
                       </label>
                       <input
                         required
                         value={formData.title || ""}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, title: e.target.value });
+                          setValidationErrors((prev) => ({ ...prev, title: "" }));
+                        }}
                         className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         style={inputStyle}
                         placeholder="Headline goes here..."
                       />
+                      {fieldError("title")}
                     </div>
 
                     <div className="space-y-2">
@@ -844,16 +951,20 @@ export default function NewsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={{ color: colors.textMuted as string }}
                       >
-                        News Date
+                        News Date <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="date"
                         required
                         value={formData.news_date || ""}
-                        onChange={(e) => setFormData({ ...formData, news_date: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, news_date: e.target.value });
+                          setValidationErrors((prev) => ({ ...prev, news_date: "" }));
+                        }}
                         className="w-full rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         style={inputStyle}
                       />
+                      {fieldError("news_date")}
                     </div>
 
                     <div className="space-y-2">
@@ -918,15 +1029,19 @@ export default function NewsManagementPage() {
                         className="text-[10px] font-bold tracking-widest uppercase ml-1"
                         style={{ color: colors.textMuted as string }}
                       >
-                        Content
+                        Content <span className="text-red-500">*</span>
                       </label>
                       <QuillEditor
                         key={editingItem?.id}
                         value={formData.content_html || ""}
-                        onChange={(value) => setFormData({ ...formData, content_html: value })}
+                        onChange={(value) => {
+                          setFormData({ ...formData, content_html: value });
+                          setValidationErrors((prev) => ({ ...prev, content_html: "" }));
+                        }}
                         isDark={isDark}
                         placeholder="Enter article content..."
                       />
+                      {fieldError("content_html")}
                     </div>
 
                     <div className="flex items-center gap-3 col-span-2">
@@ -955,6 +1070,110 @@ export default function NewsManagementPage() {
                       </label>
                     </div>
                   </div>
+
+                  {editingItem && activeNewsId && (
+                    <>
+                      <div
+                        className="border-t pt-6"
+                        style={{
+                          borderColor: isDark
+                            ? "rgba(255,255,255,0.08)"
+                            : "#e2e8f0",
+                        }}
+                      >
+                        <NewsAttachmentManager newsId={activeNewsId} />
+                      </div>
+                    </>
+                  )}
+
+                  {!editingItem && (
+                    <div
+                      className="border-t pt-6"
+                      style={{
+                        borderColor: isDark
+                          ? "rgba(255,255,255,0.08)"
+                          : "#e2e8f0",
+                      }}
+                    >
+                      <div className="space-y-3">
+                        <label
+                          className="text-[10px] font-bold tracking-widest uppercase ml-1"
+                          style={{ color: colors.textMuted as string }}
+                        >
+                          Attachments ({pendingAttachments.length})
+                        </label>
+
+                        {pendingAttachments.length > 0 && (
+                          <div className="space-y-2">
+                            {pendingAttachments.map((att, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center gap-3 rounded-xl px-4 py-3"
+                                style={{
+                                  backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "#f8fafc",
+                                  border: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "#e2e8f0"}`,
+                                }}
+                              >
+                                <FileText className="h-5 w-5 shrink-0 text-blue-500" />
+                                <span
+                                  className="flex-1 text-sm truncate"
+                                  style={{ color: colors.text as string }}
+                                >
+                                  {att.title}
+                                </span>
+                                <span className="text-xs shrink-0" style={{ color: colors.textMuted as string }}>
+                                  {att.file.name}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => removePendingAttachment(index)}
+                                  className="p-1.5 rounded-lg transition-all shrink-0"
+                                  style={{
+                                    backgroundColor: "rgba(239,68,68,0.1)",
+                                    color: "#ef4444",
+                                  }}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            <input
+                              ref={attachmentFileRef}
+                              type="file"
+                              className="flex-1 text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer"
+                              style={{ color: colors.text as string }}
+                            />
+                            <input
+                              value={attachmentTitle}
+                              onChange={(e) => setAttachmentTitle(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  addPendingAttachment();
+                                }
+                              }}
+                              placeholder="Title"
+                              className="flex-1 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                              style={inputStyle}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={addPendingAttachment}
+                            disabled={!attachmentTitle.trim() || !attachmentFileRef.current?.files?.[0]}
+                            className="bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 text-white font-bold py-2 px-6 rounded-lg transition-all active:scale-95 disabled:cursor-not-allowed w-full"
+                          >
+                            Add Attachment
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="pt-4 flex gap-4 shrink-0 justify-end">
                     <button

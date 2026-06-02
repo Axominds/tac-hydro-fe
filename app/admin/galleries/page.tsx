@@ -13,6 +13,7 @@ import {
   Check,
   Upload,
   Pencil,
+  AlertCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import {
@@ -232,24 +233,34 @@ export default function GalleriesManagementPage() {
 
   const handleAddCategory = async () => {
     if (!newCatName.trim()) return;
-    await createCategory.mutateAsync({
-      name: newCatName.trim(),
-      order: (categories?.length || 0) + 1,
-    });
-    setNewCatName("");
+    try {
+      await createCategory.mutateAsync({
+        name: newCatName.trim(),
+        order: (categories?.length || 0) + 1,
+      });
+      setNewCatName("");
+      showToast("Category added successfully!");
+    } catch (error: any) {
+      showToast(error?.body?.name?.[0] || "Failed to add category", "error");
+    }
   };
 
   const handleAddSubcategory = async () => {
     if (!newSubCatName.trim() || !selectedCatId) return;
-    await createSubcategory.mutateAsync({
-      categoryId: selectedCatId,
-      data: {
-        name: newSubCatName.trim(),
-        order: (activeSubcategories.length || 0) + 1,
-      },
-    });
-    setNewSubCatName("");
-    refetchSubcategories();
+    try {
+      await createSubcategory.mutateAsync({
+        categoryId: selectedCatId,
+        data: {
+          name: newSubCatName.trim(),
+          order: (activeSubcategories.length || 0) + 1,
+        },
+      });
+      setNewSubCatName("");
+      showToast("Subcategory added successfully!");
+      refetchSubcategories();
+    } catch (error: any) {
+      showToast(error?.body?.name?.[0] || "Failed to add subcategory", "error");
+    }
   };
 
   const confirmDelete = async () => {
@@ -281,6 +292,7 @@ export default function GalleriesManagementPage() {
       });
     }
     refetchImages();
+    showToast("Images uploaded successfully!", "success");
   };
 
   const onDropReorder = async (targetId: number, type: "cat" | "sub" | "img") => {
@@ -341,11 +353,11 @@ export default function GalleriesManagementPage() {
   };
 
   return (
-    <div className="space-y-15 uppercase relative h-[calc(100vh-140px)] flex flex-col">
+    <div className="space-y-15 relative h-[calc(100vh-140px)] flex flex-col">
       <div className="flex items-center justify-between shrink-0">
         <div>
           <h1
-            className={`${montserrat.className} text-4xl mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={{ color: colors.text as string }}
           >
             Media <span className="text-blue-500">Galleries</span>
@@ -360,7 +372,7 @@ export default function GalleriesManagementPage() {
         {/* LEFT: Categories Sidebar */}
         <div className="w-72 rounded-3xl p-6 flex flex-col min-h-0" style={cardStyle}>
           <div
-            className="flex items-center gap-2 mb-6 font-bold tracking-widest text-xs uppercase"
+            className="flex items-center gap-2 mb-6 text-[10px] font-bold tracking-widest uppercase"
             style={{ color: colors.text as string }}
           >
             <Layers className="h-4 w-4 text-blue-500" />
@@ -393,7 +405,11 @@ export default function GalleriesManagementPage() {
                     setSelectedSubCatId(null);
                   }}
                   onSave={async (id, name) => {
-                    await updateCategory.mutateAsync({ id, data: { name } });
+                    try {
+                      await updateCategory.mutateAsync({ id, data: { name } });
+                    } catch (error: any) {
+                      showToast(error?.body?.name?.[0] || "Failed to save category", "error");
+                    }
                   }}
                   onSaveComplete={() => {
                     showToast("Category saved successfully!");
@@ -450,7 +466,7 @@ export default function GalleriesManagementPage() {
             }}
           >
             <div
-              className="flex items-center gap-2 mb-4 font-bold tracking-widest text-xs uppercase"
+              className="flex items-center gap-2 mb-4 text-[10px] font-bold tracking-widest uppercase"
               style={{ color: colors.text as string }}
             >
               <List className="h-4 w-4 text-blue-500" />
@@ -481,12 +497,16 @@ export default function GalleriesManagementPage() {
                       onSelect={() => setSelectedSubCatId(sub.id)}
                       onSave={async (id, name) => {
                         if (selectedCatId) {
-                          await updateSubcategory.mutateAsync({
-                            categoryId: selectedCatId,
-                            id,
-                            data: { name },
-                          });
-                          refetchSubcategories();
+                          try {
+                            await updateSubcategory.mutateAsync({
+                              categoryId: selectedCatId,
+                              id,
+                              data: { name },
+                            });
+                            refetchSubcategories();
+                          } catch (error: any) {
+                            showToast(error?.body?.name?.[0] || "Failed to save subcategory", "error");
+                          }
                         }
                       }}
                       onSaveComplete={() => {
@@ -554,7 +574,7 @@ export default function GalleriesManagementPage() {
               <div className="space-y-8">
                 <div className="flex items-center justify-between">
                   <h3
-                    className="font-bold tracking-widest text-xs uppercase flex items-center gap-2"
+                    className="text-[10px] font-bold tracking-widest uppercase flex items-center gap-2"
                     style={{ color: colors.text as string }}
                   >
                     <ImageIcon className="h-4 w-4 text-blue-500" />

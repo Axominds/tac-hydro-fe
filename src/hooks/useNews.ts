@@ -46,6 +46,11 @@ export function useNewsDetail(id: number | null) {
       return apiFetch<NewsDetail>(`/api/home/news/${id}/`);
     },
     enabled: !!id,
+    retry: (failureCount, error) => {
+      const status = (error as any)?.status;
+      if (status && status >= 400 && status < 500) return false;
+      return failureCount < 3;
+    },
   });
 }
 

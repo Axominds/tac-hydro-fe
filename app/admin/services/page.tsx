@@ -425,7 +425,7 @@ export default function ServicesManagementPage() {
   return (
     <div className="space-y-15">
       <div>
-        <h1 className={`${montserrat.className} text-4xl mb-2`} style={colors.text.primary}>
+        <h1 className={`${montserrat.className} text-4xl font-bold mb-2`} style={colors.text.primary}>
           Our <span className="text-blue-500">Services</span>
         </h1>
         <p style={colors.text.secondary}>
@@ -436,7 +436,7 @@ export default function ServicesManagementPage() {
       {/* Expertise Categories */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-bold text-xl flex items-center gap-2" style={colors.text.primary}>
+          <h2 className={`${montserrat.className} font-bold text-xl flex items-center gap-2`} style={colors.text.primary}>
             <Briefcase className="h-5 w-5 text-blue-500" />
             Expertise Categories
           </h2>
@@ -482,7 +482,7 @@ export default function ServicesManagementPage() {
       {/* Service Sectors */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-bold text-xl flex items-center gap-2" style={colors.text.primary}>
+          <h2 className={`${montserrat.className} font-bold text-xl flex items-center gap-2`} style={colors.text.primary}>
             <Upload className="h-5 w-5 text-blue-500" />
             Service Sectors
           </h2>

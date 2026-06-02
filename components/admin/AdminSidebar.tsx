@@ -18,10 +18,13 @@ import {
   Sun,
   Moon,
   Handshake,
+  KeyRound,
+  UserCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import Cookies from "js-cookie";
 import { setThemeValue } from "../../src/components/admin/ThemeToggle";
+import { ChangePasswordModal } from "./ChangePasswordModal";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["700"] });
 
@@ -61,6 +64,8 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
     }
     return false;
   });
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const isDark = localTheme === "dark";
 
   const toggleTheme = () => {
@@ -251,26 +256,82 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
         })}
       </nav>
 
-      {/* Footer Profile/Logout */}
+      {/* Footer Account */}
       <div
         className={`mt-auto transition-colors duration-300 ${isCollapsed ? "p-3" : "p-6"}`}
         style={{ borderTop: `1px solid ${colors.sidebarBorder}` }}
       >
-        <button
-          onClick={() => {
-            Cookies.remove("access_token");
-            Cookies.remove("refresh_token");
-            window.location.href = "/admin/login";
-          }}
-className={`w-full flex items-center gap-3 rounded-xl transition-all font-medium text-sm group ${
+        <div className="relative">
+          <button
+            onClick={() => setShowAccountMenu(!showAccountMenu)}
+            className={`w-full flex items-center gap-3 rounded-xl transition-all font-medium text-sm group ${
               isCollapsed ? "justify-center py-3" : "px-4 py-3.5"
             }`}
-            style={{ color: "#ef4444" }}
-        >
-          <LogOut className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-          {!isCollapsed && <span>Logout</span>}
-        </button>
+            style={{
+              backgroundColor: showAccountMenu ? colors.hoverBg : "transparent",
+              color: colors.textColor,
+            }}
+          >
+            <UserCircle className="h-5 w-5 shrink-0" style={{ color: colors.mutedColor }} />
+            {!isCollapsed && <span className="tracking-wide">Account</span>}
+          </button>
+
+          {showAccountMenu && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setShowAccountMenu(false)}
+              />
+              <div
+                className={`absolute z-50 rounded-xl overflow-hidden border transition-all ${
+                  isCollapsed ? "left-full ml-3 w-52" : "left-0 right-0"
+                }`}
+                style={{
+                  backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
+                  borderColor: isDark ? "rgba(255,255,255,0.1)" : "#e2e8f0",
+                  boxShadow: isDark
+                    ? "0 10px 40px rgba(0,0,0,0.5)"
+                    : "0 10px 40px rgba(0,0,0,0.12)",
+                  bottom: isCollapsed ? 0 : "calc(100% + 8px)",
+                }}
+              >
+              <button
+                onClick={() => {
+                  setShowAccountMenu(false);
+                  setShowChangePassword(true);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium transition-all hover:scale-[1.02]"
+                style={{ color: colors.textColor }}
+              >
+                <KeyRound className="h-4 w-4" style={{ color: colors.mutedColor }} />
+                Change Password
+              </button>
+              <div
+                style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}` }}
+              />
+              <button
+                onClick={() => {
+                  setShowAccountMenu(false);
+                  Cookies.remove("access_token");
+                  Cookies.remove("refresh_token");
+                  window.location.href = "/admin/login";
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium transition-all hover:scale-[1.02]"
+                style={{ color: "#ef4444" }}
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </button>
+            </div>
+          </>
+        )}
+        </div>
       </div>
+
+      <ChangePasswordModal
+        isOpen={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+      />
     </aside>
   );
 }

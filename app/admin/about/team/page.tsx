@@ -12,6 +12,7 @@ import {
   Check,
   Tag,
   Users,
+  AlertCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useAdminTheme, getThemedClasses } from "../../../../src/hooks/useAdminTheme";
@@ -73,6 +74,7 @@ export default function TeamPage() {
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [selectedProfilePhoto, setSelectedProfilePhoto] = useState<File | null>(null);
   const [isSavingMember, setIsSavingMember] = useState(false);
+  const [memberValidationErrors, setMemberValidationErrors] = useState<Record<string, string>>({});
   const { toast, showToast, hideToast } = useToast();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -118,7 +120,7 @@ export default function TeamPage() {
   };
 
   const handleAddMemberToCategory = async () => {
-    if (!selectedMemberId || !addingToCategoryId) return;
+    if (!selectedMemberId || !addingToCategoryId || !addMemberExpertise.trim()) return;
     setIsSavingAddMember(true);
     try {
       await apiFetch("/api/about-us/team-member-categories/", {
@@ -132,6 +134,7 @@ export default function TeamPage() {
         },
       });
       queryClient.invalidateQueries({ queryKey: ["team-member-categories"] });
+      showToast("Member added to category successfully!", "success");
       setIsAddToCategoryModalOpen(false);
     } catch (e) {
       console.error(e);
@@ -368,7 +371,12 @@ export default function TeamPage() {
 
   const handleMemberSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!memberFormData.name.trim()) return;
+    const errors: Record<string, string> = {};
+    if (!memberFormData.name.trim()) {
+      errors.name = "Name is required.";
+    }
+    setMemberValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     setIsSavingMember(true);
     try {
       if (editingMember) {
@@ -418,7 +426,18 @@ export default function TeamPage() {
         await createTeamMember.mutateAsync(data);
       }
       setIsMemberModal(false);
+      setMemberValidationErrors({});
       showToast(editingMember ? "Team member saved successfully!" : "Team member added successfully!");
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setMemberValidationErrors(serverErrors);
+      } else {
+        showToast("Failed to save team member", "error");
+      }
     } finally {
       setIsSavingMember(false);
     }
@@ -431,6 +450,7 @@ export default function TeamPage() {
   const toggleMemberCategory = async (memberId: number, categoryId: number, isAdding: boolean) => {
     if (isAdding) {
       await addMemberCategory.mutateAsync({ team_member_id: memberId, category_id: categoryId });
+      showToast("Category added to member successfully!", "success");
     } else {
       const mc = memberCategories?.find(
         (m) => m.team_member_id === memberId && m.category_id === categoryId,
@@ -442,11 +462,11 @@ export default function TeamPage() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1
-            className={`${montserrat.className} text-3xl font-bold mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={classes.text.primary}
           >
             Team <span className="text-blue-500">Members</span>
@@ -550,7 +570,6 @@ export default function TeamPage() {
           {/* Categories */}
           {orderedCategories.map((category) => {
             const categoryMembers = membersByCategory[category.id] || [];
-            if (categoryMembers.length === 0) return null;
             return (
               <div key={category.id}>
                 <div className="flex items-center justify-between mb-3">
@@ -563,19 +582,44 @@ export default function TeamPage() {
                       ({categoryMembers.length})
                     </span>
                   </h2>
-                  <button
-                    onClick={() => {
-                      setAddingToCategoryId(category.id);
-                      setSelectedMemberId(null);
-                      setAddMemberRole("");
-                      setAddMemberExpertise("");
-                      setIsAddToCategoryModalOpen(true);
-                    }}
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-all"
-                  >
-                    <Plus className="h-3.5 w-3.5" /> Add
-                  </button>
+                  {categoryMembers.length > 0 && (
+                    <button
+                      onClick={() => {
+                        setAddingToCategoryId(category.id);
+                        setSelectedMemberId(null);
+                        setAddMemberRole("");
+                        setAddMemberExpertise("");
+                        setIsAddToCategoryModalOpen(true);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-all"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Add
+                    </button>
+                  )}
                 </div>
+                {categoryMembers.length === 0 ? (
+                  <div
+                    className="flex flex-col items-center justify-center py-12 rounded-2xl border-2 border-dashed"
+                    style={{ borderColor: colors.border, backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}
+                  >
+                    <Users className="h-10 w-10 mb-3" style={{ color: colors.textMuted }} />
+                    <p className="text-sm font-medium mb-3" style={{ color: colors.textMuted }}>
+                      No members in this category yet
+                    </p>
+                    <button
+                      onClick={() => {
+                        setAddingToCategoryId(category.id);
+                        setSelectedMemberId(null);
+                        setAddMemberRole("");
+                        setAddMemberExpertise("");
+                        setIsAddToCategoryModalOpen(true);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1.5 transition-all"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Add Member
+                    </button>
+                  </div>
+                ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {categoryMembers.map(({ member, memberCatId, role, technical_expertise }) => (
                     <div
@@ -647,6 +691,7 @@ export default function TeamPage() {
                     </div>
                   ))}
                 </div>
+              )}
               </div>
             );
           })}
@@ -661,32 +706,33 @@ export default function TeamPage() {
             onClick={() => setIsCategoryModal(false)}
           />
           <div
-            className="relative z-10 w-full max-w-md rounded-3xl overflow-hidden flex flex-col max-h-[80vh]"
+            className="relative z-10 w-full max-w-xl rounded-3xl overflow-hidden flex flex-col max-h-[80vh]"
             style={{ backgroundColor: colors.modalBg, border: `1px solid ${colors.border}` }}
           >
             <div
-              className="p-6 flex items-center justify-between"
+              className="p-8 flex items-center justify-between shrink-0"
               style={{ borderBottom: `1px solid ${colors.border}` }}
             >
               <div className="flex items-center gap-3">
-                <Tag className="h-5 w-5 text-blue-500" />
+                <Tag className="h-6 w-6 text-blue-500" />
                 <h2
-                  className={`${montserrat.className} text-xl font-bold`}
-                  style={{ color: colors.text }}
+                  className={`${montserrat.className} text-2xl`}
+                  style={classes.text.primary}
                 >
-                  Manage Categories
+                  Manage <span className="text-blue-500">Categories</span>
                 </h2>
               </div>
-              <button onClick={() => setIsCategoryModal(false)}>
-                <X className="h-5 w-5" style={{ color: colors.textMuted }} />
+              <button onClick={() => setIsCategoryModal(false)} style={classes.text.muted}>
+                <X className="h-6 w-6" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              <p className="text-xs" style={{ color: colors.textMuted }}>
-                Drag to reorder
-              </p>
-              <div className="space-y-2">
-                {orderedCategories.map((category) => (
+            <div className="flex-1 overflow-y-auto p-8 space-y-6">
+              <div className="space-y-4">
+                <p className="text-xs" style={{ color: colors.textMuted }}>
+                  Drag to reorder
+                </p>
+                <div className="space-y-2 max-h-80 overflow-y-auto pr-2 -mr-2">
+                  {orderedCategories.map((category) => (
                   <div
                     key={category.id}
                     draggable
@@ -743,23 +789,35 @@ export default function TeamPage() {
                     )}
                   </div>
                 ))}
+                </div>
               </div>
-              <div className="flex gap-2">
-                <input
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
-                  placeholder="New category name"
-                  className="flex-1 rounded-lg px-3 py-2 text-sm"
-                  style={classes.input.bg}
-                />
-                <button
-                  onClick={handleAddCategory}
-                  disabled={addingCategory || !newCategoryName.trim()}
-                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+              <div
+                className="pt-6"
+                style={{ borderTop: `1px solid ${colors.border}` }}
+              >
+                <p
+                  className="text-[10px] font-bold tracking-widest uppercase mb-4 ml-1"
+                  style={{ color: colors.textMuted }}
                 >
-                  {addingCategory ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add"}
-                </button>
+                  Add New Category
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
+                    placeholder="e.g. Senior Management"
+                    className="flex-1 rounded-lg px-3 py-2 text-sm"
+                    style={classes.input.bg}
+                  />
+                  <button
+                    onClick={handleAddCategory}
+                    disabled={addingCategory || !newCategoryName.trim()}
+                    className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    {addingCategory ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -794,15 +852,33 @@ export default function TeamPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
-                  Name
+                  Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   value={memberFormData.name}
-                  onChange={(e) => setMemberFormData({ ...memberFormData, name: e.target.value })}
+                  onChange={(e) => {
+                    setMemberFormData({ ...memberFormData, name: e.target.value });
+                    if (memberValidationErrors.name) {
+                      setMemberValidationErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.name;
+                        return next;
+                      });
+                    }
+                  }}
                   className="w-full rounded-lg px-3 py-2 text-sm"
-                  style={classes.input.bg}
+                  style={{
+                    ...classes.input.bg,
+                    border: memberValidationErrors.name ? "1px solid #ef4444" : undefined,
+                  }}
                   placeholder="Member name"
                 />
+                {memberValidationErrors.name && (
+                  <p className="mt-1 text-xs flex items-center gap-1" style={{ color: "#ef4444" }}>
+                    <AlertCircle className="h-3 w-3" />
+                    {memberValidationErrors.name}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
@@ -946,7 +1022,7 @@ export default function TeamPage() {
               </button>
               <button
                 onClick={handleMemberSave}
-                disabled={isSavingMember || !memberFormData.name?.trim()}
+                disabled={isSavingMember}
                 className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isSavingMember && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -986,7 +1062,7 @@ export default function TeamPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
-                  Select Member
+                  Select Member <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={selectedMemberId || ""}
@@ -1034,7 +1110,7 @@ export default function TeamPage() {
               </div>
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
-                  Technical Expertise
+                  Technical Expertise <span className="text-red-500">*</span>
                 </label>
                 <input
                   value={addMemberExpertise}
@@ -1055,7 +1131,7 @@ export default function TeamPage() {
               </button>
               <button
                 onClick={handleAddMemberToCategory}
-                disabled={!selectedMemberId || isSavingAddMember}
+                disabled={!selectedMemberId || !addMemberExpertise.trim() || isSavingAddMember}
                 className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isSavingAddMember && <Loader2 className="h-4 w-4 animate-spin" />}

@@ -16,7 +16,7 @@ import {
 import { Montserrat } from "next/font/google";
 import { useValuedPartners } from "../../../src/hooks/useValuedPartners";
 import { useValuedPartnerMutations } from "../../../src/hooks/useAdminMutations";
-import { ValuedPartner } from "../../../src/lib/api";
+import { ValuedPartner, apiFetch } from "../../../src/lib/api";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { Toast, useToast } from "../../../src/components/ui/toast";
 import { ConfirmDialog } from "../../../src/components/ui/confirm-dialog";
@@ -140,15 +140,19 @@ function PartnerModal({
   const [name, setName] = useState(partner?.name || "");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(partner?.logo || null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   useEffect(() => {
-    setName(partner?.name || "");
-    setLogoPreview(partner?.logo || null);
-    setLogoFile(null);
-  }, [partner]);
+    if (isOpen) {
+      setName(partner?.name || "");
+      setLogoPreview(partner?.logo || null);
+      setLogoFile(null);
+      setValidationErrors({});
+    }
+  }, [isOpen, partner?.id]);
 
   const inputStyle = {
     backgroundColor: theme === "dark" ? "rgba(255,255,255,0.05)" : "#f1f5f9",
@@ -159,8 +163,28 @@ function PartnerModal({
   };
 
   const handleSave = async () => {
-    if (!name.trim()) return;
-    await onSave(name, logoFile || undefined);
+    const errors: Record<string, string> = {};
+    if (!name.trim()) {
+      errors.name = "Partner name is required.";
+    } else if (name.length > 255) {
+      errors.name = "Partner name cannot exceed 255 characters.";
+    }
+    if (!partner?.id && !logoFile) {
+      errors.logo = "Logo is required.";
+    }
+    setValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+    try {
+      await onSave(name, logoFile || undefined);
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setValidationErrors(serverErrors);
+      }
+    }
   };
 
   const handleDelete = async () => {
@@ -228,16 +252,25 @@ function PartnerModal({
               className="text-[10px] font-bold tracking-widest uppercase px-1"
               style={{ color: colors.textMuted as string }}
             >
-              Partner Name
+              Partner Name <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                setValidationErrors((prev) => ({ ...prev, name: "" }));
+              }}
               placeholder="e.g. World Bank"
               className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
               style={inputStyle}
             />
+            {validationErrors.name && (
+              <p className="text-xs text-red-500 mt-1 px-1 flex items-center gap-1">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                {validationErrors.name}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -245,7 +278,7 @@ function PartnerModal({
               className="text-[10px] font-bold tracking-widest uppercase px-1"
               style={{ color: colors.textMuted as string }}
             >
-              Logo {!isEditing && "(Required)"}
+              Logo <span className="text-red-500">*</span>
             </label>
             {(logoPreview || partner?.logo) && (
               <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -259,10 +292,19 @@ function PartnerModal({
             <input
               type="file"
               accept="image/*"
-              onChange={handleFileChange}
+              onChange={(e) => {
+                handleFileChange(e);
+                setValidationErrors((prev) => ({ ...prev, logo: "" }));
+              }}
               className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-lg"
               style={inputStyle}
             />
+            {validationErrors.logo && (
+              <p className="text-xs text-red-500 mt-1 px-1 flex items-center gap-1">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                {validationErrors.logo}
+              </p>
+            )}
           </div>
         </div>
 
@@ -348,10 +390,6 @@ export default function ValuedPartnersPage() {
   };
 
   const handleSave = async (name: string, logoFile?: File) => {
-    const token = document.cookie.replace(
-      /(?:(?:^|.*;\s*)access_token\s*\=\s*([^;]*).*$)|^.*$/,
-      "$1",
-    );
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -359,33 +397,28 @@ export default function ValuedPartnersPage() {
         if (logoFile) {
           formData.append("logo", logoFile);
         }
-        await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/valued-partners/${editingPartner.id}/`,
-          {
-            method: "PATCH",
-            headers: { Authorization: `Bearer ${token}` },
-            body: formData,
-          },
-        );
+        await apiFetch(`/api/home/valued-partners/${editingPartner.id}/`, {
+          method: "PATCH",
+          body: formData,
+        });
       } else {
         formData.append("order", String(partnersList.length));
         if (logoFile) {
           formData.append("logo", logoFile);
         }
-        await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_BASE_URL}/api/home/valued-partners/`,
-          {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-            body: formData,
-          },
-        );
+        await apiFetch(`/api/home/valued-partners/`, {
+          method: "POST",
+          body: formData,
+        });
       }
       showToast(editingPartner ? "Partner updated successfully!" : "Partner added successfully!");
       setIsModalOpen(false);
       refetch();
-    } catch (error) {
-      showToast("Failed to save partner", "error");
+    } catch (error: any) {
+      if (!error?.body) {
+        showToast("Failed to save partner", "error");
+      }
+      throw error;
     }
   };
 
@@ -444,11 +477,11 @@ export default function ValuedPartnersPage() {
   };
 
   return (
-    <div className="space-y-6 relative pb-40">
+    <div className="space-y-15 relative pb-40">
       <div className="flex items-center justify-between">
         <div>
           <h1
-            className={`${montserrat.className} text-4xl mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={{ color: colors.text as string }}
           >
             Valued <span className="text-blue-500">Partners</span>

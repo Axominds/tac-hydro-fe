@@ -21,6 +21,7 @@ import {
   ShieldCheck,
   DollarSign,
   Trophy,
+  AlertCircle,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useAdminTheme, getThemedClasses } from "../../../../src/hooks/useAdminTheme";
@@ -110,6 +111,8 @@ export default function CorePrinciplesPage() {
     color_class: "blue",
   });
   const [isSavingPrinciple, setIsSavingPrinciple] = useState(false);
+  const [introValidationErrors, setIntroValidationErrors] = useState<Record<string, string>>({});
+  const [principleValidationErrors, setPrincipleValidationErrors] = useState<Record<string, string>>({});
   const { toast, showToast, hideToast } = useToast();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -182,6 +185,12 @@ export default function CorePrinciplesPage() {
   const handleIntroSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!intro) return;
+    const errors: Record<string, string> = {};
+    if (!introFormData.title?.trim()) {
+      errors.title = "Title is required.";
+    }
+    setIntroValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     const cleanedContent = (introFormData.content_html || "").replace(/&nbsp;/g, " ");
     const cleanedData = { ...introFormData, content_html: cleanedContent };
     setIsSavingIntro(true);
@@ -191,13 +200,25 @@ export default function CorePrinciplesPage() {
         await uploadImage.mutateAsync({ id: intro.id, file: selectedIntroFile });
       }
       setIsIntroModal(false);
+      setIntroValidationErrors({});
       showToast("Changes saved successfully!");
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setIntroValidationErrors(serverErrors);
+      } else {
+        showToast("Failed to save intro", "error");
+      }
     } finally {
       setIsSavingIntro(false);
     }
   };
 
   const openPrincipleModal = (principle?: CorePrinciple) => {
+    setPrincipleValidationErrors({});
     if (principle) {
       setEditingPrinciple(principle);
       setPrincipleFormData({
@@ -220,7 +241,12 @@ export default function CorePrinciplesPage() {
 
   const handlePrincipleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!principleFormData.title.trim()) return;
+    const errors: Record<string, string> = {};
+    if (!principleFormData.title.trim()) {
+      errors.title = "Title is required.";
+    }
+    setPrincipleValidationErrors(errors);
+    if (Object.keys(errors).length > 0) return;
     setIsSavingPrinciple(true);
     try {
       if (editingPrinciple) {
@@ -232,9 +258,20 @@ export default function CorePrinciplesPage() {
         });
       }
       setIsPrincipleModal(false);
+      setPrincipleValidationErrors({});
       showToast(
         editingPrinciple ? "Changes saved successfully!" : "Principle added successfully!"
       );
+    } catch (error: any) {
+      if (error?.body) {
+        const serverErrors: Record<string, string> = {};
+        for (const [key, messages] of Object.entries(error.body)) {
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : String(messages);
+        }
+        setPrincipleValidationErrors(serverErrors);
+      } else {
+        showToast("Failed to save principle", "error");
+      }
     } finally {
       setIsSavingPrinciple(false);
     }
@@ -296,10 +333,10 @@ export default function CorePrinciplesPage() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div>
       <div className="mb-8">
         <h1
-          className={`${montserrat.className} text-3xl font-bold mb-2`}
+          className={`${montserrat.className} text-4xl font-bold mb-2`}
           style={classes.text.primary}
         >
           Core <span className="text-blue-500">Principles</span>
@@ -344,6 +381,7 @@ export default function CorePrinciplesPage() {
                       image_caption_subtitle: intro.image_caption_subtitle || "",
                     });
                     setSelectedIntroFile(null);
+                    setIntroValidationErrors({});
                     setIsIntroModal(true);
                   }}
                   className="p-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
@@ -382,6 +420,7 @@ export default function CorePrinciplesPage() {
                   image_caption_subtitle: "",
                 });
                 setSelectedIntroFile(null);
+                setIntroValidationErrors({});
                 setIsIntroModal(true);
               }}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold"
@@ -498,14 +537,32 @@ export default function CorePrinciplesPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
-                  Title
+                  Title <span className="text-red-500">*</span>
                 </label>
                 <input
                   value={introFormData.title || ""}
-                  onChange={(e) => setIntroFormData({ ...introFormData, title: e.target.value })}
+                  onChange={(e) => {
+                    setIntroFormData({ ...introFormData, title: e.target.value });
+                    if (introValidationErrors.title) {
+                      setIntroValidationErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.title;
+                        return next;
+                      });
+                    }
+                  }}
                   className="w-full rounded-lg px-3 py-2 text-sm"
-                  style={classes.input.bg}
+                  style={{
+                    ...classes.input.bg,
+                    border: introValidationErrors.title ? "1px solid #ef4444" : undefined,
+                  }}
                 />
+                {introValidationErrors.title && (
+                  <p className="mt-1 text-xs flex items-center gap-1" style={{ color: "#ef4444" }}>
+                    <AlertCircle className="h-3 w-3" />
+                    {introValidationErrors.title}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
@@ -574,7 +631,7 @@ export default function CorePrinciplesPage() {
             </div>
             <div className="p-6 flex justify-end gap-3">
               <button
-                onClick={() => setIsIntroModal(false)}
+            onClick={() => { setIsIntroModal(false); setIntroValidationErrors({}); }}
                 className="px-4 py-2 rounded-lg text-sm font-medium"
                 style={{ color: colors.textMuted }}
               >
@@ -582,7 +639,7 @@ export default function CorePrinciplesPage() {
               </button>
               <button
                 onClick={handleIntroSave}
-                disabled={isSavingIntro || !introFormData.title?.trim()}
+                disabled={isSavingIntro}
                 className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isSavingIntro && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -622,17 +679,33 @@ export default function CorePrinciplesPage() {
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
-                  Title
+                  Title <span className="text-red-500">*</span>
                 </label>
                 <input
                   value={principleFormData.title}
-                  onChange={(e) =>
-                    setPrincipleFormData({ ...principleFormData, title: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setPrincipleFormData({ ...principleFormData, title: e.target.value });
+                    if (principleValidationErrors.title) {
+                      setPrincipleValidationErrors((prev) => {
+                        const next = { ...prev };
+                        delete next.title;
+                        return next;
+                      });
+                    }
+                  }}
                   className="w-full rounded-lg px-3 py-2 text-sm"
-                  style={classes.input.bg}
+                  style={{
+                    ...classes.input.bg,
+                    border: principleValidationErrors.title ? "1px solid #ef4444" : undefined,
+                  }}
                   placeholder="Core principle title"
                 />
+                {principleValidationErrors.title && (
+                  <p className="mt-1 text-xs flex items-center gap-1" style={{ color: "#ef4444" }}>
+                    <AlertCircle className="h-3 w-3" />
+                    {principleValidationErrors.title}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm mb-1" style={{ color: colors.textMuted }}>
@@ -702,7 +775,7 @@ export default function CorePrinciplesPage() {
             </div>
             <div className="p-6 flex justify-end gap-3">
               <button
-                onClick={() => setIsPrincipleModal(false)}
+            onClick={() => { setIsPrincipleModal(false); setPrincipleValidationErrors({}); }}
                 className="px-4 py-2 rounded-lg text-sm font-medium"
                 style={{ color: colors.textMuted }}
               >
@@ -710,7 +783,7 @@ export default function CorePrinciplesPage() {
               </button>
               <button
                 onClick={handlePrincipleSave}
-                disabled={isSavingPrinciple || !principleFormData.title?.trim()}
+                disabled={isSavingPrinciple}
                 className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isSavingPrinciple && <Loader2 className="h-4 w-4 animate-spin" />}

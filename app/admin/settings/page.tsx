@@ -42,6 +42,7 @@ export default function SiteSettingsManagementPage() {
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingMode, setPendingMode] = useState<"upload" | "youtube" | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const { toast, showToast, hideToast } = useToast();
 
   useEffect(() => {
@@ -87,8 +88,59 @@ export default function SiteSettingsManagementPage() {
     setShowConfirmDialog(false);
   };
 
+  const CURRENT_YEAR = new Date().getFullYear();
+
+  const validateForm = (): Record<string, string> => {
+    const errors: Record<string, string> = {};
+    const { company_name, tagline, contact_email, collaboration_email, phone, founded_year, linkedin_url, facebook_url } = formData;
+
+    if (!company_name?.trim()) {
+      errors.company_name = "Company name is required";
+    } else if (company_name.length > 255) {
+      errors.company_name = "Company name must be 255 characters or less";
+    }
+
+    if (tagline && tagline.length > 255) {
+      errors.tagline = "Tagline must be 255 characters or less";
+    }
+
+    if (contact_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact_email)) {
+      errors.contact_email = "Enter a valid email address";
+    }
+
+    if (collaboration_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(collaboration_email)) {
+      errors.collaboration_email = "Enter a valid email address";
+    }
+
+    if (phone && !/^[\d\s+\-()\.,]+$/.test(phone)) {
+      errors.phone = "Enter a valid phone number (digits, spaces, +, -, (, ), . only)";
+    }
+
+    if (founded_year) {
+      if (founded_year < 1800) {
+        errors.founded_year = "Founded year must be 1800 or later";
+      } else if (founded_year > CURRENT_YEAR) {
+        errors.founded_year = `Founded year cannot be later than ${CURRENT_YEAR}`;
+      }
+    }
+
+    if (linkedin_url && !linkedin_url.toLowerCase().includes("linkedin.com")) {
+      errors.linkedin_url = "Must be a valid LinkedIn URL containing linkedin.com";
+    }
+
+    if (facebook_url && !facebook_url.toLowerCase().includes("facebook.com")) {
+      errors.facebook_url = "Must be a valid Facebook URL containing facebook.com";
+    }
+
+    return errors;
+  };
+
   const handleSave = async () => {
     if (!settings?.id) return;
+
+    const clientErrors = validateForm();
+    setValidationErrors(clientErrors);
+    if (Object.keys(clientErrors).length > 0) return;
 
     setSaveStatus("saving");
 
@@ -130,9 +182,24 @@ export default function SiteSettingsManagementPage() {
       showToast("Settings saved successfully!");
       setSelectedFile(null);
       setSelectedVideo(null);
-    } catch (error) {
+    } catch (error: any) {
       setSaveStatus("error");
-      showToast("Failed to save settings", "error");
+      if (error?.body && typeof error.body === "object") {
+        const serverErrors: Record<string, string> = {};
+        const body = error.body as Record<string, string | string[]>;
+        Object.entries(body).forEach(([key, messages]) => {
+          if (key === "non_field_errors") return;
+          serverErrors[key] = Array.isArray(messages) ? messages[0] : messages;
+        });
+        if (Object.keys(serverErrors).length > 0) {
+          setValidationErrors(serverErrors);
+        }
+        const nonField = body.non_field_errors;
+        const msg = Array.isArray(nonField) ? nonField[0] : nonField;
+        showToast(msg || "Failed to save settings", "error");
+      } else {
+        showToast("Failed to save settings", "error");
+      }
     }
   };
 
@@ -153,12 +220,23 @@ export default function SiteSettingsManagementPage() {
     color: colors.text,
   };
 
+  const fieldError = (field: string) => {
+    const error = validationErrors[field];
+    if (!error) return null;
+    return (
+      <p className="text-xs text-red-500 mt-1 px-1 flex items-center gap-1">
+        <AlertCircle className="h-3 w-3 shrink-0" />
+        {error}
+      </p>
+    );
+  };
+
   return (
-    <div className="space-y-15 uppercase relative pb-40">
+    <div className="space-y-15 relative pb-40">
       <div className="flex items-center justify-between">
         <div>
           <h1
-            className={`${montserrat.className} text-4xl mb-2`}
+            className={`${montserrat.className} text-4xl font-bold mb-2`}
             style={{ color: colors.text as string }}
           >
             Global <span className="text-blue-500">Settings</span>
@@ -197,37 +275,45 @@ export default function SiteSettingsManagementPage() {
             <div className="space-y-6">
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
-                  Company Name
+                  Company Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.company_name || ""}
-                  onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, company_name: e.target.value });
+                    setValidationErrors((prev) => ({ ...prev, company_name: "" }));
+                  }}
                   className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                   style={inputStyle}
                 />
+                {fieldError("company_name")}
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Tagline
                 </label>
                 <textarea
                   value={formData.tagline || ""}
-                  onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, tagline: e.target.value });
+                    setValidationErrors((prev) => ({ ...prev, tagline: "" }));
+                  }}
                   rows={2}
                   className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium resize-none text-sm normal-case"
                   style={inputStyle}
                 />
+                {fieldError("tagline")}
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Official Email Support
@@ -240,15 +326,19 @@ export default function SiteSettingsManagementPage() {
                   <input
                     type="email"
                     value={formData.contact_email || ""}
-                    onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, contact_email: e.target.value });
+                      setValidationErrors((prev) => ({ ...prev, contact_email: "" }));
+                    }}
                     className="w-full rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium lowercase"
                     style={inputStyle}
                   />
                 </div>
+                {fieldError("contact_email")}
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Collaboration Email
@@ -261,17 +351,19 @@ export default function SiteSettingsManagementPage() {
                   <input
                     type="email"
                     value={formData.collaboration_email || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, collaboration_email: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setFormData({ ...formData, collaboration_email: e.target.value });
+                      setValidationErrors((prev) => ({ ...prev, collaboration_email: "" }));
+                    }}
                     className="w-full rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium lowercase"
                     style={inputStyle}
                   />
                 </div>
+                {fieldError("collaboration_email")}
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Phone Number
@@ -284,15 +376,19 @@ export default function SiteSettingsManagementPage() {
                   <input
                     type="text"
                     value={formData.phone || ""}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, phone: e.target.value });
+                      setValidationErrors((prev) => ({ ...prev, phone: "" }));
+                    }}
                     className="w-full rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                     style={inputStyle}
                   />
                 </div>
+                {fieldError("phone")}
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Business Hours
@@ -305,15 +401,19 @@ export default function SiteSettingsManagementPage() {
                   <input
                     type="text"
                     value={formData.business_hours || ""}
-                    onChange={(e) => setFormData({ ...formData, business_hours: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, business_hours: e.target.value });
+                      setValidationErrors((prev) => ({ ...prev, business_hours: "" }));
+                    }}
                     className="w-full rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                     style={inputStyle}
                   />
                 </div>
+                {fieldError("business_hours")}
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Headquarter Location
@@ -326,15 +426,19 @@ export default function SiteSettingsManagementPage() {
                   <input
                     type="text"
                     value={formData.address || ""}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, address: e.target.value });
+                      setValidationErrors((prev) => ({ ...prev, address: "" }));
+                    }}
                     className="w-full rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                     style={inputStyle}
                   />
                 </div>
+                {fieldError("address")}
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Founded Year
@@ -342,15 +446,17 @@ export default function SiteSettingsManagementPage() {
                 <input
                   type="number"
                   value={formData.founded_year || ""}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFormData({
                       ...formData,
                       founded_year: parseInt(e.target.value) || undefined,
-                    })
-                  }
+                    });
+                    setValidationErrors((prev) => ({ ...prev, founded_year: "" }));
+                  }}
                   className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                   style={inputStyle}
                 />
+                {fieldError("founded_year")}
               </div>
             </div>
           </div>
@@ -370,7 +476,7 @@ export default function SiteSettingsManagementPage() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center px-1">
                   <label
-                    className="text-sm font-semibold uppercase tracking-widest text-[10px]"
+                    className="text-[10px] font-bold tracking-widest uppercase"
                     style={{ color: colors.textMuted as string }}
                   >
                     Map Embed URL
@@ -398,12 +504,16 @@ export default function SiteSettingsManagementPage() {
                   <input
                     type="url"
                     value={formData.map_embed_url || ""}
-                    onChange={(e) => setFormData({ ...formData, map_embed_url: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, map_embed_url: e.target.value });
+                      setValidationErrors((prev) => ({ ...prev, map_embed_url: "" }));
+                    }}
                     placeholder="https://www.google.com/maps/embed?pb=..."
                     className="w-full rounded-xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                     style={inputStyle}
                   />
                 </div>
+                {fieldError("map_embed_url")}
                 {showMapPreview && formData.map_embed_url && (
                   <div
                     className="w-full h-64 rounded-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 shadow-inner"
@@ -426,7 +536,7 @@ export default function SiteSettingsManagementPage() {
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   LinkedIn URL
@@ -434,15 +544,19 @@ export default function SiteSettingsManagementPage() {
                 <input
                   type="url"
                   value={formData.linkedin_url || ""}
-                  onChange={(e) => setFormData({ ...formData, linkedin_url: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, linkedin_url: e.target.value });
+                    setValidationErrors((prev) => ({ ...prev, linkedin_url: "" }));
+                  }}
                   placeholder="https://linkedin.com/company/tachydro"
                   className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                   style={inputStyle}
                 />
+                {fieldError("linkedin_url")}
               </div>
               <div className="space-y-2">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Facebook URL
@@ -450,11 +564,15 @@ export default function SiteSettingsManagementPage() {
                 <input
                   type="url"
                   value={formData.facebook_url || ""}
-                  onChange={(e) => setFormData({ ...formData, facebook_url: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, facebook_url: e.target.value });
+                    setValidationErrors((prev) => ({ ...prev, facebook_url: "" }));
+                  }}
                   placeholder="https://facebook.com/tachydro"
                   className="w-full rounded-xl py-3.5 px-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
                   style={inputStyle}
                 />
+                {fieldError("facebook_url")}
               </div>
             </div>
           </div>
@@ -501,7 +619,7 @@ export default function SiteSettingsManagementPage() {
             {videoMode === "upload" && (
               <div className="space-y-4">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   Video File
@@ -527,17 +645,26 @@ export default function SiteSettingsManagementPage() {
                 <input
                   type="file"
                   accept="video/*"
-                  onChange={(e) => e.target.files && setSelectedVideo(e.target.files[0])}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file && file.size > 10 * 1024 * 1024) {
+                      setValidationErrors((prev) => ({ ...prev, video: "Video file must not exceed 10MB" }));
+                      return;
+                    }
+                    setValidationErrors((prev) => ({ ...prev, video: "" }));
+                    setSelectedVideo(file || null);
+                  }}
                   className="block w-full text-sm file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-xl"
                   style={inputStyle}
                 />
+                {fieldError("video")}
               </div>
             )}
 
             {videoMode === "youtube" && (
               <div className="space-y-4">
                 <label
-                  className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                  className="text-[10px] font-bold tracking-widest uppercase"
                   style={{ color: colors.textMuted as string }}
                 >
                   YouTube URL
@@ -585,7 +712,7 @@ export default function SiteSettingsManagementPage() {
             </h2>
             <div className="space-y-4">
               <label
-                className="text-sm font-semibold px-1 uppercase tracking-widest text-[10px]"
+                className="text-[10px] font-bold tracking-widest uppercase"
                 style={{ color: colors.textMuted as string }}
               >
                 Chart Image
@@ -613,10 +740,19 @@ export default function SiteSettingsManagementPage() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => e.target.files && setSelectedFile(e.target.files[0])}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file && file.size > 10 * 1024 * 1024) {
+                      setValidationErrors((prev) => ({ ...prev, organization_chart_image: "Image file must not exceed 10MB" }));
+                      return;
+                    }
+                    setValidationErrors((prev) => ({ ...prev, organization_chart_image: "" }));
+                    setSelectedFile(file || null);
+                  }}
                   className="block w-full text-sm file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-500 hover:file:bg-blue-500/20 transition-all cursor-pointer rounded-xl"
                   style={inputStyle}
                 />
+                {fieldError("organization_chart_image")}
               </div>
             </div>
           </div>
@@ -633,7 +769,7 @@ export default function SiteSettingsManagementPage() {
             }}
           >
             <h3
-              className="text-lg font-bold mb-4"
+              className={`${montserrat.className} text-lg font-bold mb-4`}
               style={{ color: colors.text as string }}
             >
               Confirm Switch
