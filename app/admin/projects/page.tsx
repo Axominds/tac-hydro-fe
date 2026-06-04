@@ -437,7 +437,7 @@ export default function ProjectsManagementPage() {
     setDeleteConfirmOpen(true);
   };
 
-  const handleUploadScopeImages = async (membershipId: number, files: FileList | null) => {
+  const handleUploadScopeImages = async (membershipId: number, files: File[] | null) => {
     if (!files || files.length === 0) return;
     const existingImages = getMembershipImages(membershipId);
     const remaining = Math.max(0, 4 - existingImages.length);
@@ -446,7 +446,7 @@ export default function ProjectsManagementPage() {
       return;
     }
 
-    const selected = Array.from(files).slice(0, remaining);
+    const selected = files.slice(0, remaining);
     setUploadingMembershipId(membershipId);
     try {
       await Promise.all(
@@ -1185,13 +1185,11 @@ export default function ProjectsManagementPage() {
                                   accept="image/*"
                                   multiple
                                   className="hidden"
-                                  onChange={(e) =>
-                                    handleUploadScopeImages(membership.id, e.target.files).finally(
-                                      () => {
-                                        e.currentTarget.value = "";
-                                      },
-                                    )
-                                  }
+                                  onChange={(e) => {
+                                    const files = e.target.files ? Array.from(e.target.files) : null;
+                                    e.currentTarget.value = "";
+                                    handleUploadScopeImages(membership.id, files);
+                                  }}
                                 />
                               </label>
                             )}
