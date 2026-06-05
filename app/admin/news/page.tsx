@@ -17,6 +17,8 @@ import {
   GripVertical,
   FileText,
   AlertCircle,
+  Filter,
+  Search,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useQueryClient } from "@tanstack/react-query";
@@ -218,6 +220,9 @@ export default function NewsManagementPage() {
   const [reordering, setReordering] = useState(false);
   const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
   const [categoryFilter, setCategoryFilter] = useState<number | null>(null);
+  const [searchText, setSearchText] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -225,15 +230,24 @@ export default function NewsManagementPage() {
 
   const statusFilterValue = statusFilter === "all" ? null : statusFilter === "published";
 
+  useEffect(() => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => setDebouncedSearch(searchText), 300);
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
+  }, [searchText]);
+
   const { data: newsData, isLoading: itemsLoading } = useNewsItems(
     categoryFilter,
     currentPage,
-    4,
+    5,
     statusFilterValue,
+    debouncedSearch.trim() || undefined,
   );
   const { data: counts } = useNewsCounts();
 
-  const totalPages = newsData?.count ? Math.ceil(newsData.count / 4) : 1;
+  const totalPages = newsData?.count ? Math.ceil(newsData.count / 5) : 1;
 
   const syncedRef = useRef(false);
   if (categories && (!syncedRef.current || orderedCategories.length !== categories.length)) {
@@ -562,7 +576,7 @@ export default function NewsManagementPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 items-start pb-40">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 items-start pb-40">
         <div className="space-y-4">
           <div className="flex items-center justify-between pb-2">
             <p
@@ -600,92 +614,102 @@ export default function NewsManagementPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-4">
-                {newsItems.map((item: NewsItem) => (
-                  <div
-                    key={item.id}
-                    className="rounded-2xl p-6 flex items-center gap-6 group transition-all"
-                    style={{
-                      ...cardStyle,
-                      backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
-                    }}
-                  >
-                    <div className="w-20 h-20 bg-blue-600/10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
-                      {item.image ? (
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <Newspaper className="h-7 w-7 text-blue-500/40" />
-                      )}
-                    </div>
-
-                    <div className="flex-1 min-w-0 space-y-1.5">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {item.news_category_id && (
-                          <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
-                            {categories?.find((c) => c.id === item.news_category_id)?.name ||
-                              "Uncategorized"}
-                          </span>
-                        )}
-                        <span
-                          className="text-[10px] flex items-center gap-1"
-                          style={{ color: colors.textMuted as string }}
-                        >
-                          <Calendar className="h-3 w-3" />
-                          {new Date(item.news_date).toLocaleDateString()}
-                        </span>
-                        {item.is_published ? (
-                          <span className="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
-                            Published
-                          </span>
-                        ) : (
-                          <span className="text-[10px] font-bold text-yellow-500/60 bg-yellow-500/5 px-2 py-0.5 rounded border border-yellow-500/10">
-                            Draft
-                          </span>
-                        )}
-                      </div>
-                      <h3
-                        className="text-sm font-bold leading-tight line-clamp-1 group-hover:text-blue-400 transition-colors"
-                        style={{ color: colors.text as string }}
-                      >
-                        {item.title}
-                      </h3>
-                      <p
-                        className="text-xs line-clamp-1 normal-case"
-                        style={{ color: colors.textMuted as string }}
-                      >
-                        {item.summary}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all shrink-0">
-                      <button
-                        onClick={() => openEditModal(item)}
-                        className="p-2.5 rounded-xl transition-all"
+              <div
+                className="rounded-2xl overflow-hidden"
+                style={{
+                  backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
+                  border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                }}
+              >
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr
+                      className="text-left text-xs font-semibold uppercase tracking-wider"
+                      style={{
+                        color: colors.textMuted as string,
+                        borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                      }}
+                    >
+                      <th className="px-6 py-4 font-semibold">Title</th>
+                      <th className="px-6 py-4 font-semibold">Date</th>
+                      <th className="px-6 py-4 font-semibold">Status</th>
+                      <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {newsItems.map((item: NewsItem) => (
+                      <tr
+                        key={item.id}
+                        className="group transition-all"
                         style={{
-                          backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-                          color: isDark ? "#888" : "#64748b",
+                          borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9"}`,
                         }}
                       >
-                        <Edit2 className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-2.5 rounded-xl transition-all"
-                        style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#ef4444" }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-600/10 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                              {item.image ? (
+                                <img src={item.image} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <Newspaper className="h-5 w-5 text-blue-500/40" />
+                              )}
+                            </div>
+                            <div>
+                              <span className="font-medium" style={{ color: colors.text as string }}>
+                                {item.title}
+                              </span>
+                              {item.news_category_id && (
+                                <span className="block text-[10px] text-blue-400 mt-0.5">
+                                  {categories?.find((c) => c.id === item.news_category_id)?.name || "Uncategorized"}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5" style={{ color: colors.textMuted as string }}>
+                            <Calendar className="h-3.5 w-3.5 shrink-0" />
+                            {new Date(item.news_date).toLocaleDateString()}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {item.is_published ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+                              Published
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded-full">
+                              Draft
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => openEditModal(item)}
+                              className="p-2 rounded-lg transition-all"
+                              style={{
+                                backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                              }}
+                            >
+                              <Edit2 className="h-4 w-4" style={{ color: colors.textSecondary as string }} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              className="p-2 rounded-lg transition-all"
+                              style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-2 mt-8">
+              <div className="flex items-center justify-center gap-2 mt-8">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
@@ -728,139 +752,99 @@ export default function NewsManagementPage() {
                       color: colors.textSecondary as string,
                       opacity: currentPage === totalPages ? 0.3 : 1,
                     }}
-                  >
+                    >
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 </div>
-              )}
             </>
           )}
         </div>
 
-        <div className="space-y-8 sticky top-6">
-          <div className="rounded-3xl p-6 space-y-4" style={cardStyle}>
-            <h2
-              className={`${montserrat.className} text-lg flex items-center gap-2 pb-4`}
-              style={{
-                color: colors.text as string,
-                borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
-              }}
-            >
-              <Check className="h-4 w-4 text-blue-500" />
-              Status
-            </h2>
-            <div className="space-y-2">
-              {[
-                { id: "all", label: "All Status", icon: ChevronRight },
-                { id: "published", label: "Published", icon: Check },
-                { id: "draft", label: "Drafts", icon: FileText },
-              ].map((status) => (
-                <button
-                  key={status.id}
-                  onClick={() => setStatusFilter(status.id as any)}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                  style={
-                    statusFilter === status.id
-                      ? { backgroundColor: "#3b82f6", color: "#ffffff" }
-                      : {
-                          color: colors.textSecondary as string,
-                          backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "transparent",
-                        }
-                  }
-                >
-                  <status.icon className="h-3.5 w-3.5" />
-                  {status.label}
-                  <span
-                    className="ml-auto text-[10px] px-2 py-0.5 rounded-full"
-                    style={{
-                      backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    {status.id === "all"
-                      ? counts?.all
-                      : status.id === "published"
-                        ? counts?.published
-                        : counts?.drafts}
-                  </span>
-                </button>
-              ))}
-            </div>
+        <div
+          className="w-64 shrink-0 rounded-2xl p-5 h-fit sticky top-28"
+          style={{
+            backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "#ffffff",
+            border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+          }}
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="h-4 w-4" style={{ color: colors.textMuted as string }} />
+            <span className="font-semibold text-sm" style={{ color: colors.text as string }}>
+              Filters
+            </span>
           </div>
 
-          <div className="rounded-3xl p-6 space-y-4" style={cardStyle}>
-            <h2
-              className={`${montserrat.className} text-lg flex items-center gap-2 pb-4`}
-              style={{
-                color: colors.text as string,
-                borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
-              }}
-            >
-              <Tag className="h-4 w-4 text-blue-500" />
-              Categories
-            </h2>
-
-            {catsLoading ? (
-              <div className="flex justify-center py-6">
-                <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs mb-1.5" style={{ color: colors.textMuted as string }}>
+                Search
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: colors.textMuted as string }} />
+                <input
+                  value={searchText}
+                  onChange={(e) => {
+                    setSearchText(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Search by title..."
+                  className="w-full rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+                    border: `1px solid ${isDark ? "rgba(255,255,255,0.15)" : "#cbd5e1"}`,
+                    color: isDark ? "#ffffff" : "#1e293b",
+                  }}
+                />
               </div>
-            ) : (
-              <div className="space-y-2 overflow-y-auto" style={{ maxHeight: "calc(100vh - 320px)" }}>
-                <button
-                  onClick={() => setCategoryFilter(null)}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                  style={
-                    categoryFilter === null
-                      ? { backgroundColor: "#3b82f6", color: "#ffffff" }
-                      : {
-                          color: colors.textSecondary as string,
-                          backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "transparent",
-                        }
-                  }
-                >
-                  <ChevronRight className="h-3.5 w-3.5" />
-                  All Categories
-                  <span
-                    className="ml-auto text-[10px] px-2 py-0.5 rounded-full"
-                    style={{
-                      backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    {counts?.all}
-                  </span>
-                </button>
+            </div>
+            <div>
+              <label className="block text-xs mb-1.5" style={{ color: colors.textMuted as string }}>
+                Status
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value as "all" | "published" | "draft");
+                  setCurrentPage(1);
+                }}
+                className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                style={{
+                  backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+                  border: `1px solid ${isDark ? "rgba(255,255,255,0.15)" : "#cbd5e1"}`,
+                  color: isDark ? "#ffffff" : "#1e293b",
+                }}
+              >
+                <option value="all">All</option>
+                <option value="published">Published</option>
+                <option value="draft">Drafts</option>
+              </select>
+            </div>
 
+            <div>
+              <label className="block text-xs mb-1.5" style={{ color: colors.textMuted as string }}>
+                Category
+              </label>
+              <select
+                value={categoryFilter ?? ""}
+                onChange={(e) => {
+                  setCategoryFilter(e.target.value ? Number(e.target.value) : null);
+                  setCurrentPage(1);
+                }}
+                className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                style={{
+                  backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+                  border: `1px solid ${isDark ? "rgba(255,255,255,0.15)" : "#cbd5e1"}`,
+                  color: isDark ? "#ffffff" : "#1e293b",
+                }}
+              >
+                <option value="">All Categories</option>
                 {categories?.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setCategoryFilter(categoryFilter === cat.id ? null : cat.id)}
-                    className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                    style={
-                      categoryFilter === cat.id
-                        ? {
-                            backgroundColor: "rgba(59,130,246,0.2)",
-                            color: "#60a5fa",
-                            border: "1px solid rgba(59,130,246,0.3)",
-                          }
-                        : {
-                            color: colors.textSecondary as string,
-                            backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "transparent",
-                          }
-                    }
-                  >
-                    <Tag className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{cat.name}</span>
-                    <span
-                      className="ml-auto text-[10px] px-2 py-0.5 rounded-full shrink-0"
-                      style={{
-                        backgroundColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-                      }}
-                    >
-                      {counts?.by_category?.[cat.id] ?? 0}
-                    </span>
-                  </button>
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
                 ))}
-              </div>
-            )}
+              </select>
+            </div>
           </div>
         </div>
       </div>

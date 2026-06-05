@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage, ExpertiseCategory, ServiceSector, AboutPageSection, ProjectScopeMembership, ProjectScopeImage, CorePrinciple, TeamCategory, TeamMember, TeamMemberCategory, ValuedPartner } from "../lib/api";
+import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage, ExpertiseCategory, ServiceSector, AboutPageSection, ProjectScopeMembership, ProjectScopeImage, CorePrinciple, TeamCategory, TeamMember, TeamMemberCategory, ValuedPartner, JobPosting } from "../lib/api";
 
 // --- PROJECTS ---
 // ... (omitting projects for brevity in replacement, but I will target the right lines)
@@ -720,4 +720,30 @@ export function useTeamMemberCategoryMutations() {
   });
 
   return { addMemberCategory, removeMemberCategory };
+}
+
+// --- JOB POSTINGS ---
+
+export function useJobPostingMutations() {
+  const queryClient = useQueryClient();
+
+  const createJobPosting = useMutation({
+    mutationFn: (data: Partial<JobPosting>) =>
+      apiFetch<JobPosting>("/api/contact-us/jobs/", { method: "POST", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["jobs"] }),
+  });
+
+  const updateJobPosting = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<JobPosting> }) =>
+      apiFetch<JobPosting>(`/api/contact-us/jobs/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["jobs"] }),
+  });
+
+  const deleteJobPosting = useMutation({
+    mutationFn: (id: number) =>
+      apiFetch(`/api/contact-us/jobs/${id}/`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["jobs"] }),
+  });
+
+  return { createJobPosting, updateJobPosting, deleteJobPosting };
 }

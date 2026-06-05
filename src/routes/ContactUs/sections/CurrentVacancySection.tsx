@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   XIcon,
   BriefcaseIcon,
@@ -9,10 +9,12 @@ import {
   ZapIcon,
   FileTextIcon,
   UploadIcon,
+  Loader2Icon,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../../../components/ui/button";
-import { CAREER_DATA, JobRole, JobType } from "../data/careerData";
+import { useJobPostings, useSubmitJobApplication } from "../../../hooks/useCareers";
+import type { JobPosting } from "../../../lib/api";
 
 type JobType = "Full Time" | "Internship" | "Independent Consultant";
 
@@ -41,25 +43,53 @@ const TYPE_CONFIG: Record<
 };
 
 export const CurrentVacancySection = () => {
+  const { data: jobs = [], isLoading, isError } = useJobPostings({ is_open: true });
+  const submitMutation = useSubmitJobApplication();
+  const formRef = useRef<HTMLFormElement>(null);
+
   const [selectedType, setSelectedType] = useState<JobType | null>("Full Time");
-  const [viewingRole, setViewingRole] = useState<JobRole | null>(null);
+  const [viewingRole, setViewingRole] = useState<JobPosting | null>(null);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const filteredRoles = selectedType
-    ? CAREER_DATA.filter((role) => role.type === selectedType)
+    ? jobs.filter((role) => role.type === selectedType)
     : [];
 
-  const handleApplyClick = (role: JobRole, e: React.MouseEvent) => {
+  const handleApplyClick = (role: JobPosting, e: React.MouseEvent) => {
     e.stopPropagation();
     setViewingRole(role);
   };
 
-  const confirmApplication = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    data.set("job_id", String(viewingRole!.id));
+    if (cvFile) data.set("cv_file", cvFile);
+    if (coverLetterFile) data.set("cover_letter_file", coverLetterFile);
+
+    submitMutation.mutate(data, {
+      onSuccess: () => {
+        setFeedback({ type: "success", message: "Application submitted successfully!" });
+        setCvFile(null);
+        setCoverLetterFile(null);
+        form.reset();
+        setTimeout(() => {
+          setViewingRole(null);
+          setFeedback(null);
+        }, 2000);
+      },
+      onError: () => {
+        setFeedback({ type: "error", message: "Submission failed. Please try again." });
+      },
+    });
+  };
+
+  const closeModal = () => {
     setViewingRole(null);
-    setCvFile(null);
-    setCoverLetterFile(null);
-    alert("Application Submitted Successfully!");
+    setFeedback(null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "cv" | "cover") => {
@@ -85,6 +115,26 @@ export const CurrentVacancySection = () => {
     };
   }, [viewingRole]);
 
+  if (isLoading) {
+    return (
+      <section className="w-full py-20 bg-white px-4 sm:px-8 lg:px-20">
+        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
+          <Loader2Icon className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="w-full py-20 bg-white px-4 sm:px-8 lg:px-20">
+        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
+          <p className="text-red-500 font-medium">Failed to load job listings. Please try again later.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="active-opportunities" className="w-full py-20 bg-white px-4 sm:px-8 lg:px-20">
       <div className="max-w-7xl mx-auto">
@@ -98,7 +148,7 @@ export const CurrentVacancySection = () => {
                 </h1>
                 <nav className="space-y-2">
                   {(Object.keys(TYPE_CONFIG) as JobType[]).map((type) => {
-                    const count = filteredRoles.length;
+                    const count = jobs.filter((job) => job.type === type).length;
                     const isActive = selectedType === type;
 
                     return (
@@ -154,7 +204,7 @@ export const CurrentVacancySection = () => {
               )}
 
               {filteredRoles.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6 min-h-[500px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
                   {filteredRoles.map((role) => (
                     <div
                       key={role.id}
@@ -174,14 +224,11 @@ export const CurrentVacancySection = () => {
                           >
                             {role.type}
                           </span>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-                            {role.category}
-                          </span>
                         </div>
                         <h5 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                           {role.title}
                         </h5>
-                        <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
+                        <p className="text-gray-500 text-sm leading-relaxed">
                           {role.description}
                         </p>
                       </div>
@@ -221,7 +268,7 @@ export const CurrentVacancySection = () => {
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-[#0b1522]/60 backdrop-blur-sm animate-fade-in"
-            onClick={() => setViewingRole(null)}
+            onClick={closeModal}
           />
 
           {/* Modal Content */}
@@ -235,12 +282,12 @@ export const CurrentVacancySection = () => {
                     TYPE_CONFIG[viewingRole.type as JobType]?.color || "text-gray-600",
                   )}
                 >
-                  {viewingRole.type} • {viewingRole.category}
+                  {viewingRole.type}
                 </span>
                 <h3 className="text-2xl font-bold text-[#0b1522]">{viewingRole.title}</h3>
               </div>
               <button
-                onClick={() => setViewingRole(null)}
+                onClick={closeModal}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <XIcon className="w-6 h-6 text-gray-400" />
@@ -314,7 +361,7 @@ export const CurrentVacancySection = () => {
                 </div>
 
                 {/* Form Sections */}
-                <form className="space-y-10 pb-10">
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-10 pb-10">
                   {/* Section A: General Information */}
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 text-gray-900">
@@ -327,7 +374,9 @@ export const CurrentVacancySection = () => {
                           First Name *
                         </label>
                         <input
+                          name="first_name"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
                       </div>
@@ -336,6 +385,7 @@ export const CurrentVacancySection = () => {
                           Middle Name
                         </label>
                         <input
+                          name="middle_name"
                           type="text"
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
@@ -345,7 +395,9 @@ export const CurrentVacancySection = () => {
                           Last Name *
                         </label>
                         <input
+                          name="last_name"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
                       </div>
@@ -353,11 +405,15 @@ export const CurrentVacancySection = () => {
                         <label className="text-xs font-bold text-gray-500 uppercase">
                           Gender *
                         </label>
-                        <select className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all appearance-none bg-white">
-                          <option>Select Gender</option>
-                          <option>Male</option>
-                          <option>Female</option>
-                          <option>Other</option>
+                        <select
+                          name="gender"
+                          required
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all appearance-none bg-white"
+                        >
+                          <option value="">Select Gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
                         </select>
                       </div>
                       <div className="space-y-1.5">
@@ -365,7 +421,9 @@ export const CurrentVacancySection = () => {
                           Phone Number *
                         </label>
                         <input
+                          name="phone"
                           type="tel"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
                       </div>
@@ -374,7 +432,9 @@ export const CurrentVacancySection = () => {
                           Email Address *
                         </label>
                         <input
+                          name="email"
                           type="email"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
                       </div>
@@ -393,7 +453,9 @@ export const CurrentVacancySection = () => {
                           Degree Name *
                         </label>
                         <input
+                          name="degree"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
                       </div>
@@ -402,7 +464,9 @@ export const CurrentVacancySection = () => {
                           Percentage / Grade / CGPA *
                         </label>
                         <input
+                          name="grade"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
                       </div>
@@ -411,7 +475,9 @@ export const CurrentVacancySection = () => {
                           Year Completed *
                         </label>
                         <input
+                          name="year_completed"
                           type="number"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
                       </div>
@@ -420,7 +486,9 @@ export const CurrentVacancySection = () => {
                           Specialization *
                         </label>
                         <input
+                          name="specialization"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
                       </div>
@@ -429,7 +497,9 @@ export const CurrentVacancySection = () => {
                           College / University Attended *
                         </label>
                         <input
+                          name="college"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
                       </div>
@@ -448,6 +518,7 @@ export const CurrentVacancySection = () => {
                           What are the major abilities regarding the job you have applied for? *
                         </label>
                         <textarea
+                          name="abilities"
                           rows={4}
                           placeholder="Briefly describe your core technical and professional strengths..."
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all resize-none"
@@ -470,6 +541,7 @@ export const CurrentVacancySection = () => {
                               Software Proficiency *
                             </label>
                             <input
+                              name="software_proficiency"
                               type="text"
                               placeholder="e.g., AutoCAD, SAP2000, MS Project"
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
@@ -480,6 +552,7 @@ export const CurrentVacancySection = () => {
                               Current Employment Status *
                             </label>
                             <input
+                              name="employment_status"
                               type="text"
                               placeholder="e.g., Employed, Unemployed, Freelancing"
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
@@ -492,6 +565,7 @@ export const CurrentVacancySection = () => {
                           Experience Sector *
                         </label>
                         <input
+                          name="experience_sector"
                           type="text"
                           placeholder="e.g., Hydropower, Construction, Irrigation"
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
@@ -502,6 +576,7 @@ export const CurrentVacancySection = () => {
                           Years of Experience *
                         </label>
                         <input
+                          name="years_experience"
                           type="text"
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
@@ -513,6 +588,7 @@ export const CurrentVacancySection = () => {
                               Possible Joining Date *
                             </label>
                             <input
+                              name="joining_date"
                               type="date"
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                             />
@@ -522,6 +598,7 @@ export const CurrentVacancySection = () => {
                               Expected Salary (Monthly / NPR) *
                             </label>
                             <input
+                              name="expected_salary"
                               type="text"
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                             />
@@ -611,13 +688,32 @@ export const CurrentVacancySection = () => {
               </div>
             </div>
 
+            {feedback && (
+              <div
+                className={cn(
+                  "px-8 py-4 text-center font-bold text-sm",
+                  feedback.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700",
+                )}
+              >
+                {feedback.message}
+              </div>
+            )}
+
             {/* Modal Footer */}
             <div className="px-8 py-6 border-t border-gray-100 bg-white flex items-center justify-end sticky bottom-0 z-10 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
               <Button
-                onClick={confirmApplication}
-                className="w-full py-7 bg-blue-600 hover:bg-blue-700 rounded-full font-bold text-xl shadow-xl transition-all"
+                type="submit"
+                disabled={submitMutation.isPending}
+                className="w-full py-7 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-full font-bold text-xl shadow-xl transition-all"
               >
-                Submit Application
+                {submitMutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2Icon className="w-5 h-5 animate-spin" />
+                    Submitting...
+                  </span>
+                ) : (
+                  "Submit Application"
+                )}
               </Button>
             </div>
           </div>

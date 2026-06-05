@@ -283,6 +283,13 @@ export interface Project {
   image_urls?: string[];
 }
 
+export interface ProjectListResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Project[];
+}
+
 export interface ProjectScopeMembership {
   id: number;
   project_id: number;
@@ -347,7 +354,6 @@ export interface NewsListResponse {
 export interface JobPosting {
   id: number;
   title: string;
-  category: number;
   type: string;
   location: string | null;
   description: string | null;
@@ -357,10 +363,11 @@ export interface JobPosting {
   published_at: string | null;
 }
 
-export interface JobCategory {
-  id: number;
-  name: string;
-  order: number;
+export interface JobPostingListResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: JobPosting[];
 }
 
 export interface TeamMember {
