@@ -520,14 +520,13 @@ export default function ProjectsManagementPage() {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
-        </div>
-      ) : (
         <div className="flex gap-6 pb-40">
           <div className="flex-1 min-w-0">
-            {!projects || projects.length === 0 ? (
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+              </div>
+            ) : !projects || projects.length === 0 ? (
               <div
                 className="rounded-2xl p-12 text-center"
                 style={{
@@ -735,7 +734,6 @@ export default function ProjectsManagementPage() {
             </div>
           </div>
         </div>
-      )}
 
       {/* CRUD Modal */}
       {isModalOpen && (

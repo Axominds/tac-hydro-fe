@@ -356,7 +356,7 @@ export default function NewsManagementPage() {
           });
           newsId = res.id;
           queryClient.invalidateQueries({ queryKey: ["news-counts"] });
-          showToast("News saved successfully", "success");
+          showToast("News saved successfully!", "success");
         } else {
           const changedData: Partial<NewsItem> = {};
           Object.keys(cleanedFormData).forEach((k) => {
@@ -370,7 +370,7 @@ export default function NewsManagementPage() {
             newsId = res.id;
             queryClient.invalidateQueries({ queryKey: ["news-counts"] });
           }
-          showToast("News saved successfully", "success");
+          showToast("News saved successfully!", "success");
         }
       } else {
         if (selectedImage) {
@@ -409,7 +409,7 @@ export default function NewsManagementPage() {
         }
         queryClient.invalidateQueries({ queryKey: ["news"] });
         queryClient.invalidateQueries({ queryKey: ["news-counts"] });
-        showToast(flushFailed ? "Failed to upload some attachments" : "News added successfully", flushFailed ? "error" : "success");
+        showToast(flushFailed ? "Failed to upload some attachments" : "News added successfully!", flushFailed ? "error" : "success");
         closeModal();
       }
       if (newsId) setCreatedNewsId(newsId);
@@ -452,7 +452,7 @@ export default function NewsManagementPage() {
     if (deleteType === "article" && deleteId) {
       await deleteNews.mutateAsync(deleteId);
       queryClient.invalidateQueries({ queryKey: ["news-counts"] });
-      showToast("News deleted successfully", "success");
+      showToast("News deleted successfully!", "success");
     } else if (deleteType === "category" && deleteId) {
       const categoryCount = counts?.by_category?.[deleteId] ?? 0;
       if (categoryCount > 0) {
@@ -463,7 +463,7 @@ export default function NewsManagementPage() {
       }
       await deleteCategory.mutateAsync(deleteId);
       setOrderedCategories((prev) => prev.filter((c) => c.id !== deleteId));
-      showToast("Category deleted successfully", "success");
+      showToast("Category deleted successfully!", "success");
     }
     setDeleteId(null);
     setDeleteType(null);

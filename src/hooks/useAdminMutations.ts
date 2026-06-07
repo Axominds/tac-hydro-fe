@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage, ExpertiseCategory, ServiceSector, AboutPageSection, ProjectScopeMembership, ProjectScopeImage, CorePrinciple, TeamCategory, TeamMember, TeamMemberCategory, ValuedPartner, JobPosting } from "../lib/api";
+import { apiFetch, Project, NewsItem, Banner, SiteSettings, GalleryCategory, GallerySubcategory, GalleryImage, ExpertiseCategory, ServiceSector, AboutPageSection, ProjectScopeMembership, ProjectScopeImage, CorePrinciple, TeamCategory, TeamMember, TeamMemberCategory, ValuedPartner, JobPosting, JobApplication, ExpertiseItem } from "../lib/api";
 
 // --- PROJECTS ---
 // ... (omitting projects for brevity in replacement, but I will target the right lines)
@@ -746,4 +746,21 @@ export function useJobPostingMutations() {
   });
 
   return { createJobPosting, updateJobPosting, deleteJobPosting };
+}
+
+// --- JOB APPLICATIONS ---
+
+export function useJobApplicationMutations() {
+  const queryClient = useQueryClient();
+
+  const updateJobApplication = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: Partial<JobApplication> }) =>
+      apiFetch<JobApplication>(`/api/contact-us/job-applications/${id}/`, { method: "PATCH", body: data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["job-applications"] });
+      queryClient.invalidateQueries({ queryKey: ["job-application"] });
+    },
+  });
+
+  return { updateJobApplication };
 }

@@ -2,55 +2,38 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  Plus,
   Edit2,
-  Trash2,
   Loader2,
-  Briefcase,
-  MapPin,
-  Eye,
-  EyeOff,
+  FileText,
   Filter,
   Search,
   ChevronRight,
+  Mail,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
-import { useJobPostings } from "../../../src/hooks/useCareers";
-import { useJobPostingMutations } from "../../../src/hooks/useAdminMutations";
+import { useJobApplications, useJobApplicationDetail, useJobPostings } from "../../../src/hooks/useCareers";
+import { useJobApplicationMutations } from "../../../src/hooks/useAdminMutations";
 import { useAdminTheme } from "../../../src/hooks/useAdminTheme";
 import { useModalContext } from "../layout";
-import { JobPostingModal } from "./JobPostingModal";
+import { JobApplicationModal } from "./JobApplicationModal";
 import { Toast, useToast } from "../../../src/components/ui/toast";
-import type { JobPosting, JobPostingListResponse } from "../../../src/lib/api";
+import type { JobApplication, JobApplicationListResponse, JobPostingListResponse } from "../../../src/lib/api";
 
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["600", "700"] });
 
-const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  "Full Time": { bg: "bg-blue-600/10", text: "text-blue-500" },
-  "Internship": { bg: "bg-emerald-600/10", text: "text-emerald-500" },
-  "Independent Consultant": { bg: "bg-purple-600/10", text: "text-purple-500" },
-};
-
-export default function CareersManagementPage() {
+export default function JobApplicationsManagementPage() {
   const { theme, colors, mounted } = useAdminTheme();
   const { setIsModalOpen } = useModalContext();
-  const { createJobPosting, updateJobPosting, deleteJobPosting } = useJobPostingMutations();
+  const { updateJobApplication } = useJobApplicationMutations();
   const { toast, showToast, hideToast } = useToast();
 
-  const [editingJob, setEditingJobLocal] = useState<JobPosting | null>(null);
-  const setEditingJob = (job: JobPosting | null) => {
-    setEditingJobLocal(job);
-    setIsModalOpen(!!job);
+  const [editingApplication, setEditingApplicationLocal] = useState<JobApplication | null>(null);
+  const setEditingApplication = (app: JobApplication | null) => {
+    setEditingApplicationLocal(app);
+    setIsModalOpen(!!app);
   };
 
-  const [isAdding, setIsAddingLocal] = useState(false);
-  const setIsAdding = (open: boolean) => {
-    setIsAddingLocal(open);
-    setIsModalOpen(open);
-  };
-
-  const [filterType, setFilterType] = useState("All");
-  const [filterIsOpen, setFilterIsOpen] = useState("all");
+  const [filterJobId, setFilterJobId] = useState<number | undefined>();
   const [searchText, setSearchText] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -67,22 +50,25 @@ export default function CareersManagementPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [filterIsOpen, filterType, debouncedSearch]);
+  }, [filterJobId, debouncedSearch]);
 
-  const filters: { is_open?: boolean; type?: string; search?: string } = {};
-  if (filterIsOpen === "open") filters.is_open = true;
-  if (filterIsOpen === "closed") filters.is_open = false;
-  if (filterType !== "All") filters.type = filterType;
+  const filters: { job_id?: number; search?: string } = {};
+  if (filterJobId !== undefined) filters.job_id = filterJobId;
   if (debouncedSearch.trim()) filters.search = debouncedSearch.trim();
 
-  const { data: jobsData, isLoading, refetch } = useJobPostings({
+  const { data: applicationsData, isLoading, refetch } = useJobApplications({
     ...(Object.keys(filters).length ? filters : {}),
     page,
     page_size: pageSize,
   });
 
-  const jobs = jobsData && "results" in jobsData ? (jobsData as JobPostingListResponse).results : undefined;
-  const totalPages = jobsData && "count" in jobsData ? Math.ceil((jobsData as JobPostingListResponse).count / pageSize) : 1;
+  const { data: detailData, isLoading: isDetailLoading } = useJobApplicationDetail(editingApplication?.id ?? null);
+
+  const { data: jobsData } = useJobPostings();
+  const allJobs = jobsData && Array.isArray(jobsData) ? jobsData : (jobsData as JobPostingListResponse)?.results || [];
+
+  const applications = applicationsData && "results" in applicationsData ? (applicationsData as JobApplicationListResponse).results : undefined;
+  const totalPages = applicationsData && "count" in applicationsData ? Math.ceil((applicationsData as JobApplicationListResponse).count / pageSize) : 1;
 
   if (!mounted) return null;
 
@@ -93,19 +79,12 @@ export default function CareersManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`${montserrat.className} text-4xl font-bold mb-2`} style={{ color: colors.text }}>
-            Job <span className="text-blue-500">Postings</span>
+            Job <span className="text-blue-500">Applications</span>
           </h1>
           <p style={{ color: colors.textMuted as string }}>
-            Manage job postings and open positions.
+            Review and manage job applications submitted through the website.
           </p>
         </div>
-        <button
-          onClick={() => setIsAdding(true)}
-          className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg"
-        >
-          <Plus className="h-4 w-4" />
-          Add
-        </button>
       </div>
 
         <div className="flex gap-6">
@@ -114,7 +93,7 @@ export default function CareersManagementPage() {
               <div className="flex justify-center py-20">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
               </div>
-            ) : !jobs || jobs.length === 0 ? (
+            ) : !applications || applications.length === 0 ? (
               <div
                 className="rounded-2xl p-12 text-center"
                 style={{
@@ -122,12 +101,12 @@ export default function CareersManagementPage() {
                   border: `1px dashed ${isDark ? "rgba(255,255,255,0.15)" : "#cbd5e1"}`,
                 }}
               >
-                <Briefcase className="h-12 w-12 mx-auto mb-4" style={{ color: colors.textMuted as string }} />
+                <FileText className="h-12 w-12 mx-auto mb-4" style={{ color: colors.textMuted as string }} />
                 <p className="font-medium mb-1" style={{ color: colors.text as string }}>
-                  No job postings yet
+                  No job applications found
                 </p>
                 <p className="text-sm" style={{ color: colors.textMuted as string }}>
-                  Click &ldquo;Add&rdquo; to create your first job posting.
+                  Adjust your filters or wait for new applications.
                 </p>
               </div>
             ) : (
@@ -147,74 +126,54 @@ export default function CareersManagementPage() {
                         borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
                       }}
                     >
-                      <th className="px-6 py-4 font-semibold">Title</th>
-                      <th className="px-6 py-4 font-semibold">Type</th>
-                      <th className="px-6 py-4 font-semibold">Location</th>
-                      <th className="px-6 py-4 font-semibold">Status</th>
+                      <th className="px-6 py-4 font-semibold">Applicant</th>
+                      <th className="px-6 py-4 font-semibold">Applied Job</th>
+                      <th className="px-6 py-4 font-semibold">Date</th>
                       <th className="px-6 py-4 font-semibold text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {jobs!.map((job) => {
-                      const typeColor = TYPE_COLORS[job.type] || TYPE_COLORS["Full Time"];
+                    {applications!.map((app) => {
+                      const job = allJobs.find(j => j.id === app.job_id);
                       return (
                         <tr
-                          key={job.id}
+                          key={app.id}
                           className="group transition-all"
                           style={{
                             borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9"}`,
                           }}
                         >
                           <td className="px-6 py-4">
-                            <span className="font-medium" style={{ color: colors.text as string }}>
-                              {job.title}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${typeColor.bg} ${typeColor.text}`}>
-                              {job.type}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-1.5" style={{ color: colors.textMuted as string }}>
-                              <MapPin className="h-3.5 w-3.5 shrink-0" />
-                              {job.location || "Location TBD"}
+                            <div className="flex flex-col">
+                              <span className="font-medium" style={{ color: colors.text as string }}>
+                                {app.first_name} {app.middle_name ? app.middle_name + " " : ""}{app.last_name}
+                              </span>
+                              <div className="flex items-center gap-1 text-xs mt-1" style={{ color: colors.textMuted as string }}>
+                                <Mail className="h-3 w-3" />
+                                {app.email}
+                              </div>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            {job.is_open ? (
-                              <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
-                                <Eye className="h-3 w-3" />
-                                Open
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                                <EyeOff className="h-3 w-3" />
-                                Closed
-                              </span>
-                            )}
+                            <span style={{ color: colors.textSecondary as string }}>
+                              {job ? job.title : `Job #${app.job_id}`}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span style={{ color: colors.textSecondary as string }}>
+                              {new Date(app.submitted_at).toLocaleDateString()}
+                            </span>
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-1">
                               <button
-                                onClick={() => setEditingJob(job)}
+                                onClick={() => setEditingApplication(app)}
                                 className="p-2 rounded-lg transition-all"
                                 style={{
                                   backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
                                 }}
                               >
                                 <Edit2 className="h-4 w-4" style={{ color: colors.textSecondary as string }} />
-                              </button>
-                              <button
-                                onClick={async () => {
-                                  await deleteJobPosting.mutateAsync(job.id);
-                                  refetch();
-                                  showToast("Job posting deleted successfully!", "error");
-                                }}
-                                className="p-2 rounded-lg transition-all"
-                                style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
-                              >
-                                <Trash2 className="h-4 w-4 text-red-500" />
                               </button>
                             </div>
                           </td>
@@ -292,14 +251,14 @@ export default function CareersManagementPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs mb-1.5" style={{ color: colors.textMuted as string }}>
-                  Search
+                  Search Applicant
                 </label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: colors.textMuted as string }} />
                   <input
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="Search by title..."
+                    placeholder="Search by name/email..."
                     className="w-full rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                     style={{
                       backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
@@ -309,13 +268,15 @@ export default function CareersManagementPage() {
                   />
                 </div>
               </div>
+
+              
               <div>
                 <label className="block text-xs mb-1.5" style={{ color: colors.textMuted as string }}>
-                  Status
+                  Job Filter
                 </label>
                 <select
-                  value={filterIsOpen}
-                  onChange={(e) => setFilterIsOpen(e.target.value)}
+                  value={filterJobId || ""}
+                  onChange={(e) => setFilterJobId(e.target.value ? Number(e.target.value) : undefined)}
                   className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                   style={{
                     backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
@@ -323,64 +284,29 @@ export default function CareersManagementPage() {
                     color: isDark ? "#ffffff" : "#1e293b",
                   }}
                 >
-                  <option value="all">All</option>
-                  <option value="open">Open</option>
-                  <option value="closed">Closed</option>
+                  <option value="">All Jobs</option>
+                  {allJobs.map(job => (
+                    <option key={job.id} value={job.id}>{job.title}</option>
+                  ))}
                 </select>
               </div>
 
-              <div>
-                <label className="block text-xs mb-1.5" style={{ color: colors.textMuted as string }}>
-                  Type
-                </label>
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value)}
-                  className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  style={{
-                    backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
-                    border: `1px solid ${isDark ? "rgba(255,255,255,0.15)" : "#cbd5e1"}`,
-                    color: isDark ? "#ffffff" : "#1e293b",
-                  }}
-                >
-                  <option value="All">All</option>
-                  <option value="Full Time">Full Time</option>
-                  <option value="Internship">Internship</option>
-                  <option value="Independent Consultant">Independent Consultant</option>
-                </select>
-              </div>
             </div>
           </div>
         </div>
 
-      {isAdding && (
-        <JobPostingModal
-          job={null}
-          isOpen={isAdding}
-          onClose={() => setIsAdding(false)}
+      {editingApplication && (
+        <JobApplicationModal
+          application={detailData || editingApplication}
+          isLoading={isDetailLoading}
+          isOpen={!!editingApplication}
+          onClose={() => setEditingApplication(null)}
           onSave={async (data) => {
-            await createJobPosting.mutateAsync(data);
+            await updateJobApplication.mutateAsync({ id: editingApplication.id, data });
             refetch();
-            showToast("Job posting added successfully!", "success");
+            showToast("Job application saved successfully!", "success");
           }}
-        />
-      )}
-
-      {editingJob && (
-        <JobPostingModal
-          job={editingJob}
-          isOpen={!!editingJob}
-          onClose={() => setEditingJob(null)}
-          onSave={async (data) => {
-            await updateJobPosting.mutateAsync({ id: editingJob.id, data });
-            refetch();
-            showToast("Job posting updated successfully!", "success");
-          }}
-          onDelete={async (id) => {
-            await deleteJobPosting.mutateAsync(id);
-            refetch();
-            showToast("Job posting deleted successfully!", "error");
-          }}
+          jobType={allJobs.find(j => j.id === editingApplication.job_id)?.type}
         />
       )}
 

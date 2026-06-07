@@ -370,6 +370,39 @@ export interface JobPostingListResponse {
   results: JobPosting[];
 }
 
+export interface JobApplication {
+  id: number;
+  job_id: number;
+  first_name: string;
+  middle_name: string | null;
+  last_name: string;
+  gender: string | null;
+  phone: string | null;
+  email: string | null;
+  degree: string | null;
+  grade: string | null;
+  year_completed: string | null;
+  specialization: string | null;
+  college: string | null;
+  abilities: string | null;
+  software_proficiency: string | null;
+  employment_status: string | null;
+  experience_sector: string | null;
+  years_experience: string | null;
+  joining_date: string | null;
+  expected_salary: string | null;
+  cv_file: string | null;
+  cover_letter_file: string | null;
+  submitted_at: string;
+}
+
+export interface JobApplicationListResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: JobApplication[];
+}
+
 export interface TeamMember {
   id: number;
   name: string;
@@ -429,4 +462,33 @@ export interface GalleryCategory {
   id: number;
   name: string;
   order: number;
+}
+
+export function extractFieldErrors(error: any): Record<string, string> {
+  const body = error?.body;
+  if (body && typeof body === "object" && !Array.isArray(body)) {
+    const result: Record<string, string> = {};
+    for (const [field, err] of Object.entries(body)) {
+      result[field] = Array.isArray(err) ? err[0] : String(err);
+    }
+    return result;
+  }
+  return {};
+}
+
+export function extractValidationError(error: any): string {
+  const body = error?.body;
+  if (body && typeof body === "object" && !Array.isArray(body)) {
+    const messages: string[] = [];
+    for (const [field, errs] of Object.entries(body)) {
+      const msgs = Array.isArray(errs) ? errs : [String(errs)];
+      for (const m of msgs) {
+        const label = field.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        messages.push(`${label}: ${m}`);
+      }
+    }
+    return messages.join("\n");
+  }
+  if (typeof body === "string") return body;
+  return "Submission failed. Please try again.";
 }
