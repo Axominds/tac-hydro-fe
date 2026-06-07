@@ -19,10 +19,11 @@ export function useNewsItems(
   categoryId?: number | null,
   page: number = 1,
   pageSize: number = 100,
-  isPublished?: boolean | null
+  isPublished?: boolean | null,
+  search?: string
 ) {
   return useQuery<NewsListResponse>({
-    queryKey: ["news", { categoryId, page, pageSize, isPublished }],
+    queryKey: ["news", { categoryId, page, pageSize, isPublished, search }],
     queryFn: () => {
       let url = `/api/home/news/?page=${page}&page_size=${pageSize}`;
       if (categoryId) {
@@ -30,6 +31,9 @@ export function useNewsItems(
       }
       if (isPublished !== null && isPublished !== undefined) {
         url += `&is_published=${isPublished}`;
+      }
+      if (search) {
+        url += `&search=${encodeURIComponent(search)}`;
       }
       return apiFetch<NewsListResponse>(url);
     },

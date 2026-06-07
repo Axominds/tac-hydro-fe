@@ -1,15 +1,9 @@
 
 export type JobType = "Full Time" | "Internship" | "Independent Consultant";
-export type JobCategory =
-    | "Civil/Design Engineering"
-    | "Mechanical Engineering"
-    | "Electrical Engineering"
-    | "Engineering Geology";
 
 export interface JobRole {
     id: string;
     title: string;
-    category: JobCategory;
     type: JobType;
     location: string;
     description: string;
@@ -22,7 +16,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "civil-engineer",
         title: "Civil Engineer",
-        category: "Civil/Design Engineering",
         type: "Full Time",
         location: "Kathmandu / Site",
         description: "Participate in the design and drafting of hydropower project components, including site selection, conceptual design, and detailed engineering drawings.",
@@ -51,7 +44,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "hydropower-hydraulic-engineer",
         title: "Hydropower/Hydraulic Engineer",
-        category: "Civil/Design Engineering",
         type: "Full Time",
         location: "Kathmandu / Site",
         description: "Provide technical support in hydropower projects, from site selection to project commissioning, including design capabilities in different disciplines of Hydraulics.",
@@ -75,7 +67,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "structural-engineer",
         title: "Structural Engineer",
-        category: "Civil/Design Engineering",
         type: "Full Time",
         location: "Kathmandu",
         description: "Lead our structural engineering team, providing technical direction, mentorship, and oversight throughout the project lifecycle.",
@@ -104,7 +95,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "independent-consultant-hydraulics",
         title: "Independent Consultant (Hydraulics)",
-        category: "Civil/Design Engineering",
         type: "Independent Consultant",
         location: "Remote / On-site",
         description: "Serve as a high-level technical advisor for our most complex hydropower projects, validating sophisticated numerical and physical models.",
@@ -129,7 +119,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "independent-consultant-structural",
         title: "Independent Consultant (Structural)",
-        category: "Civil/Design Engineering",
         type: "Independent Consultant",
         location: "Remote / On-site",
         description: "Provide expert oversight for large-scale hydropower projects, navigating the complexities of mass concrete behavior and high-seismic zones.",
@@ -155,7 +144,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "civil-engineering-intern",
         title: "Civil Engineering Intern",
-        category: "Civil/Design Engineering",
         type: "Internship",
         location: "Kathmandu",
         description: "Gain practical exposure to the 'Detail Engineering Design' phase of hydropower development under the mentorship of senior engineers.",
@@ -179,7 +167,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "mechanical-engineer",
         title: "Mechanical Engineer",
-        category: "Mechanical Engineering",
         type: "Full Time",
         location: "Site",
         description: "Play a pivotal role in the installation, supervision, and quality control of pipes and gates at our hydropower project site.",
@@ -207,7 +194,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "mechanical-engineering-intern",
         title: "Mechanical Engineering Intern",
-        category: "Mechanical Engineering",
         type: "Internship",
         location: "Site",
         description: "Support our site-based project teams in the installation and quality control of mechanical components.",
@@ -231,7 +217,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "electrical-engineer",
         title: "Electrical Engineer",
-        category: "Electrical Engineering",
         type: "Full Time",
         location: "Kathmandu / Site",
         description: "Design, analyze, and implement electrical systems for hydropower projects, including powerhouses, switchyards, and transmission components.",
@@ -259,7 +244,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "electrical-engineering-intern",
         title: "Electrical Engineering Intern",
-        category: "Electrical Engineering",
         type: "Internship",
         location: "Kathmandu / Site",
         description: "Support our design and implementation team, gaining a comprehensive look at the electrical life cycle of a hydropower project.",
@@ -283,7 +267,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "engineering-geologist",
         title: "Engineering Geologist",
-        category: "Engineering Geology",
         type: "Full Time",
         location: "Site",
         description: "Undertake tunnel geology assessments, focusing on rock classification and collaborative analysis of geological conditions.",
@@ -310,7 +293,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "independent-consultant-geology",
         title: "Independent Consultant (Engineering Geology)",
-        category: "Engineering Geology",
         type: "Independent Consultant",
         location: "Remote / On-site",
         description: "Provide high-level technical oversight for tunneling and underground works, translating complex geological data into actionable risk assessments.",
@@ -335,7 +317,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "independent-consultant-geotechnical",
         title: "Independent Consultant (Geotechnical Engineering)",
-        category: "Engineering Geology",
         type: "Independent Consultant",
         location: "Remote / On-site",
         description: "Provide expert advisory on foundation engineering and slope stabilization, ensuring the geomechanical integrity of critical structures.",
@@ -359,7 +340,6 @@ export const CAREER_DATA: JobRole[] = [
     {
         id: "geology-intern",
         title: "Geology Intern",
-        category: "Engineering Geology",
         type: "Internship",
         location: "Site",
         description: "Transition from classroom maps to actual tunnel faces, learning to interpret earth's secrets under the mentorship of seasoned geologists.",

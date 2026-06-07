@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   XIcon,
   BriefcaseIcon,
@@ -9,10 +9,13 @@ import {
   ZapIcon,
   FileTextIcon,
   UploadIcon,
+  Loader2Icon,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { Button } from "../../../components/ui/button";
-import { CAREER_DATA, JobRole, JobType } from "../data/careerData";
+import { useJobPostings, useSubmitJobApplication } from "../../../hooks/useCareers";
+import { extractFieldErrors } from "../../../lib/api";
+import type { JobPosting } from "../../../lib/api";
 
 type JobType = "Full Time" | "Internship" | "Independent Consultant";
 
@@ -41,25 +44,60 @@ const TYPE_CONFIG: Record<
 };
 
 export const CurrentVacancySection = () => {
+  const { data: jobsData, isLoading, isError } = useJobPostings({ is_open: true });
+  const submitMutation = useSubmitJobApplication();
+  const formRef = useRef<HTMLFormElement>(null);
+
   const [selectedType, setSelectedType] = useState<JobType | null>("Full Time");
-  const [viewingRole, setViewingRole] = useState<JobRole | null>(null);
+  const [viewingRole, setViewingRole] = useState<JobPosting | null>(null);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
+  const [feedback, setFeedback] = useState<{ type: "success"; message: string } | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const jobs = jobsData ? ('results' in jobsData ? jobsData.results : jobsData) : [];
 
   const filteredRoles = selectedType
-    ? CAREER_DATA.filter((role) => role.type === selectedType)
+    ? jobs.filter((role: JobPosting) => role.type === selectedType)
     : [];
 
-  const handleApplyClick = (role: JobRole, e: React.MouseEvent) => {
+  const handleApplyClick = (role: JobPosting, e: React.MouseEvent) => {
     e.stopPropagation();
     setViewingRole(role);
   };
 
-  const confirmApplication = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFieldErrors({});
+    setFeedback(null);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    data.set("job_id", String(viewingRole!.id));
+    if (cvFile) data.set("cv_file", cvFile);
+    if (coverLetterFile) data.set("cover_letter_file", coverLetterFile);
+
+    submitMutation.mutate(data, {
+      onSuccess: () => {
+        setFieldErrors({});
+        setFeedback({ type: "success", message: "Application submitted successfully!" });
+        setCvFile(null);
+        setCoverLetterFile(null);
+        form.reset();
+        setTimeout(() => {
+          setViewingRole(null);
+          setFeedback(null);
+        }, 2000);
+      },
+      onError: (error) => {
+        setFieldErrors(extractFieldErrors(error));
+      },
+    });
+  };
+
+  const closeModal = () => {
     setViewingRole(null);
-    setCvFile(null);
-    setCoverLetterFile(null);
-    alert("Application Submitted Successfully!");
+    setFeedback(null);
+    setFieldErrors({});
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "cv" | "cover") => {
@@ -85,6 +123,26 @@ export const CurrentVacancySection = () => {
     };
   }, [viewingRole]);
 
+  if (isLoading) {
+    return (
+      <section className="w-full py-20 bg-white px-4 sm:px-8 lg:px-20">
+        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
+          <Loader2Icon className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="w-full py-20 bg-white px-4 sm:px-8 lg:px-20">
+        <div className="max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
+          <p className="text-red-500 font-medium">Failed to load job listings. Please try again later.</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section id="active-opportunities" className="w-full py-20 bg-white px-4 sm:px-8 lg:px-20">
       <div className="max-w-7xl mx-auto">
@@ -98,7 +156,7 @@ export const CurrentVacancySection = () => {
                 </h1>
                 <nav className="space-y-2">
                   {(Object.keys(TYPE_CONFIG) as JobType[]).map((type) => {
-                    const count = filteredRoles.length;
+                    const count = jobs.filter((job: JobPosting) => job.type === type).length;
                     const isActive = selectedType === type;
 
                     return (
@@ -154,7 +212,7 @@ export const CurrentVacancySection = () => {
               )}
 
               {filteredRoles.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6 min-h-[500px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
                   {filteredRoles.map((role) => (
                     <div
                       key={role.id}
@@ -174,14 +232,11 @@ export const CurrentVacancySection = () => {
                           >
                             {role.type}
                           </span>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
-                            {role.category}
-                          </span>
                         </div>
                         <h5 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                           {role.title}
                         </h5>
-                        <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
+                        <p className="text-gray-500 text-sm leading-relaxed">
                           {role.description}
                         </p>
                       </div>
@@ -221,7 +276,7 @@ export const CurrentVacancySection = () => {
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-[#0b1522]/60 backdrop-blur-sm animate-fade-in"
-            onClick={() => setViewingRole(null)}
+            onClick={closeModal}
           />
 
           {/* Modal Content */}
@@ -235,12 +290,12 @@ export const CurrentVacancySection = () => {
                     TYPE_CONFIG[viewingRole.type as JobType]?.color || "text-gray-600",
                   )}
                 >
-                  {viewingRole.type} • {viewingRole.category}
+                  {viewingRole.type}
                 </span>
                 <h3 className="text-2xl font-bold text-[#0b1522]">{viewingRole.title}</h3>
               </div>
               <button
-                onClick={() => setViewingRole(null)}
+                onClick={closeModal}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <XIcon className="w-6 h-6 text-gray-400" />
@@ -314,7 +369,7 @@ export const CurrentVacancySection = () => {
                 </div>
 
                 {/* Form Sections */}
-                <form className="space-y-10 pb-10">
+                <form ref={formRef} id="application-form" onSubmit={handleSubmit} className="space-y-10 pb-10">
                   {/* Section A: General Information */}
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 text-gray-900">
@@ -324,59 +379,90 @@ export const CurrentVacancySection = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          First Name *
+                          First Name <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="first_name"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.first_name && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.first_name}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
                           Middle Name
                         </label>
                         <input
+                          name="middle_name"
                           type="text"
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.middle_name && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.middle_name}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Last Name *
+                          Last Name <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="last_name"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.last_name && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.last_name}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Gender *
+                          Gender <span className="text-red-500">*</span>
                         </label>
-                        <select className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all appearance-none bg-white">
-                          <option>Select Gender</option>
-                          <option>Male</option>
-                          <option>Female</option>
-                          <option>Other</option>
+                        <select
+                          name="gender"
+                          required
+                          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all appearance-none bg-white"
+                        >
+                          <option value="">Select Gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                          <option value="Other">Other</option>
                         </select>
+                        {fieldErrors.gender && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.gender}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Phone Number *
+                          Phone Number <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="phone"
                           type="tel"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.phone && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.phone}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Email Address *
+                          Email Address <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="email"
                           type="email"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.email && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -390,48 +476,73 @@ export const CurrentVacancySection = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Degree Name *
+                          Degree Name <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="degree"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.degree && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.degree}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Percentage / Grade / CGPA *
+                          Percentage / Grade / CGPA <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="grade"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.grade && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.grade}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Year Completed *
+                          Year Completed <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="year_completed"
                           type="number"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.year_completed && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.year_completed}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Specialization *
+                          Specialization <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="specialization"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.specialization && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.specialization}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5 md:col-span-2">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          College / University Attended *
+                          College / University Attended <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="college"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.college && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.college}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -445,13 +556,18 @@ export const CurrentVacancySection = () => {
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          What are the major abilities regarding the job you have applied for? *
+                          What are the major abilities regarding the job you have applied for? <span className="text-red-500">*</span>
                         </label>
                         <textarea
+                          name="abilities"
                           rows={4}
+                          required
                           placeholder="Briefly describe your core technical and professional strengths..."
                           className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all resize-none"
                         />
+                        {fieldErrors.abilities && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.abilities}</p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -467,64 +583,94 @@ export const CurrentVacancySection = () => {
                         <>
                           <div className="space-y-1.5">
                             <label className="text-xs font-bold text-gray-500 uppercase">
-                              Software Proficiency *
+                              Software Proficiency <span className="text-red-500">*</span>
                             </label>
                             <input
+                              name="software_proficiency"
                               type="text"
+                              required
                               placeholder="e.g., AutoCAD, SAP2000, MS Project"
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                             />
+                            {fieldErrors.software_proficiency && (
+                              <p className="text-red-500 text-xs mt-1">{fieldErrors.software_proficiency}</p>
+                            )}
                           </div>
                           <div className="space-y-1.5">
                             <label className="text-xs font-bold text-gray-500 uppercase">
-                              Current Employment Status *
+                              Current Employment Status <span className="text-red-500">*</span>
                             </label>
                             <input
+                              name="employment_status"
                               type="text"
+                              required
                               placeholder="e.g., Employed, Unemployed, Freelancing"
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                             />
+                            {fieldErrors.employment_status && (
+                              <p className="text-red-500 text-xs mt-1">{fieldErrors.employment_status}</p>
+                            )}
                           </div>
                         </>
                       )}
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Experience Sector *
+                          Experience Sector <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="experience_sector"
                           type="text"
+                          required
                           placeholder="e.g., Hydropower, Construction, Irrigation"
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.experience_sector && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.experience_sector}</p>
+                        )}
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-gray-500 uppercase">
-                          Years of Experience *
+                          Years of Experience <span className="text-red-500">*</span>
                         </label>
                         <input
+                          name="years_experience"
                           type="text"
+                          required
                           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                         />
+                        {fieldErrors.years_experience && (
+                          <p className="text-red-500 text-xs mt-1">{fieldErrors.years_experience}</p>
+                        )}
                       </div>
                       {viewingRole.type !== "Independent Consultant" && (
                         <>
                           <div className="space-y-1.5">
                             <label className="text-xs font-bold text-gray-500 uppercase">
-                              Possible Joining Date *
+                              Possible Joining Date <span className="text-red-500">*</span>
                             </label>
                             <input
+                              name="joining_date"
                               type="date"
+                              required
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                             />
+                            {fieldErrors.joining_date && (
+                              <p className="text-red-500 text-xs mt-1">{fieldErrors.joining_date}</p>
+                            )}
                           </div>
                           <div className="space-y-1.5">
                             <label className="text-xs font-bold text-gray-500 uppercase">
-                              Expected Salary (Monthly / NPR) *
+                              Expected Salary (Monthly / NPR) <span className="text-red-500">*</span>
                             </label>
                             <input
+                              name="expected_salary"
                               type="text"
+                              required
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
                             />
+                            {fieldErrors.expected_salary && (
+                              <p className="text-red-500 text-xs mt-1">{fieldErrors.expected_salary}</p>
+                            )}
                           </div>
                         </>
                       )}
@@ -562,7 +708,7 @@ export const CurrentVacancySection = () => {
                           )}
                         />
                         <h5 className="font-bold text-sm text-gray-900 mb-1">
-                          {cvFile ? cvFile.name : "Upload CV / Resume *"}
+                          {cvFile ? cvFile.name : <span className="flex items-center justify-center gap-1">Upload CV / Resume <span className="text-red-500">*</span></span>}
                         </h5>
                         <p className="text-[10px] text-gray-500">
                           {cvFile
@@ -570,6 +716,9 @@ export const CurrentVacancySection = () => {
                             : "Accepted formats: PDF, DOCX (Max 5MB)"}
                         </p>
                       </div>
+                      {fieldErrors.cv_file && (
+                        <p className="text-red-500 text-xs mt-1 col-span-2">{fieldErrors.cv_file}</p>
+                      )}
 
                       {/* Cover Letter Upload */}
                       <div
@@ -597,7 +746,7 @@ export const CurrentVacancySection = () => {
                           )}
                         />
                         <h5 className="font-bold text-sm text-gray-900 mb-1">
-                          {coverLetterFile ? coverLetterFile.name : "Upload Cover Letter *"}
+                          {coverLetterFile ? coverLetterFile.name : <span className="flex items-center justify-center gap-1">Upload Cover Letter <span className="text-red-500">*</span></span>}
                         </h5>
                         <p className="text-[10px] text-gray-500">
                           {coverLetterFile
@@ -605,19 +754,42 @@ export const CurrentVacancySection = () => {
                             : "Accepted formats: PDF, DOCX (Max 5MB)"}
                         </p>
                       </div>
+                      {fieldErrors.cover_letter_file && (
+                        <p className="text-red-500 text-xs mt-1 col-span-2">{fieldErrors.cover_letter_file}</p>
+                      )}
                     </div>
                   </div>
                 </form>
               </div>
             </div>
 
+            {feedback && (
+              <div
+                className={cn(
+                  "px-8 py-4 text-center font-bold text-sm whitespace-pre-line",
+                  feedback.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700",
+                )}
+              >
+                {feedback.message}
+              </div>
+            )}
+
             {/* Modal Footer */}
             <div className="px-8 py-6 border-t border-gray-100 bg-white flex items-center justify-end sticky bottom-0 z-10 shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
               <Button
-                onClick={confirmApplication}
-                className="w-full py-7 bg-blue-600 hover:bg-blue-700 rounded-full font-bold text-xl shadow-xl transition-all"
+                type="submit"
+                form="application-form"
+                disabled={submitMutation.isPending}
+                className="w-full py-7 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-full font-bold text-xl shadow-xl transition-all"
               >
-                Submit Application
+                {submitMutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2Icon className="w-5 h-5 animate-spin" />
+                    Submitting...
+                  </span>
+                ) : (
+                  "Submit Application"
+                )}
               </Button>
             </div>
           </div>

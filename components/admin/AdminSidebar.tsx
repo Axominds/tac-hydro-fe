@@ -20,6 +20,7 @@ import {
   Handshake,
   KeyRound,
   UserCircle,
+  FileText,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import Cookies from "js-cookie";
@@ -46,6 +47,16 @@ const MENU_ITEMS = [
   { name: "Galleries", href: "/admin/galleries", icon: ImageIcon },
   { name: "Banners", href: "/admin/banners", icon: Megaphone },
   { name: "News", href: "/admin/news", icon: Newspaper },
+  { 
+    name: "Careers", 
+    href: "/admin/careers", 
+    icon: FileText,
+    isDropdown: true,
+    subItems: [
+      { name: "Job Postings", href: "/admin/careers" },
+      { name: "Job Applications", href: "/admin/job-applications" },
+    ]
+  },
   { name: "Valued Partners", href: "/admin/partners", icon: Handshake },
   { name: "Site Settings", href: "/admin/settings", icon: Settings },
 ];

@@ -14,12 +14,14 @@ import {
   GripVertical,
   Pencil,
   Image as ImageIcon,
-  Search,
   AlertCircle,
+  ChevronRight,
+  Filter,
+  Search,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import {
-  useProjectsWithScopes,
+  useProjects,
   useProjectScopeMemberships,
   useProjectScopeImages,
 } from "../../../src/hooks/useProjects";
@@ -35,6 +37,7 @@ import {
   ProjectScope,
   ProjectScopeMembership,
   ProjectScopeImage,
+  ProjectListResponse,
   apiFetch,
 } from "../../../src/lib/api";
 import { useAdminTheme, getThemedClasses } from "../../../src/hooks/useAdminTheme";
@@ -65,17 +68,6 @@ export default function ProjectsManagementPage() {
   const { theme, colors, mounted } = useAdminTheme();
   const { setIsModalOpen: setContextModalOpen } = useModalContext();
   const classes = getThemedClasses(theme);
-  const { data: projects, isLoading } = useProjectsWithScopes();
-  const { data: scopeMemberships } = useProjectScopeMemberships();
-  const { data: scopeImages } = useProjectScopeImages();
-  const { createProject, updateProject, deleteProject } = useProjectMutations();
-  const { data: scopes } = useProjectScopes();
-  const { createScope, updateScope, reorderScopes, deleteScope } = useProjectScopeMutations();
-  const { createMembership, updateMembership, deleteMembership } =
-    useProjectScopeMembershipMutations();
-  const { createScopeImage, deleteScopeImage, reorderScopeImages } =
-    useProjectScopeImageMutations();
-  const { toast, showToast, hideToast } = useToast();
 
   const [isModalOpen, setIsModalOpenLocal] = useState(false);
   const [isMembershipModalOpen, setIsMembershipModalOpen] = useState(false);
@@ -95,7 +87,48 @@ export default function ProjectsManagementPage() {
   const [addingScope, setAddingScope] = useState(false);
   const [editingScopeId, setEditingScopeId] = useState<number | null>(null);
   const [editingScopeName, setEditingScopeName] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState<"all" | "Completed" | "Ongoing">("all");
+  const [searchText, setSearchText] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 8;
+
+  useEffect(() => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => setDebouncedSearch(searchText), 300);
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
+  }, [searchText]);
+
+  const statusParam = filterStatus === "all" ? undefined : filterStatus;
+  const searchParam = debouncedSearch.trim() || undefined;
+  const { data: projectsData, isLoading } = useProjects({
+    status: statusParam,
+    search: searchParam,
+    page,
+    page_size: pageSize,
+  });
+
+  const projects = projectsData && "results" in projectsData ? (projectsData as ProjectListResponse).results : undefined;
+  const totalPages = projectsData && "count" in projectsData ? Math.ceil((projectsData as ProjectListResponse).count / pageSize) : 1;
+
+  useEffect(() => {
+    setPage(1);
+  }, [filterStatus, debouncedSearch]);
+
+  const { data: scopeMemberships } = useProjectScopeMemberships();
+  const { data: scopeImages } = useProjectScopeImages();
+  const { createProject, updateProject, deleteProject } = useProjectMutations();
+  const { data: scopes } = useProjectScopes();
+  const { createScope, updateScope, reorderScopes, deleteScope } = useProjectScopeMutations();
+  const { createMembership, updateMembership, deleteMembership } =
+    useProjectScopeMembershipMutations();
+  const { createScopeImage, deleteScopeImage, reorderScopeImages } =
+    useProjectScopeImageMutations();
+  const { toast, showToast, hideToast } = useToast();
+
   const syncedRef = useRef(false);
   const addingScopeRef = useRef(false);
   const updatingScopeRef = useRef(false);
@@ -139,15 +172,8 @@ export default function ProjectsManagementPage() {
     setRoleDrafts(drafts);
   }, [scopeMemberships, editingProject?.id]);
 
-  const filteredProjects = projects?.filter((project) => {
-    if (!searchQuery.trim()) return true;
-    const query = searchQuery.toLowerCase();
-    const matchesTitle = project.title.toLowerCase().includes(query);
-    const matchesCapacity = project.installed_capacity.toString().includes(query);
-    return matchesTitle || matchesCapacity;
-  });
-
   if (!mounted) return null;
+  const isDark = theme === "dark";
 
   const openCreateModal = () => {
     setEditingProject(null);
@@ -484,17 +510,7 @@ export default function ProjectsManagementPage() {
             <Tag className="h-4 w-4" />
             Manage Scopes
           </button>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by project or MW..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2.5 w-64 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-            />
-          </div>
-<button
+          <button
             onClick={openCreateModal}
             className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
           >
@@ -504,77 +520,220 @@ export default function ProjectsManagementPage() {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 pb-40">
-          {filteredProjects?.length === 0 && searchQuery ? (
-            <div className="text-center py-20">
-              <p style={classes.text.secondary}>No projects found matching "{searchQuery}"</p>
-            </div>
-          ) : (
-            filteredProjects?.map((project) => (
+        <div className="flex gap-6 pb-40">
+          <div className="flex-1 min-w-0">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+              </div>
+            ) : !projects || projects.length === 0 ? (
               <div
-                key={project.id}
-                className="flex items-center gap-6 p-6 rounded-2xl group transition-all"
+                className="rounded-2xl p-12 text-center"
+                style={{
+                  ...classes.card.base,
+                  borderStyle: "dashed",
+                }}
+              >
+                <BarChart3 className="h-12 w-12 mx-auto mb-4" style={{ opacity: 0.3 }} />
+                <p className="font-medium mb-1" style={classes.text.primary}>
+                  No projects yet
+                </p>
+                <p className="text-sm" style={classes.text.secondary}>
+                  Click &ldquo;Add&rdquo; to create your first project.
+                </p>
+              </div>
+            ) : (
+              <>
+              <div
+                className="rounded-2xl overflow-hidden"
                 style={{
                   ...classes.card.base,
                   borderWidth: "1px",
                   borderStyle: "solid",
                 }}
               >
-                <div className="w-24 h-16 bg-blue-600/10 rounded-xl relative overflow-hidden flex-shrink-0">
-                  {project.image_urls && project.image_urls[0] ? (
-                    <img
-                      src={project.image_urls[0]}
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                      <BarChart3 className="h-8 w-8 text-blue-500" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-lg leading-tight mb-1" style={classes.text.primary}>
-                    {project.title}
-                  </h3>
-                  <div className="flex gap-4">
-                    <span
-                      className="text-xs font-medium px-2 py-1 rounded-full uppercase tracking-widest"
-                      style={{ color: "#60a5fa", backgroundColor: "rgba(96, 165, 250, 0.1)" }}
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr
+                      className="text-left text-xs font-semibold uppercase tracking-wider"
+                      style={{
+                        color: colors.textMuted as string,
+                        borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+                      }}
                     >
-                      {project.status || "Active"}
-                    </span>
-                    <span className="text-xs font-medium" style={classes.text.muted}>
-                      {project.installed_capacity} {project.installed_capacity_unit} Capacity
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all">
+                      <th className="px-6 py-4 font-semibold">Title</th>
+                      <th className="px-6 py-4 font-semibold">Status</th>
+                      <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {projects.map((project) => (
+                      <tr
+                        key={project.id}
+                        className="group transition-all"
+                        style={{
+                          borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "#f1f5f9"}`,
+                        }}
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center">
+                            <div>
+                              <span className="font-medium" style={{ color: colors.text as string }}>
+                                {project.title}
+                              </span>
+                              <span className="block text-xs mt-0.5" style={{ color: colors.textMuted as string }}>
+                                {project.installed_capacity} {project.installed_capacity_unit}
+                              </span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {project.status === "Completed" ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+                              <Check className="h-3 w-3" />
+                              Completed
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+                              <Loader2 className="h-3 w-3" />
+                              Ongoing
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => openEditModal(project)}
+                              className="p-2 rounded-lg transition-all"
+                              style={{
+                                backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                              }}
+                            >
+                              <Edit2 className="h-4 w-4" style={{ color: colors.textSecondary as string }} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(project.id)}
+                              className="p-2 rounded-lg transition-all"
+                              style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
+                            >
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="p-2 rounded-lg transition-all"
+                  style={{
+                    backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                    color: colors.textSecondary as string,
+                    opacity: page === 1 ? 0.3 : 1,
+                  }}
+                >
+                  <ChevronRight className="h-4 w-4 rotate-180" />
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pg) => (
                   <button
-                    onClick={() => openEditModal(project)}
-                    className="p-2.5 rounded-lg transition-all"
-                    style={classes.card.hover}
+                    key={pg}
+                    onClick={() => setPage(pg)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-semibold transition-all"
+                    style={
+                      page === pg
+                        ? { backgroundColor: "#3b82f6", color: "#ffffff" }
+                        : {
+                            color: colors.textSecondary as string,
+                            backgroundColor: isDark
+                              ? "rgba(255,255,255,0.05)"
+                              : "rgba(0,0,0,0.05)",
+                          }
+                    }
                   >
-                    <Edit2 className="h-4 w-4" style={{ color: colors.textSecondary }} />
+                    {pg}
                   </button>
-                  <button
-                    onClick={() => handleDelete(project.id)}
-                    className="p-2.5 rounded-lg transition-all"
-                    style={{ backgroundColor: "rgba(239, 68, 68, 0.1)" }}
-                  >
-                    <Trash2 className="h-4 w-4 text-red-400" />
-                  </button>
+                ))}
+
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="p-2 rounded-lg transition-all"
+                  style={{
+                    backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                    color: colors.textSecondary as string,
+                    opacity: page === totalPages ? 0.3 : 1,
+                  }}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+              </>
+            )}
+          </div>
+
+          <div
+            className="w-64 shrink-0 rounded-2xl p-5 h-fit sticky top-28"
+            style={{
+              ...classes.card.base,
+              borderWidth: "1px",
+              borderStyle: "solid",
+            }}
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <Filter className="h-4 w-4" style={{ color: colors.textMuted as string }} />
+              <span className="font-semibold text-sm" style={{ color: colors.text as string }}>
+                Filters
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs mb-1.5" style={{ color: colors.textMuted as string }}>
+                  Search
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: colors.textMuted as string }} />
+                  <input
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    placeholder="Search by title..."
+                    className="w-full rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    style={{
+                      backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+                      border: `1px solid ${isDark ? "rgba(255,255,255,0.15)" : "#cbd5e1"}`,
+                      color: isDark ? "#ffffff" : "#1e293b",
+                    }}
+                  />
                 </div>
               </div>
-            ))
-          )}
+              <div>
+                <label className="block text-xs mb-1.5" style={{ color: colors.textMuted as string }}>
+                  Status
+                </label>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value as "all" | "Completed" | "Ongoing")}
+                  className="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: isDark ? "rgba(0,0,0,0.3)" : "#f1f5f9",
+                    border: `1px solid ${isDark ? "rgba(255,255,255,0.15)" : "#cbd5e1"}`,
+                    color: isDark ? "#ffffff" : "#1e293b",
+                  }}
+                >
+                  <option value="all">All</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Ongoing">Ongoing</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
 
       {/* CRUD Modal */}
       {isModalOpen && (

@@ -1,11 +1,40 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiFetch, Project, ProjectScopeMembership, ProjectScope, ProjectScopeImage } from "../lib/api";
+import { apiFetch, Project, ProjectListResponse, ProjectScopeMembership, ProjectScope, ProjectScopeImage } from "../lib/api";
 import { useProjectScopes } from "./useProjectScopes";
 
-export function useProjects() {
-  return useQuery<Project[]>({
-    queryKey: ["projects"],
-    queryFn: () => apiFetch<Project[]>("/api/projects/"),
+interface ProjectFilters {
+  status?: string;
+  search?: string;
+  page?: number;
+  page_size?: number;
+}
+
+export function useProjects(filters?: ProjectFilters) {
+  const hasPagination = filters?.page !== undefined;
+
+  return useQuery<Project[] | ProjectListResponse>({
+    queryKey: ["projects", filters],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (filters?.status) {
+        params.set("status", filters.status);
+      }
+      if (filters?.search) {
+        params.set("search", filters.search);
+      }
+      if (filters?.page !== undefined) {
+        params.set("page", String(filters.page));
+      }
+      if (filters?.page_size !== undefined) {
+        params.set("page_size", String(filters.page_size));
+      }
+      const qs = params.toString();
+      const url = `/api/projects/${qs ? `?${qs}` : ""}`;
+      if (hasPagination) {
+        return apiFetch<ProjectListResponse>(url);
+      }
+      return apiFetch<Project[]>(url);
+    },
   });
 }
 
